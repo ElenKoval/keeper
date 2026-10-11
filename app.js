@@ -5,14 +5,28 @@ const $ = id => document.getElementById(id);
 const app = $('app'), keeper = $('keeper'), lineEl = $('line'), optsEl = $('opts'), floor = $('floor');
 
 /* ---------- данные ---------- */
+/* need = сколько глав прочитано, чтобы открылся чат */
 const PEOPLE = {
-  dream:  {name:'Дрим',   face:'assets/img/dream.jpg'},
-  weaver: {name:'Вивер',  face:'assets/img/weaver.jpg'},
-  keeper: {name:'Кипер',  face:'assets/img/keeper.jpg'},
+  keeper:        {name:'Кипер',    face:'assets/img/keeper.jpg',  need:0,  who:'хранитель, помнит всё'},
+  dream:         {name:'Дрим',     face:'assets/img/dream.jpg',   need:1,  who:'садовник Нитей'},
+  weaver:        {name:'Вивер',    face:'assets/img/weaver.jpg',  need:1,  who:'единственная, кто растёт'},
+  liora:         {name:'Лиора',    face:'assets/img/liora.jpg',   need:1,  who:'поёт над Нитями'},
+  drpak:         {name:'Пак',      face:'assets/img/pak.jpg',     need:1,  who:'хирург, режет Жажду'},
+  crystal:       {name:'Кристалл', face:'assets/img/crystal.jpg', need:1,  who:'настраивает Нити, как струны'},
+  cat:           {name:'Кот',      face:'assets/img/cat.jpg',     need:1,  who:'самый младший в Саду'},
+  angry_forest:  {name:'Злой Лес', face:'assets/img/forest.jpg',  need:6,  who:'принимает Тени'},
+  shiny:         {name:'Шайни',    face:'assets/img/shiny.jpg',   need:11, who:''},
+  shiny_bro:     {name:'Брат',     face:'assets/img/bro.jpg',     need:11, who:''},
+  talk_mushroom: {name:'Гриб',     face:'assets/img/grib.jpg',    need:13, who:''},
 };
+/* file = путь к mp3 в assets/audio, пока пусто */
 const SONGS = {
-  dream:  {title:'Песня Дрима', file:''},
-  keeper: {title:'Песня Кипера', file:''},
+  keeper:  {title:'Песня Кипера',          who:'keeper', file:''},
+  dream:   {title:'Песня Дрима',           who:'dream',  file:''},
+  weaver:  {title:'Gasoline Rainbow',      who:'weaver', file:''},
+  cat:     {title:'Песня Кота',            who:'cat',    file:''},
+  drpak:   {title:'Песня Пака',            who:'drpak',  file:''},
+  crystal: {title:'Песня Кристалла',       who:'crystal',file:''},
 };
 const TITLES = ['Перед первым криком','Мир стал меньше','Возможно, жук','Янтарная тишина','Встреча','Бег','Просто скажи «нет»','Операция','Крыша','Прикосновение','Запах высоты','Ноктюрн','Цена','Шипы'];
 
@@ -85,7 +99,7 @@ const roots = $('roots');
 const rnd = (a,b) => a + Math.random()*(b-a);
 function drawRoots(){
   const W = innerWidth, H = innerHeight; roots.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  let g = ''; const n = Math.round(W/34);
+  let g = ''; const n = Math.round(W/55);
   for (let i=0;i<n;i++){
     const x = rnd(0,W), len = rnd(.05,.34)*H; let d = `M${x.toFixed(1)} 0`, cx = x;
     const k = Math.max(3, Math.round(len/80));
@@ -130,11 +144,14 @@ function go(id){
   busy = true; let i = 0;
   const next = () => {
     if (my !== token) return;
+    optsEl.innerHTML = ''; clearTimeout(timer);
     if (i >= n.steps.length){ busy = false; return finish(n, my); }
     const s = n.steps[i++]; act(s.act); showLine(s.say || '', s.note);
-    const wait = s.say ? Math.min(7000, 1300 + s.say.length*42) : 2200;
-    clearTimeout(timer); timer = setTimeout(next, wait);
-    lineEl.onclick = () => { clearTimeout(timer); next(); };
+    if (!s.say){ timer = setTimeout(next, 1800); return; }          // только действие – идём дальше сами
+    if (i < n.steps.length || n.next){                               // ждём нажатия
+      const b = document.createElement('button'); b.className = 'tapnext'; b.textContent = 'дальше ▸';
+      b.onclick = next; optsEl.appendChild(b); lineEl.onclick = next;
+    } else next();
   };
   next();
 }
@@ -156,7 +173,7 @@ function finish(n, my){
 function choose(o){
   if (o.go) return go(o.go);
   if (o.resume) return go(S.resume && S.resume !== 'back' ? S.resume : 'start');
-  if (o.chat) return openChat(o.chat, o.label.includes(',') ? o.label.split(', ').slice(1).join(', ') : null, o.label);
+  if (o.chat) return openChat(o.chat, o.label.includes(',') ? o.label.split(', ').slice(1).join(', ') : null);
   if (o.song) return openSong(o.song);
 }
 
@@ -229,20 +246,10 @@ async function ask(character, message, history){
   } finally { clearTimeout(to); }
 }
 
-/* свободный разговор с Кипером */
-$('ask').addEventListener('submit', async e => {
-  e.preventDefault(); const inp = $('askInput'); const m = inp.value.trim(); if (!m) return; inp.value = '';
-  token++; clearTimeout(timer); busy = true; act('look');
-  const h = S.chats.keeper || (S.chats.keeper = []);
-  showLine('…', 'Кипер думает.'); const slow = setTimeout(() => showLine('…', 'Кипер думает. Иногда это занимает до минуты: он просыпается.'), 6000);
-  try{ const a = await ask('keeper', m, h); h.push({role:'user', text:m}, {role:'model', text:a}); S.chats.keeper = h.slice(-40); save(); showLine(a); }
-  catch(err){ showLine('Я задумался и потерял мысль. Скажи ещё раз?'); }
-  finally{ clearTimeout(slow); busy = false; if (!optsEl.children.length && !floor.children.length && wb.hidden) finish({opts:[{label:'Вернуться к истории', resume:true, tap:true}]}); }
-});
-
 /* чат с персонажем */
 let chatWith = null;
-function openChat(id, first, label){
+function openChat(id, first){
+  PANELS.forEach(p => $(p).hidden = true); setTab('people');
   chatWith = id; if (!S.met.includes(id)) S.met.push(id); save();
   const p = PEOPLE[id]; $('chatFace').src = p.face; $('chatName').textContent = p.name;
   $('chatSub').textContent = 'знает историю до главы «' + TITLES[Math.min(S.read, TITLES.length-1)] + '»';
@@ -261,28 +268,51 @@ async function sendChat(m){
   finally{ clearTimeout(slow); w.scrollIntoView({block:'end'}); }
 }
 $('chatForm').addEventListener('submit', e => { e.preventDefault(); const i = $('chatInput'); const m = i.value.trim(); if (!m) return; i.value = ''; sendChat(m); });
-$('chatBack').onclick = () => { $('chat').hidden = true; const n = N[S.node]; if (n && n.opts) { /* остаёмся в той же сцене, кнопки на месте */ } };
+$('chatBack').onclick = () => { $('chat').hidden = true; setTab('story'); };
 
-/* песни */
-function openSong(id){
-  const s = SONGS[id]; if (!S.heard.includes(id)) S.heard.push(id); save();
-  $('songTitle').textContent = s.title; const a = $('audio');
-  if (s.file){ a.src = s.file; a.hidden = false; $('songNote').textContent = ''; a.play().catch(() => {}); }
-  else { a.hidden = true; $('songNote').textContent = 'Песня скоро будет здесь.'; }
-  $('song').hidden = false;
+/* разделы: История · Персонажи · Музыка · Книга */
+const PANELS = ['people','music','toc'];
+function closePanels(){ PANELS.forEach(p => $(p).hidden = true); setTab('story'); }
+function setTab(name){ document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === name)); }
+function openPanel(name){
+  PANELS.forEach(p => $(p).hidden = true); $('chat').hidden = true;
+  if (name === 'people') renderPeople(), $('people').hidden = false;
+  if (name === 'music') renderSongs(), $('music').hidden = false;
+  if (name === 'book') renderBook(), $('toc').hidden = false;
+  setTab(name);
 }
-$('songBack').onclick = () => { $('audio').pause(); $('song').hidden = true; };
+document.querySelectorAll('.nav button').forEach(b => b.onclick = () => b.dataset.tab === 'story' ? (closePanels(), $('chat').hidden = true) : openPanel(b.dataset.tab));
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = closePanels);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePanels(); $('chat').hidden = true; } });
 
-/* книга по порядку */
-$('bookBtn').onclick = () => {
+function renderPeople(){
+  const box = $('cards'); box.innerHTML = '';
+  Object.entries(PEOPLE).forEach(([id, p]) => {
+    const open = S.read >= p.need;
+    const b = document.createElement('button'); b.className = 'card'; b.disabled = !open;
+    b.innerHTML = `<img src="${p.face}" alt=""><b>${esc(p.name)}</b><small>${open ? esc(p.who || 'поговорить') : 'встретишь дальше в истории'}</small>`;
+    if (open) b.onclick = () => { $('people').hidden = true; openChat(id); };
+    box.appendChild(b);
+  });
+}
+function renderSongs(hl){
+  const ul = $('songList'); ul.innerHTML = '';
+  Object.entries(SONGS).forEach(([id, s]) => {
+    const li = document.createElement('li'); if (id === hl) li.className = 'hl';
+    li.innerHTML = `<img src="${PEOPLE[s.who].face}" alt=""><span class="t"><b>${esc(s.title)}</b><small>${esc(PEOPLE[s.who].name)}${s.file ? '' : ' · скоро'}</small></span>`;
+    const b = document.createElement('button'); b.textContent = '▶ Слушать'; b.disabled = !s.file;
+    b.onclick = () => { const a = $('player'); a.src = s.file; a.hidden = false; a.play().catch(() => {}); if (!S.heard.includes(id)) { S.heard.push(id); save(); } };
+    li.appendChild(b); ul.appendChild(li);
+  });
+}
+function openSong(id){ openPanel('music'); renderSongs(id); }
+function renderBook(){
   const ol = $('tocList'); ol.innerHTML = '';
-  TITLES.forEach((t, i) => { const li = document.createElement('li'); const b = document.createElement('button');
-    const ok = i < window.CHAPTERS.length && i <= S.read; b.disabled = !ok;
-    b.innerHTML = `<span class="n">${i===0?'·':i}</span><span>${esc(t)}</span>` + (i >= window.CHAPTERS.length ? ' <span class="n">скоро</span>' : (i > S.read ? ' <span class="n">ещё рано</span>' : ''));
-    b.onclick = () => { $('toc').hidden = true; token++; startRead(i, null); }; li.appendChild(b); ol.appendChild(li); });
-  $('toc').hidden = false;
-};
-$('tocBack').onclick = () => { $('toc').hidden = true; };
+  TITLES.forEach((t, i) => { const li = document.createElement('li'); const b = document.createElement('button'); b.className = 'ch';
+    const have = i < window.CHAPTERS.length, ok = have && i <= S.read; b.disabled = !ok;
+    b.innerHTML = `<span class="n">${i===0?'·':i}</span><span>${esc(t)}</span>` + (!have ? ' <span class="n">скоро</span>' : (i > S.read ? ' <span class="n">ещё рано</span>' : ''));
+    b.onclick = () => { closePanels(); token++; startRead(i, null); }; li.appendChild(b); ol.appendChild(li); });
+}
 
 /* старт */
 setTimeout(() => go(S.node && S.node !== 'start' ? 'back' : 'start'), 600);

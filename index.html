@@ -14,9 +14,12 @@
 
 <header class="top">
   <span class="mark">Мир Дриады</span>
-  <button class="book" id="bookBtn" title="Читать по порядку" aria-label="Читать по порядку">
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5.5C6.5 4 9.5 4 12 5.5v13C9.5 17 6.5 17 4 18.5z M20 5.5C17.5 4 14.5 4 12 5.5v13c2.5-1.5 5.5-1.5 8 0z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-  </button>
+  <nav class="nav" aria-label="Разделы">
+    <button data-tab="story" class="on">История</button>
+    <button data-tab="people">Персонажи</button>
+    <button data-tab="music">Музыка</button>
+    <button data-tab="book">Книга</button>
+  </nav>
 </header>
 
 <main id="app" class="mode-talk">
@@ -77,13 +80,6 @@
   <!-- objects on the floor -->
   <div class="floor" id="floor"></div>
   <img id="walkBug" class="walkbug" src="assets/img/bug0.png" alt="Жук" hidden>
-
-  <!-- free talk with Keeper -->
-  <form class="ask" id="ask" autocomplete="off">
-    <label class="sr" for="askInput">Напиши Киперу</label>
-    <input id="askInput" maxlength="600" placeholder="Напиши Киперу…">
-    <button type="submit" aria-label="Отправить">→</button>
-  </form>
 </main>
 
 <!-- character chat -->
@@ -101,19 +97,26 @@
   </form>
 </aside>
 
-<!-- song -->
-<aside class="song" id="song" hidden>
-  <p class="song-title" id="songTitle"></p>
-  <p class="song-note" id="songNote"></p>
-  <audio id="audio" controls preload="none" hidden></audio>
-  <button class="back" id="songBack">Закрыть</button>
+<!-- characters -->
+<aside class="panel" id="people" hidden>
+  <div class="panel-head"><p class="panel-title">Персонажи</p><button class="back" data-close>Закрыть</button></div>
+  <p class="panel-lead">С кем можно поговорить. Каждый знает историю ровно до того места, где ты сейчас.</p>
+  <div class="cards" id="cards"></div>
+</aside>
+
+<!-- music -->
+<aside class="panel" id="music" hidden>
+  <div class="panel-head"><p class="panel-title">Музыка</p><button class="back" data-close>Закрыть</button></div>
+  <p class="panel-lead">У каждого своя песня. Новые появляются по ходу истории.</p>
+  <ul class="songs" id="songList"></ul>
+  <audio id="player" controls preload="none" hidden></audio>
 </aside>
 
 <!-- book in order -->
-<aside class="toc" id="toc" hidden>
-  <p class="toc-title">Ну если ты настаиваешь на порядке…</p>
+<aside class="panel" id="toc" hidden>
+  <div class="panel-head"><p class="panel-title">Книга</p><button class="back" data-close>Закрыть</button></div>
+  <p class="panel-lead">Ну если ты настаиваешь на порядке…</p>
   <ol id="tocList"></ol>
-  <button class="back" id="tocBack">Вернуться к Киперу</button>
 </aside>
 
 <script src="assets/chapters.js"></script>
