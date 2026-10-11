@@ -254,7 +254,7 @@ function openChat(id, first){
   PANELS.forEach(p => $(p).hidden = true); setTab('people');
   chatWith = id; if (!S.met.includes(id)) S.met.push(id); save();
   const p = PEOPLE[id]; $('chatFace').src = p.face; $('chatName').textContent = p.name;
-  $('chatSub').textContent = 'знает историю до главы «' + TITLES[Math.min(S.read, TITLES.length-1)] + '»';
+  $('chatSub').textContent = p.who || '';
   const log = $('chatLog'); log.innerHTML = ''; (S.chats[id] || []).forEach(m => addMsg(m.role==='user'?'me':'them', m.text));
   $('chat').hidden = false;
   if (first){ const q = first.replace(/\?$/, '?'); sendChat(q.charAt(0).toUpperCase() + q.slice(1)); }
