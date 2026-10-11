@@ -7,17 +7,17 @@ const app = $('app'), keeper = $('keeper'), lineEl = $('line'), optsEl = $('opts
 /* ---------- данные ---------- */
 /* need = сколько глав прочитано, чтобы открылся чат */
 const PEOPLE = {
-  keeper:        {name:'Кипер',    face:'assets/img/keeper_paper.jpg',  need:0,  who:'хранитель, помнит всё'},
-  dream:         {name:'Дрим',     face:'assets/img/dream.jpg',   need:1,  who:'садовник Нитей'},
-  weaver:        {name:'Вивер',    face:'assets/img/weaver.jpg',  need:1,  who:'единственная, кто растёт'},
-  liora:         {name:'Лиора',    face:'assets/img/liora.jpg',   need:1,  who:'поёт над Нитями'},
-  drpak:         {name:'Пак',      face:'assets/img/pak.jpg',     need:1,  who:'хирург, режет Жажду'},
-  crystal:       {name:'Кристалл', face:'assets/img/crystal.jpg', need:1,  who:'настраивает Нити, как струны'},
-  cat:           {name:'Кот',      face:'assets/img/cat.jpg',     need:1,  who:'самый младший в Саду'},
-  angry_forest:  {name:'Злой Лес', face:'assets/img/forest.jpg',  need:6,  who:'принимает Тени'},
-  shiny:         {name:'Шайни',    face:'assets/img/shiny.jpg',   need:11, who:''},
-  shiny_bro:     {name:'Брат',     face:'assets/img/bro.jpg',     need:11, who:''},
-  talk_mushroom: {name:'Гриб',     face:'assets/img/grib.jpg',    need:13, who:''},
+  keeper:        {name:'Кипер',    face:'assets/img/keeper_paper.jpg?v=3',  need:0,  who:'хранитель, помнит всё'},
+  dream:         {name:'Дрим',     face:'assets/img/dream.jpg?v=3',   need:1,  who:'садовник Нитей'},
+  weaver:        {name:'Вивер',    face:'assets/img/weaver.jpg?v=3',  need:1,  who:'единственная, кто растёт'},
+  liora:         {name:'Лиора',    face:'assets/img/liora.jpg?v=3',   need:1,  who:'поёт над Нитями'},
+  drpak:         {name:'Пак',      face:'assets/img/pak.jpg?v=3',     need:1,  who:'хирург, режет Жажду'},
+  crystal:       {name:'Кристалл', face:'assets/img/crystal.jpg?v=3', need:1,  who:'настраивает Нити, как струны'},
+  cat:           {name:'Кот',      face:'assets/img/cat.jpg?v=3',     need:1,  who:'самый младший в Саду'},
+  angry_forest:  {name:'Злой Лес', face:'assets/img/forest.jpg?v=3',  need:6,  who:'принимает Тени'},
+  shiny:         {name:'Шайни',    face:'assets/img/shiny.jpg?v=3',   need:11, who:''},
+  shiny_bro:     {name:'Брат',     face:'assets/img/bro.jpg?v=3',     need:11, who:''},
+  talk_mushroom: {name:'Гриб',     face:'assets/img/grib.jpg?v=3',    need:13, who:''},
 };
 /* file = путь к mp3 в assets/audio, пока пусто */
 const SONGS = {
@@ -205,7 +205,7 @@ function startBug(b){
 /* ---------- чтение ---------- */
 const textEl = $('text'), pages = document.querySelector('.pages');
 let R = null;
-const IMG = k => `assets/img/${k}.jpg`;
+const IMG = k => `assets/img/${k}.jpg?v=3`;
 function startRead(ch, then){
   const c = window.CHAPTERS[ch]; app.className = 'mode-read';
   $('chapTitle').textContent = c.title; textEl.innerHTML = ''; pages.scrollTop = 0;
