@@ -246,3 +246,4 @@ button,input{font:inherit;color:inherit}
 .time{color:var(--dim);font-variant-numeric:tabular-nums;font-size:.9rem;min-width:3.2em}
 .lyrics{font-family:var(--body);white-space:pre-wrap;color:var(--ink);line-height:1.55;margin:14px 0 0;max-width:34rem}
 .card .ph{width:100%;aspect-ratio:1;border-radius:10px;background:#141210;display:grid;place-items:center;text-align:center;font-style:italic;font-size:.8rem;color:#d9d2c3;padding:12px}
+.sound .toKeeper{z-index:36}

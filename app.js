@@ -234,6 +234,7 @@ function endRead(){ S.read = Math.max(S.read, R.ch + 1); save(); const then = R.
 
 function leaveRead(){ if (!R) return; if (R.i >= window.CHAPTERS[R.ch].paras.length) return endRead(); R = null; go(S.resume || 'start'); }
 $('toKeeper').onclick = leaveRead;
+$('musicHome').onclick = () => $('homeBtn').click();
 $('homeBtn').onclick = () => { closePanels(); $('chat').hidden = true; if (R) leaveRead(); };
 
 /* ---------- ИИ ---------- */
