@@ -1,0 +1,289 @@
+/* Кипер рассказывает — движок сцены */
+(() => {
+const API = 'https://ai-character-platform.onrender.com/api/chat';
+const $ = id => document.getElementById(id);
+const app = $('app'), keeper = $('keeper'), lineEl = $('line'), optsEl = $('opts'), floor = $('floor');
+
+/* ---------- данные ---------- */
+const PEOPLE = {
+  dream:  {name:'Дрим',   face:'assets/img/dream.jpg'},
+  weaver: {name:'Вивер',  face:'assets/img/weaver.jpg'},
+  keeper: {name:'Кипер',  face:'assets/img/keeper.jpg'},
+};
+const SONGS = {
+  dream:  {title:'Песня Дрима', file:''},
+  keeper: {title:'Песня Кипера', file:''},
+};
+const TITLES = ['Перед первым криком','Мир стал меньше','Возможно, жук','Янтарная тишина','Встреча','Бег','Просто скажи «нет»','Операция','Крыша','Прикосновение','Запах высоты','Ноктюрн','Цена','Шипы'];
+
+/* кадры чтения: [начало абзаца, рисунок, движение камеры, действие Кипера] */
+const FRAMES = {
+  0: [['', 'dryad','pan-up'], ['Рядом с ней остался Кипер','keeper','pan-in','look'], ['Только Дрим не оставлял','dream','pan-down'],
+      ['Особенно когда внутри','dream','pan-in'], ['Пак действовал','pak','pan-in'], ['Лиора садилась','liora','pan-up'],
+      ['Кристалл настраивал','crystal','pan-left'], ['Кот появился позже','cat','pan-left'], ['А выведенная Жажда','forest','pan-down'],
+      ['За пределами Сада','fallow','pan-still'], ['На Земле сменялись','dryad','pan-in'], ['Пока однажды Дрим','dryad','pan-down'],
+      ['Ветви над Дримом опять','dryad','pan-down','weave']],
+  1: [['', 'dryad','pan-down'], ['Раньше Вивер помещалась','weaver','pan-up'], ['Вивер остановилась рядом','dream','pan-in'],
+      ['Они дошли до края Сада','dream','pan-left'], ['— Я пойду к Лиоре','liora','pan-left'], ['Он постоял ещё немного','dryad','pan-down']],
+  2: [['', 'keeper','pan-in'], ['Дрим провёл рукой по стволу','dryad','pan-up'], ['— Я хочу знать, кто такая Вивер','dream','pan-in'],
+      ['Кипер медленно повернул','keeper','pan-in'], ['Он поскрёб рогом о дерево','keeper','pan-in','scratch'], ['Жук снова появился','dryad','pan-down']],
+};
+
+/* сцены */
+const N = {
+  start: {steps:[
+      {act:'scratch', note:'Кипер чешется рогом о кору.'},
+      {act:'look', say:'О. Ты надолго?'},
+      {act:'twitch', say:'Впрочем, откуда тебе знать. Я вот тоже не знаю, надолго ли я. Садись. Я хочу рассказать тебе одну историю.'},
+      {say:'Она ещё не закончилась. Или уже? Нет. Не стал бы я рассказывать закончившуюся, это невежливо по отношению к концу.'}],
+    opts:[{label:'Я слушаю', go:'listen'}, {label:'А ты кто?', go:'who'}]},
+  who: {steps:[{say:'Кипер. Я здесь всё храню.'}, {act:'look', note:'Смотрит под себя.', say:'Почти всё. Жука опять потерял. Но историю пока помню. Она больше жука, её труднее потерять.'}],
+    opts:[{label:'Ну рассказывай', go:'pro_in'}]},
+  listen: {steps:[{say:'Хорошо. Хорошо. Это редкость. Обычно слушаю я.'}], next:'pro_in'},
+  pro_in: {steps:[
+      {say:'С чего бы… С начала? Начало было до начала, я его плохо вижу.'},
+      {say:'С Дриады? Она спит. Разговора не получится. С Дрима? Он сейчас занят. Он тогда тоже был занят…'},
+      {act:'twitch', note:'Перестаёт чесаться. Замирает.', say:'А потом кто-то закричал.'},
+      {say:'Подними. Аккуратно. Она была совсем маленькая.'}],
+    object:{kind:'chitin', label:'осколок хитина', go:'pro_read'}},
+  pro_read: {read:0, then:'pro_after'},
+  pro_after: {steps:[{say:'Он не знал, как её держать. Столько лапок и всего две руки. Несправедливая арифметика.'}],
+    opts:[{label:'Дрим, ты испугался?', chat:'dream'}, {label:'А что было дальше?', go:'pro_song'}]},
+  pro_song: {steps:[{say:'Он потом про неё пел. Мне он этого не говорил. Но я слышал.'}],
+    opts:[{label:'Послушать Дрима', song:'dream'}, {label:'Дальше', go:'ch1_in', tap:true}]},
+  ch1_in: {steps:[
+      {act:'stuck', note:'Кипер пытается пролезть между двумя ветвями, застревает, пятится.'},
+      {say:'Между прочим, очень неприятное чувство. И совершенно необязательно об этом рассказывать всем.'},
+      {say:'Вот тут. Она полезла туда, куда лазила всегда. А «всегда» – штука ненадёжная.'}],
+    object:{kind:'scratch', label:'царапина на корне', go:'ch1_read'}},
+  ch1_read: {read:1, then:'ch1_after'},
+  ch1_after: {steps:[{say:'Корень остался прежним. Так все говорят. А корни, между прочим, тоже растут. Только внутрь.'}],
+    opts:[{label:'Вивер, а тебе было больно?', chat:'weaver'}, {label:'Дрим, что с тобой происходит?', chat:'dream'}, {label:'Кипер, он же тебя зовёт', go:'ch1_call'}]},
+  ch1_call: {steps:[{act:'look', note:'Делает вид, что не слышит. Потом всё-таки оборачивается.', say:'Я слышал. Я просто был занят. Важным.'}], next:'ch2_in'},
+  ch2_in: {steps:[{act:'listen', say:'Вот он. Не дави. Он хотя бы знает, куда идёт.'}], bug:{go:'ch2_read'}},
+  ch2_read: {read:2, then:'ch2_after'},
+  ch2_after: {steps:[{say:'Это я хорошо сказал. Я редко понимаю, что говорю. Но это не значит…'}],
+    opts:[{label:'…что ты ошибаешься', go:'ch2_here'}]},
+  ch2_here: {steps:[{act:'twitch', say:'Вот. Ты уже почти здешний. Или здешняя. Я не разглядел.'}, {say:'Про меня, кстати, тоже есть песня. Я её не слушал. Вдруг там правда.'}],
+    opts:[{label:'Кипер, а жук – чей?', chat:'keeper'}, {label:'Дрим, ты ему веришь?', chat:'dream'}, {label:'Послушать Кипера', song:'keeper'}, {label:'А что дальше?', go:'later', tap:true}]},
+  later: {steps:[{act:'listen', say:'Дальше кто-то поёт. Слышишь? Нет? Значит, ещё рано.'}, {say:'Приходи потом. Я никуда не денусь. Это моя главная работа – никуда не деваться.'}],
+    opts:[{label:'Поговорить с Кипером', chat:'keeper'}, {label:'Хочу кое с кем поговорить', go:'whom'}]},
+  back: {steps:[{act:'look', note:'Смотрит на тебя, потом на оставленные вещи.', say:'А, это ты. Я ничего не трогал. Почти.'}],
+    opts:[{label:'Продолжим историю', resume:true}, {label:'Хочу кое с кем поговорить', go:'whom'}, {label:'Давай музыку', go:'music'}]},
+  whom: {steps:[{say:'С кем? Я всех помню. Почти.'}], dyn:'whom'},
+  music: {steps:[{say:'Музыку я храню в янтаре. Вот, что уже звучало.'}], dyn:'music'},
+};
+const RESUMABLE = new Set(['start','pro_in','pro_after','pro_song','ch1_in','ch1_after','ch2_in','ch2_after','ch2_here','later']);
+
+/* ---------- состояние ---------- */
+let S = {node:null, resume:'start', read:0, chats:{}, met:[], heard:[]};
+try { Object.assign(S, JSON.parse(localStorage.getItem('keeper-state') || '{}')); } catch(e) {}
+const save = () => { try { localStorage.setItem('keeper-state', JSON.stringify(S)); } catch(e) {} };
+
+/* ---------- корни ---------- */
+const roots = $('roots');
+const rnd = (a,b) => a + Math.random()*(b-a);
+function drawRoots(){
+  const W = innerWidth, H = innerHeight; roots.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  let g = ''; const n = Math.round(W/34);
+  for (let i=0;i<n;i++){
+    const x = rnd(0,W), len = rnd(.05,.34)*H; let d = `M${x.toFixed(1)} 0`, cx = x;
+    const k = Math.max(3, Math.round(len/80));
+    for (let j=1;j<=k;j++){ const ny = len*j/k, nx = x + rnd(-14,14); d += ` Q${(cx+rnd(-14,14)).toFixed(1)} ${(ny-len/k/2).toFixed(1)} ${nx.toFixed(1)} ${ny.toFixed(1)}`; cx = nx; }
+    if (Math.random()<.6){ const by = len*rnd(.3,.7); d += ` M${(x+rnd(-8,8)).toFixed(1)} ${by.toFixed(1)} q${rnd(-30,30).toFixed(1)} ${rnd(20,50).toFixed(1)} ${rnd(-50,50).toFixed(1)} ${rnd(40,110).toFixed(1)}`; }
+    g += `<g class="sway" style="--d:${rnd(7,13).toFixed(1)}s;--a:${rnd(.4,1.2).toFixed(2)}deg"><path d="${d}" stroke-width="${rnd(.6,1.6).toFixed(2)}" opacity="${rnd(.1,.38).toFixed(2)}"/></g>`;
+  }
+  roots.innerHTML = g;
+}
+drawRoots(); let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawRoots, 250); });
+
+/* ---------- Кипер: моргание, действия, жук на роге ---------- */
+const lids = [$('lidL'), $('lidR')];
+function setLids(c){ lids.forEach(l => { l.classList.toggle('open', !c); l.style.transform = c ? 'translateY(0px)' : `translateY(-${l.id==='lidL'?400:280}px)`; }); }
+function blink(d){ setLids(true); setTimeout(() => { setLids(false); if (d) setTimeout(() => blink(false), 220); }, 130); }
+(function loop(){ setTimeout(() => { blink(Math.random()<.25); loop(); }, 2600 + Math.random()*4200); })();
+function act(name){ if (!name) return; const c = 'a-'+name; keeper.classList.remove(c); void keeper.offsetWidth; keeper.classList.add(c);
+  setTimeout(() => keeper.classList.remove(c), 2600); if (name==='look'||name==='twitch') blink(false); }
+const BF = [0,1,2,3].map(i => `assets/img/bug${i}.png`); let fr = 0;
+setInterval(() => { fr = (fr+1)%4; document.querySelectorAll('.bugframe').forEach(b => b.setAttribute('href', BF[fr])); const w = $('walkBug'); if (!w.hidden) w.src = BF[fr]; }, 110);
+const hornBug = $('hornBug'), HP = [[1560,900],[1620,760],[1700,560],[1800,260]];
+function hornCrawl(){ const pts = Math.random()<.5 ? HP : [...HP].reverse(); let s=0,t=0; hornBug.setAttribute('opacity',1);
+  const step = () => { t += .006; if (t>=1){ t=0; s++; if (s>=pts.length-1){ hornBug.setAttribute('opacity',0); setTimeout(hornCrawl, 12000+Math.random()*12000); return; } }
+    const a=pts[s], b=pts[s+1], x=a[0]+(b[0]-a[0])*t, y=a[1]+(b[1]-a[1])*t, ang=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI+90;
+    hornBug.setAttribute('transform', `translate(${x} ${y}) rotate(${ang})`); requestAnimationFrame(step); }; step(); }
+setTimeout(hornCrawl, 9000);
+const POKES = ['Тсс. Не шевелись. Ты стоишь на моём вчера. Вот. Теперь можно.','Я помню всё. Только не по порядку.','Ты не видел жука? Маленький, тёмный. Всё время куда-то идёт.','Ноги – ужасная вещь. Чем их больше, тем труднее притворяться, что стоишь на месте.','Хорошо. Хорошо.'];
+keeper.addEventListener('click', () => { if (app.classList.contains('mode-read')) return; act('twitch'); if (!busy) showLine(POKES[Math.floor(Math.random()*POKES.length)]); });
+
+/* ---------- реплики ---------- */
+let busy = false, timer = null, token = 0;
+function showLine(text, note){
+  lineEl.innerHTML = (note ? `<span class="act">${esc(note)}</span>` : '') + esc(text || '');
+}
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function go(id){
+  const n = N[id]; if (!n) return;
+  const my = ++token; S.node = id; if (RESUMABLE.has(id)) S.resume = id; save();
+  optsEl.innerHTML = ''; floor.innerHTML = ''; hideBug();
+  if (n.read !== undefined) return startRead(n.read, n.then);
+  app.className = 'mode-talk';
+  busy = true; let i = 0;
+  const next = () => {
+    if (my !== token) return;
+    if (i >= n.steps.length){ busy = false; return finish(n, my); }
+    const s = n.steps[i++]; act(s.act); showLine(s.say || '', s.note);
+    const wait = s.say ? Math.min(7000, 1300 + s.say.length*42) : 2200;
+    clearTimeout(timer); timer = setTimeout(next, wait);
+    lineEl.onclick = () => { clearTimeout(timer); next(); };
+  };
+  next();
+}
+function finish(n, my){
+  lineEl.onclick = null;
+  if (n.next) return go(n.next);
+  if (n.object) return showObject(n.object);
+  if (n.bug) return startBug(n.bug);
+  let opts = n.opts || [];
+  if (n.dyn === 'whom') opts = S.met.map(id => ({label: PEOPLE[id].name, chat:id})).concat([{label:'Никого. Рассказывай дальше', resume:true, tap:true}]);
+  if (n.dyn === 'music') opts = S.heard.length ? S.heard.map(id => ({label: SONGS[id].title, song:id})).concat([{label:'Хватит музыки', resume:true, tap:true}])
+                                              : (showLine('Ещё ничего не звучало. Сначала история, потом песни. Так честнее.'), [{label:'Тогда история', resume:true}]);
+  opts.forEach((o, k) => {
+    const b = document.createElement('button'); b.className = 'opt' + (o.tap ? ' tap' : '') + (o.song ? ' song' : '');
+    b.textContent = o.label; b.style.animationDelay = (k*90)+'ms';
+    b.onclick = () => choose(o); optsEl.appendChild(b);
+  });
+}
+function choose(o){
+  if (o.go) return go(o.go);
+  if (o.resume) return go(S.resume && S.resume !== 'back' ? S.resume : 'start');
+  if (o.chat) return openChat(o.chat, o.label.includes(',') ? o.label.split(', ').slice(1).join(', ') : null, o.label);
+  if (o.song) return openSong(o.song);
+}
+
+/* ---------- предметы ---------- */
+const THING_SVG = {
+  chitin: '<svg width="64" height="64" viewBox="0 0 64 64"><path d="M14 40 C18 22 34 12 50 16 C46 28 40 44 22 50 Z" fill="none" stroke="#ffd58a" stroke-width="1.6"/><path d="M20 44 C28 34 36 26 46 20 M24 36 c4 1 8 0 12-3" fill="none" stroke="#e2a543" stroke-width="1"/></svg>',
+  scratch: '<svg width="96" height="54" viewBox="0 0 96 54"><path d="M4 40 C24 30 40 34 60 26 C72 21 84 22 92 18" fill="none" stroke="#9a9287" stroke-width="1.4"/><path d="M30 33 l14 -5 M34 37 l16 -6" stroke="#ffd58a" stroke-width="1.6" stroke-linecap="round"/></svg>',
+};
+function showObject(o){
+  const b = document.createElement('button'); b.className = 'thing'; b.setAttribute('aria-label', o.label);
+  b.innerHTML = THING_SVG[o.kind] + `<span>${esc(o.label)}</span>`; b.onclick = () => go(o.go); floor.appendChild(b);
+}
+
+/* ---------- жук ---------- */
+const wb = $('walkBug'); let bugTries = 0, bugMove;
+function hideBug(){ wb.hidden = true; clearInterval(bugMove); }
+function placeBug(){ const x = rnd(.15,.85)*innerWidth, y = rnd(.55,.8)*innerHeight; const r = Math.atan2(y-parseFloat(wb.style.top||y), x-parseFloat(wb.style.left||x))*180/Math.PI+90;
+  wb.style.transform = `rotate(${r}deg)`; wb.style.left = x+'px'; wb.style.top = y+'px'; }
+function startBug(b){
+  wb.hidden = false; wb.style.left = (innerWidth*.1)+'px'; wb.style.top = (innerHeight*.7)+'px'; placeBug();
+  bugMove = setInterval(placeBug, 2400); bugTries = 0;
+  wb.onclick = () => {
+    bugTries++;
+    if (bugTries === 1 && Math.random() < .6){ placeBug(); act('twitch'); showLine('Правильно. Я бы тоже убежал.'); return; }
+    hideBug(); act('look'); go(b.go);
+  };
+}
+
+/* ---------- чтение ---------- */
+const textEl = $('text'), pages = document.querySelector('.pages');
+let R = null;
+const IMG = k => `assets/img/${k}.jpg`;
+function startRead(ch, then){
+  const c = window.CHAPTERS[ch]; app.className = 'mode-read';
+  $('chapTitle').textContent = c.title; textEl.innerHTML = ''; pages.scrollTop = 0;
+  R = {ch, then, i:0, frame:-1}; setFrame(0); $('moreBtn').hidden = false; $('allBtn').hidden = false; $('moreBtn').textContent = 'Дальше';
+  revealMore();
+}
+function setFrame(k){
+  const f = FRAMES[R.ch][k]; if (!f || k === R.frame) return; R.frame = k;
+  const a = $('artImg'), b = $('artImg2'); const cur = a.classList.contains('next') ? b : a, nxt = cur === a ? b : a;
+  nxt.src = IMG(f[1]); nxt.className = f[2]; requestAnimationFrame(() => { nxt.classList.remove('next'); cur.classList.add('next'); });
+  if (f[3]) act(f[3]);
+}
+function addPara(){
+  const c = window.CHAPTERS[R.ch]; if (R.i >= c.paras.length) return false;
+  const t = c.paras[R.i];
+  FRAMES[R.ch].forEach((f, k) => { if (k && f[0] && t.startsWith(f[0])) setFrame(k); });
+  const p = document.createElement('p'); p.textContent = t; textEl.appendChild(p); R.i++; return true;
+}
+function revealMore(){
+  let n = 0; while (n < 260 && addPara()) n += window.CHAPTERS[R.ch].paras[R.i-1].length;
+  const last = textEl.lastElementChild; if (last) setTimeout(() => last.scrollIntoView({behavior:'smooth', block:'end'}), 60);
+  if (R.i >= window.CHAPTERS[R.ch].paras.length){ $('moreBtn').textContent = 'Вернуться к Киперу'; $('allBtn').hidden = true; }
+}
+$('moreBtn').onclick = () => { if (R.i >= window.CHAPTERS[R.ch].paras.length) return endRead(); revealMore(); };
+$('allBtn').onclick = () => { while (addPara()); $('moreBtn').textContent = 'Вернуться к Киперу'; $('allBtn').hidden = true; };
+document.addEventListener('keydown', e => { if (app.classList.contains('mode-read') && (e.key===' '||e.key==='ArrowRight') && document.activeElement.tagName!=='INPUT'){ e.preventDefault(); $('moreBtn').click(); } });
+function endRead(){ S.read = Math.max(S.read, R.ch + 1); save(); const then = R.then; R = null; if (then) go(then); else go(S.resume || 'later'); }
+
+/* ---------- ИИ ---------- */
+async function ask(character, message, history){
+  const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 75000);
+  try{
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'}, signal:ctrl.signal,
+      body: JSON.stringify({message, history: history.slice(-12), character, provider:'auto', readChapter: S.read})});
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || r.status);
+    return (d.text || '').trim() || '…';
+  } finally { clearTimeout(to); }
+}
+
+/* свободный разговор с Кипером */
+$('ask').addEventListener('submit', async e => {
+  e.preventDefault(); const inp = $('askInput'); const m = inp.value.trim(); if (!m) return; inp.value = '';
+  token++; clearTimeout(timer); busy = true; act('look');
+  const h = S.chats.keeper || (S.chats.keeper = []);
+  showLine('…', 'Кипер думает.'); const slow = setTimeout(() => showLine('…', 'Кипер думает. Иногда это занимает до минуты: он просыпается.'), 6000);
+  try{ const a = await ask('keeper', m, h); h.push({role:'user', text:m}, {role:'model', text:a}); S.chats.keeper = h.slice(-40); save(); showLine(a); }
+  catch(err){ showLine('Я задумался и потерял мысль. Скажи ещё раз?'); }
+  finally{ clearTimeout(slow); busy = false; if (!optsEl.children.length && !floor.children.length && wb.hidden) finish({opts:[{label:'Вернуться к истории', resume:true, tap:true}]}); }
+});
+
+/* чат с персонажем */
+let chatWith = null;
+function openChat(id, first, label){
+  chatWith = id; if (!S.met.includes(id)) S.met.push(id); save();
+  const p = PEOPLE[id]; $('chatFace').src = p.face; $('chatName').textContent = p.name;
+  $('chatSub').textContent = 'знает историю до главы «' + TITLES[Math.min(S.read, TITLES.length-1)] + '»';
+  const log = $('chatLog'); log.innerHTML = ''; (S.chats[id] || []).forEach(m => addMsg(m.role==='user'?'me':'them', m.text));
+  $('chat').hidden = false;
+  if (first){ const q = first.replace(/\?$/, '?'); sendChat(q.charAt(0).toUpperCase() + q.slice(1)); }
+  else $('chatInput').focus();
+}
+function addMsg(cls, text){ const d = document.createElement('div'); d.className = 'msg ' + cls; d.textContent = text; $('chatLog').appendChild(d); d.scrollIntoView({block:'end'}); return d; }
+async function sendChat(m){
+  const id = chatWith; addMsg('me', m); const w = addMsg('them wait', PEOPLE[id].name + ' думает…');
+  const slow = setTimeout(() => { w.textContent = PEOPLE[id].name + ' думает… (сервер просыпается, это бывает до минуты)'; }, 6000);
+  const h = S.chats[id] || (S.chats[id] = []);
+  try{ const a = await ask(id, m, h); h.push({role:'user', text:m}, {role:'model', text:a}); S.chats[id] = h.slice(-40); save(); w.className = 'msg them'; w.textContent = a; }
+  catch(e){ w.className = 'msg them wait'; w.textContent = 'Не дозвалась. Попробуй ещё раз.'; }
+  finally{ clearTimeout(slow); w.scrollIntoView({block:'end'}); }
+}
+$('chatForm').addEventListener('submit', e => { e.preventDefault(); const i = $('chatInput'); const m = i.value.trim(); if (!m) return; i.value = ''; sendChat(m); });
+$('chatBack').onclick = () => { $('chat').hidden = true; const n = N[S.node]; if (n && n.opts) { /* остаёмся в той же сцене, кнопки на месте */ } };
+
+/* песни */
+function openSong(id){
+  const s = SONGS[id]; if (!S.heard.includes(id)) S.heard.push(id); save();
+  $('songTitle').textContent = s.title; const a = $('audio');
+  if (s.file){ a.src = s.file; a.hidden = false; $('songNote').textContent = ''; a.play().catch(() => {}); }
+  else { a.hidden = true; $('songNote').textContent = 'Песня скоро будет здесь.'; }
+  $('song').hidden = false;
+}
+$('songBack').onclick = () => { $('audio').pause(); $('song').hidden = true; };
+
+/* книга по порядку */
+$('bookBtn').onclick = () => {
+  const ol = $('tocList'); ol.innerHTML = '';
+  TITLES.forEach((t, i) => { const li = document.createElement('li'); const b = document.createElement('button');
+    const ok = i < window.CHAPTERS.length && i <= S.read; b.disabled = !ok;
+    b.innerHTML = `<span class="n">${i===0?'·':i}</span><span>${esc(t)}</span>` + (i >= window.CHAPTERS.length ? ' <span class="n">скоро</span>' : (i > S.read ? ' <span class="n">ещё рано</span>' : ''));
+    b.onclick = () => { $('toc').hidden = true; token++; startRead(i, null); }; li.appendChild(b); ol.appendChild(li); });
+  $('toc').hidden = false;
+};
+$('tocBack').onclick = () => { $('toc').hidden = true; };
+
+/* старт */
+setTimeout(() => go(S.node && S.node !== 'start' ? 'back' : 'start'), 600);
+})();

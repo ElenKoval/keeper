@@ -1,0 +1,144 @@
+/* Layout: talk = Keeper and his words side by side under the roots; read = drawing + text, Keeper steps aside to the corner */
+:root{
+  --bg:#0a0908; --bg2:#14110d; --ink:#ebe5d8; --dim:#9a9287; --faint:#3e3932;
+  --amber:#e2a543; --amber-hi:#ffd58a;
+  --display:'Forum','Cormorant Garamond',Georgia,serif;
+  --body:'Literata',Georgia,'Times New Roman',serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+[hidden]{display:none!important}
+
+#roots{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#roots path{fill:none;stroke:#cfc8bb;stroke-linecap:round}
+.sway{transform-box:fill-box;transform-origin:50% 0;animation:sway var(--d,9s) ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(calc(var(--a,1deg)*-1))}to{transform:rotate(var(--a,1deg))}}
+
+.top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:calc(14px + env(safe-area-inset-top,0px)) 18px 0;z-index:30;pointer-events:none}
+.mark{font-family:var(--display);font-size:1.2rem;letter-spacing:.06em;color:var(--dim)}
+.book{pointer-events:auto;background:none;border:0;color:var(--dim);cursor:pointer;padding:6px;border-radius:8px}
+.book:hover{color:var(--amber)}
+
+#app{position:relative;z-index:1;height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:24px;padding:56px 32px 84px;max-width:1240px;margin:0 auto}
+@media (max-width:760px){#app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr;align-content:start;gap:8px;padding:52px 16px 76px}}
+
+/* Keeper */
+.keeper{grid-column:1;grid-row:1;justify-self:end;width:min(100%,46vh);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:width .7s ease,transform .7s ease,opacity .5s;
+  -webkit-mask-image:radial-gradient(ellipse 50% 52% at 50% 52%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 50% 52%,#000 62%,transparent 100%)}
+@media (max-width:760px){.keeper{justify-self:center;width:min(70vw,34vh)}}
+.keeper svg{display:block;width:100%;height:auto}
+.breath{transform-box:view-box;transform-origin:1200px 3100px;animation:breath 5.2s ease-in-out infinite}
+@keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.009,1.013)}}
+.hornL{transform-box:view-box;transform-origin:930px 920px;animation:hornL 7s ease-in-out infinite}
+.hornR{transform-box:view-box;transform-origin:1500px 900px;animation:hornR 7s ease-in-out infinite .4s}
+@keyframes hornL{0%,100%{transform:rotate(0)}30%{transform:rotate(-1.2deg)}60%{transform:rotate(.6deg)}}
+@keyframes hornR{0%,100%{transform:rotate(0)}35%{transform:rotate(1.2deg)}65%{transform:rotate(-.6deg)}}
+.lid{transform-box:view-box;transition:transform .09s ease-in}
+.lid.open{transition:transform .14s ease-out}
+/* actions */
+.keeper.a-twitch .hornL{animation:twitchL .7s ease-in-out}
+.keeper.a-twitch .hornR{animation:twitchR .7s ease-in-out}
+@keyframes twitchL{0%,100%{transform:rotate(0)}20%{transform:rotate(-4deg)}45%{transform:rotate(2.5deg)}70%{transform:rotate(-1.5deg)}}
+@keyframes twitchR{0%,100%{transform:rotate(0)}20%{transform:rotate(4deg)}45%{transform:rotate(-2.5deg)}70%{transform:rotate(1.5deg)}}
+.keeper.a-scratch svg{animation:scratch .28s ease-in-out 6 alternate;transform-origin:50% 90%}
+@keyframes scratch{from{transform:rotate(-2.2deg) translateX(-4px)}to{transform:rotate(2.2deg) translateX(4px)}}
+.keeper.a-look svg{animation:look 1.2s ease-out;transform-origin:50% 80%}
+@keyframes look{0%{transform:scale(1)}40%{transform:scale(1.04) translateY(-6px)}100%{transform:scale(1)}}
+.keeper.a-stuck svg{animation:stuck 1.6s ease-in-out;transform-origin:50% 100%}
+@keyframes stuck{0%{transform:none}15%{transform:scaleX(.9) translateX(10px)}25%{transform:scaleX(.88) translateX(14px)}35%{transform:scaleX(.9) translateX(10px)}45%{transform:scaleX(.88) translateX(14px)}70%{transform:translateX(-18px)}100%{transform:none}}
+.keeper.a-weave svg{animation:weave .35s ease-in-out 6 alternate;transform-origin:50% 70%}
+@keyframes weave{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-5px) rotate(1deg)}}
+.keeper.a-listen svg{animation:listen 2.4s ease-in-out;transform-origin:50% 90%}
+@keyframes listen{0%,100%{transform:none}30%,70%{transform:rotate(-5deg) translateX(-10px)}}
+
+/* talk */
+.talk{grid-column:2;grid-row:1;align-self:center;max-width:34rem;min-width:0}
+@media (max-width:760px){.talk{grid-column:1;grid-row:2;align-self:start;max-width:none}}
+.line{font-size:clamp(1.25rem,2.6vw,1.75rem);line-height:1.4;font-style:italic;margin:0 0 1.1em;min-height:2.8em;text-wrap:pretty}
+@media (max-width:760px){.line{font-size:1.2rem;min-height:2em;text-align:center}}
+.line .act{display:block;font-style:normal;font-size:.62em;color:var(--dim);letter-spacing:.02em;margin-bottom:.5em}
+.opts{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+@media (max-width:760px){.opts{align-items:stretch}}
+.opt{background:none;border:1px solid var(--faint);border-radius:999px;padding:9px 18px;cursor:pointer;text-align:left;transition:border-color .2s,color .2s;animation:rise .4s ease both}
+.opt:hover{border-color:var(--amber);color:var(--amber-hi)}
+.opt.tap{border-color:transparent;color:var(--dim);padding-left:0;font-size:.95rem}
+.opt.tap:hover{color:var(--amber-hi)}
+.opt.song{border-color:rgba(226,165,67,.5)}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* floor objects */
+.floor{position:fixed;left:0;right:0;bottom:96px;display:flex;justify-content:center;pointer-events:none;z-index:5}
+.thing{pointer-events:auto;background:none;border:0;cursor:pointer;padding:10px;animation:appear 1.2s ease both}
+.thing span{display:block;font-size:.85rem;color:var(--dim);font-style:italic;margin-top:6px;text-align:center}
+.thing svg{display:block;margin:0 auto;filter:drop-shadow(0 0 12px rgba(226,165,67,.45));animation:pulse 2.6s ease-in-out infinite}
+@keyframes appear{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pulse{50%{filter:drop-shadow(0 0 22px rgba(226,165,67,.8))}}
+.walkbug{position:fixed;width:46px;height:auto;z-index:6;cursor:pointer;transition:left 2.2s linear,top 2.2s linear,transform .3s}
+
+/* free talk */
+.ask{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 32px));display:flex;gap:8px;z-index:20}
+.ask input,.chat-form input{flex:1;min-width:0;background:rgba(20,17,13,.85);border:1px solid var(--faint);border-radius:999px;padding:11px 18px;outline:none}
+.ask input:focus,.chat-form input:focus{border-color:var(--amber)}
+.ask button,.chat-form button{background:none;border:1px solid var(--faint);border-radius:999px;width:46px;cursor:pointer}
+.ask button:hover,.chat-form button:hover{border-color:var(--amber)}
+
+/* reading */
+.read{position:fixed;inset:0;z-index:2;display:none;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);background:var(--bg)}
+.mode-read .read{display:grid;animation:fade .8s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (max-width:760px){.read{grid-template-columns:minmax(0,1fr);grid-template-rows:42vh 1fr}}
+.art{position:relative;overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 58% 56% at 50% 50%,#000 45%,transparent 100%);mask-image:radial-gradient(ellipse 58% 56% at 50% 50%,#000 45%,transparent 100%)}
+.art img{position:absolute;inset:-6%;width:112%;height:112%;object-fit:contain;transition:opacity 1.4s ease}
+.art img.next{opacity:0}
+.pan-up{animation:panUp 26s ease-in-out infinite alternate}
+.pan-down{animation:panDown 26s ease-in-out infinite alternate}
+.pan-in{animation:panIn 24s ease-in-out infinite alternate}
+.pan-left{animation:panLeft 26s ease-in-out infinite alternate}
+.pan-still{animation:panIn 60s ease-in-out infinite alternate}
+@keyframes panUp{from{transform:scale(1.15) translateY(6%)}to{transform:scale(1.15) translateY(-6%)}}
+@keyframes panDown{from{transform:scale(1.12) translateY(-5%)}to{transform:scale(1.12) translateY(5%)}}
+@keyframes panIn{from{transform:scale(1)}to{transform:scale(1.18)}}
+@keyframes panLeft{from{transform:scale(1.15) translateX(5%)}to{transform:scale(1.15) translateX(-5%)}}
+.pages{overflow-y:auto;padding:84px 40px 120px;scroll-behavior:smooth}
+@media (max-width:760px){.pages{padding:8px 18px 130px}}
+.chap{font-family:var(--display);font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.1;margin:0 0 .8em;text-wrap:balance}
+.text{max-width:36rem}
+.text p{margin:0 0 .9em;animation:rise .5s ease both}
+.readnav{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:14px;max-width:36rem}
+.more{background:none;border:1px solid var(--amber);color:var(--amber-hi);border-radius:999px;padding:8px 22px;cursor:pointer}
+.linkish{background:none;border:0;color:var(--dim);cursor:pointer;text-decoration:underline;text-decoration-color:var(--faint);text-underline-offset:4px;font-size:.9rem}
+.mode-read .keeper{position:fixed;left:8px;bottom:70px;width:112px;z-index:4}
+@media (max-width:760px){.mode-read .keeper{width:72px;left:auto;right:4px;bottom:auto;top:calc(42vh - 96px)}}
+.mode-read .talk,.mode-read .floor{display:none}
+.mode-read .ask{display:none}
+
+/* side panels */
+.chat,.song,.toc{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--bg2);border-left:1px solid var(--faint);z-index:40;display:flex;flex-direction:column;animation:slide .35s ease}
+@keyframes slide{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+.chat-head{display:flex;gap:12px;align-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px 12px;border-bottom:1px solid var(--faint);flex-wrap:wrap}
+.chat-head img{width:52px;height:52px;border-radius:50%;object-fit:cover}
+.chat-name{font-family:var(--display);font-size:1.4rem;margin:0;line-height:1}
+.chat-sub{margin:2px 0 0;color:var(--dim);font-size:.85rem}
+.back{margin-left:auto;background:none;border:1px solid var(--faint);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:.9rem}
+.back:hover{border-color:var(--amber)}
+.chat-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:85%;padding:9px 14px;border-radius:16px;line-height:1.45;white-space:pre-wrap}
+.msg.me{align-self:flex-end;background:#2a241c;border-bottom-right-radius:4px}
+.msg.them{align-self:flex-start;border:1px solid var(--faint);border-bottom-left-radius:4px}
+.msg.wait{color:var(--dim);font-style:italic;border:0}
+.chat-form{display:flex;gap:8px;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--faint)}
+.song,.toc{padding:calc(24px + env(safe-area-inset-top,0px)) 24px 24px;gap:14px}
+.song-title,.toc-title{font-family:var(--display);font-size:1.6rem;margin:0}
+.song-note{color:var(--dim);margin:0}
+.song .back,.toc .back{margin:auto 0 0;align-self:flex-start}
+.toc ol{list-style:none;padding:0;margin:0;overflow-y:auto}
+.toc li button{display:flex;gap:12px;width:100%;background:none;border:0;border-bottom:1px solid var(--faint);padding:12px 0;cursor:pointer;text-align:left}
+.toc li button[disabled]{opacity:.35;cursor:default}
+.toc .n{color:var(--dim);min-width:2ch;font-variant-numeric:tabular-nums}
+
+@media (prefers-reduced-motion:reduce){.sway,.breath,.hornL,.hornR,.art img,.thing svg{animation:none!important}}
