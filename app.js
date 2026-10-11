@@ -62,7 +62,7 @@ const N = {
     object:{kind:'chitin', label:'осколок хитина', go:'pro_read'}},
   pro_read: {read:0, then:'pro_after'},
   pro_after: {steps:[{say:'Он не знал, как её держать. Столько лапок и всего две руки. Несправедливая арифметика.'}],
-    opts:[{label:'Дрим, ты испугался?', chat:'dream'}, {label:'А что было дальше?', go:'pro_song'}]},
+    opts:[{label:'А что было дальше?', go:'pro_song'}]},
   pro_song: {steps:[{say:'Он потом про неё пел. Мне он этого не говорил. Но я слышал.'}],
     opts:[{label:'Послушать Дрима', song:'dream'}, {label:'Дальше', go:'ch1_in', tap:true}]},
   ch1_in: {steps:[
@@ -72,18 +72,18 @@ const N = {
     object:{kind:'scratch', label:'царапина на корне', go:'ch1_read'}},
   ch1_read: {read:1, then:'ch1_after'},
   ch1_after: {steps:[{say:'Корень остался прежним. Так все говорят. А корни, между прочим, тоже растут. Только внутрь.'}],
-    opts:[{label:'Вивер, а тебе было больно?', chat:'weaver'}, {label:'Дрим, что с тобой происходит?', chat:'dream'}, {label:'Кипер, он же тебя зовёт', go:'ch1_call'}]},
+    opts:[{label:'Кипер, он же тебя зовёт', go:'ch1_call'}]},
   ch1_call: {steps:[{act:'look', note:'Делает вид, что не слышит. Потом всё-таки оборачивается.', say:'Я слышал. Я просто был занят. Важным.'}], next:'ch2_in'},
   ch2_in: {steps:[{act:'listen', say:'Вот он. Не дави. Он хотя бы знает, куда идёт.'}], bug:{go:'ch2_read'}},
   ch2_read: {read:2, then:'ch2_after'},
   ch2_after: {steps:[{say:'Это я хорошо сказал. Я редко понимаю, что говорю. Но это не значит…'}],
     opts:[{label:'…что ты ошибаешься', go:'ch2_here'}]},
   ch2_here: {steps:[{act:'twitch', say:'Вот. Ты уже почти здешний. Или здешняя. Я не разглядел.'}, {say:'Про меня, кстати, тоже есть песня. Я её не слушал. Вдруг там правда.'}],
-    opts:[{label:'Кипер, а жук – чей?', chat:'keeper'}, {label:'Дрим, ты ему веришь?', chat:'dream'}, {label:'Послушать Кипера', song:'keeper'}, {label:'А что дальше?', go:'later', tap:true}]},
+    opts:[{label:'Послушать Кипера', song:'keeper'}, {label:'А что дальше?', go:'later'}]},
   later: {steps:[{act:'listen', say:'Дальше кто-то поёт. Слышишь? Нет? Значит, ещё рано.'}, {say:'Приходи потом. Я никуда не денусь. Это моя главная работа – никуда не деваться.'}],
-    opts:[{label:'Поговорить с Кипером', chat:'keeper'}, {label:'Хочу кое с кем поговорить', go:'whom'}]},
+    opts:[{label:'Начать сначала', reset:true, tap:true}]},
   back: {steps:[{act:'look', note:'Смотрит на тебя, потом на оставленные вещи.', say:'А, это ты. Я ничего не трогал. Почти.'}],
-    opts:[{label:'Продолжим историю', resume:true}, {label:'Хочу кое с кем поговорить', go:'whom'}, {label:'Давай музыку', go:'music'}]},
+    opts:[{label:'Продолжим историю', resume:true}, {label:'Хочу кое с кем поговорить', panel:'people'}, {label:'Давай музыку', panel:'music'}]},
   whom: {steps:[{say:'С кем? Я всех помню. Почти.'}], dyn:'whom'},
   music: {steps:[{say:'Музыку я храню в янтаре. Вот, что уже звучало.'}], dyn:'music'},
 };
@@ -175,6 +175,8 @@ function choose(o){
   if (o.resume) return go(S.resume && S.resume !== 'back' ? S.resume : 'start');
   if (o.chat) return openChat(o.chat, o.label.includes(',') ? o.label.split(', ').slice(1).join(', ') : null);
   if (o.song) return openSong(o.song);
+  if (o.panel) return openPanel(o.panel);
+  if (o.reset) return $('resetBtn').click();
 }
 
 /* ---------- предметы ---------- */
