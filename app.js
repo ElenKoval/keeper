@@ -16,18 +16,14 @@ const PEOPLE = {
   cat:           {name:'Кот',      face:'assets/img/cat.jpg?v=3',     need:1,  who:'самый младший в Саду'},
   angry_forest:  {name:'Злой Лес', face:'assets/img/forest.jpg?v=3',  need:6,  who:'принимает Тени'},
   shiny:         {name:'Шайни',    face:'assets/img/shiny.jpg?v=3',   need:11, who:''},
-  shiny_bro:     {name:'Брат',     face:'assets/img/bro.jpg?v=3',     need:11, who:''},
+  shiny_bro:     {name:'Брат',     face:'',     need:11, who:''},
   talk_mushroom: {name:'Гриб',     face:'assets/img/grib.jpg?v=3',    need:13, who:''},
 };
-/* file = путь к mp3 в assets/audio, пока пусто */
-const SONGS = {
-  keeper:  {title:'Песня Кипера',          who:'keeper', file:''},
-  dream:   {title:'Песня Дрима',           who:'dream',  file:''},
-  weaver:  {title:'Gasoline Rainbow',      who:'weaver', file:''},
-  cat:     {title:'Песня Кота',            who:'cat',    file:''},
-  drpak:   {title:'Песня Пака',            who:'drpak',  file:''},
-  crystal: {title:'Песня Кристалла',       who:'crystal',file:''},
-};
+/* Звук мира: порядок пластинок и наклейки; треки – в assets/songs.js */
+const SHELF = [['dream','Дрим','dream'],['cat','Кот','cat'],['weaver','Вивер','weaver'],['crystal','Кристалл','crystal'],
+  ['keeper','Кипер','keeper_paper'],['shiny','Шайни','shiny'],['shiny_bro','Брат',''],['liora','Лиора','liora'],
+  ['drpak','Пак','pak'],['dryad','Дриада','dryad'],['talk_mushroom','Гриб','grib'],['angry_forest','Злой Лес','forest']];
+const BRO_PH = 'Брат вышел за бурбоном. Скоро вернётся.';
 const TITLES = ['Перед первым криком','Мир стал меньше','Возможно, жук','Янтарная тишина','Встреча','Бег','Просто скажи «нет»','Операция','Крыша','Прикосновение','Запах высоты','Ноктюрн','Цена','Шипы'];
 
 /* кадры чтения: [начало абзаца, рисунок, движение камеры, действие Кипера] */
@@ -62,7 +58,7 @@ const N = {
     object:{kind:'chitin', label:'осколок хитина', go:'pro_read'}},
   pro_read: {read:0, then:'pro_after'},
   pro_after: {steps:[{say:'Он не знал, как её держать. Столько лапок и всего две руки. Несправедливая арифметика.'}],
-    opts:[{label:'А что было дальше?', go:'pro_song'}]},
+    opts:[{label:'А что было дальше?', go:'ch1_in'}]},
   pro_song: {steps:[{say:'Он потом про неё пел. Мне он этого не говорил. Но я слышал.'}],
     opts:[{label:'Послушать Дрима', song:'dream'}, {label:'Дальше', go:'ch1_in', tap:true}]},
   ch1_in: {steps:[
@@ -162,7 +158,7 @@ function finish(n, my){
   if (n.bug) return startBug(n.bug);
   let opts = n.opts || [];
   if (n.dyn === 'whom') opts = S.met.map(id => ({label: PEOPLE[id].name, chat:id})).concat([{label:'Никого. Рассказывай дальше', resume:true, tap:true}]);
-  if (n.dyn === 'music') opts = S.heard.length ? S.heard.map(id => ({label: SONGS[id].title, song:id})).concat([{label:'Хватит музыки', resume:true, tap:true}])
+  if (n.dyn === 'music') opts = S.heard.length ? S.heard.map(id => ({label: (songs(id)[0]||{}).title||id, song:id})).concat([{label:'Хватит музыки', resume:true, tap:true}])
                                               : (showLine('Ещё ничего не звучало. Сначала история, потом песни. Так честнее.'), [{label:'Тогда история', resume:true}]);
   opts.forEach((o, k) => {
     const b = document.createElement('button'); b.className = 'opt' + (o.tap ? ' tap' : '') + (o.song ? ' song' : '');
@@ -236,6 +232,10 @@ $('allBtn').onclick = () => { while (addPara()); $('moreBtn').textContent = 'В�
 document.addEventListener('keydown', e => { if (app.classList.contains('mode-read') && (e.key===' '||e.key==='ArrowRight') && document.activeElement.tagName!=='INPUT'){ e.preventDefault(); $('moreBtn').click(); } });
 function endRead(){ S.read = Math.max(S.read, R.ch + 1); save(); const then = R.then; R = null; if (then) go(then); else go(S.resume || 'later'); }
 
+function leaveRead(){ if (!R) return; if (R.i >= window.CHAPTERS[R.ch].paras.length) return endRead(); R = null; go(S.resume || 'start'); }
+$('toKeeper').onclick = leaveRead;
+$('homeBtn').onclick = () => { closePanels(); $('chat').hidden = true; if (R) leaveRead(); };
+
 /* ---------- ИИ ---------- */
 async function ask(character, message, history){
   const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 75000);
@@ -279,11 +279,11 @@ function setTab(name){ document.querySelectorAll('.nav button').forEach(b => b.c
 function openPanel(name){
   PANELS.forEach(p => $(p).hidden = true); $('chat').hidden = true;
   if (name === 'people') renderPeople(), $('people').hidden = false;
-  if (name === 'music') renderSongs(), $('music').hidden = false;
+  if (name === 'music') renderShelf(), $('music').hidden = false;
   if (name === 'book') renderBook(), $('toc').hidden = false;
   setTab(name);
 }
-document.querySelectorAll('.nav button').forEach(b => b.onclick = () => b.dataset.tab === 'story' ? (closePanels(), $('chat').hidden = true) : openPanel(b.dataset.tab));
+document.querySelectorAll('.nav button').forEach(b => b.onclick = () => b.dataset.tab === 'story' ? $('homeBtn').click() : openPanel(b.dataset.tab));
 document.querySelectorAll('[data-close]').forEach(b => b.onclick = closePanels);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePanels(); $('chat').hidden = true; } });
 
@@ -292,22 +292,46 @@ function renderPeople(){
   Object.entries(PEOPLE).forEach(([id, p]) => {
     const open = S.read >= p.need;
     const b = document.createElement('button'); b.className = 'card'; b.disabled = !open;
-    b.innerHTML = `<img src="${p.face}" alt=""><b>${esc(p.name)}</b><small>${open ? esc(p.who || 'поговорить') : 'встретишь дальше в истории'}</small>`;
+    b.innerHTML = (p.face ? `<img src="${p.face}" alt="">` : `<span class="ph">${BRO_PH}</span>`) + `<b>${esc(p.name)}</b><small>${open ? esc(p.who || 'поговорить') : 'встретишь дальше в истории'}</small>`;
     if (open) b.onclick = () => { $('people').hidden = true; openChat(id); };
     box.appendChild(b);
   });
 }
-function renderSongs(hl){
-  const ul = $('songList'); ul.innerHTML = '';
-  Object.entries(SONGS).forEach(([id, s]) => {
-    const li = document.createElement('li'); if (id === hl) li.className = 'hl';
-    li.innerHTML = `<img src="${PEOPLE[s.who].face}" alt=""><span class="t"><b>${esc(s.title)}</b><small>${esc(PEOPLE[s.who].name)}${s.file ? '' : ' · скоро'}</small></span>`;
-    const b = document.createElement('button'); b.textContent = '▶ Слушать'; b.disabled = !s.file;
-    b.onclick = () => { const a = $('player'); a.src = s.file; a.hidden = false; a.play().catch(() => {}); if (!S.heard.includes(id)) { S.heard.push(id); save(); } };
-    li.appendChild(b); ul.appendChild(li);
+const songs = id => (window.SONGS_DATA && window.SONGS_DATA[id]) || [];
+const plural = n => n === 1 ? 'песня' : (n < 5 ? 'песни' : 'песен');
+const labelHTML = img => img ? `<img src="assets/img/${img}.jpg?v=3" alt="">` : '';
+function renderShelf(){
+  $('detail').hidden = true; $('shelf').hidden = false; const box = $('shelf'); box.innerHTML = '';
+  SHELF.forEach(([id, name, img]) => {
+    const n = songs(id).length; const b = document.createElement('button'); b.className = 'rec'; b.disabled = !n;
+    b.innerHTML = `<span class="disc"><span class="lbl${img ? '' : ' ph'}">${img ? labelHTML(img) : BRO_PH}</span><span class="pin"></span></span><b>${esc(name)}</b>` +
+      (n ? `<small>${n} ${plural(n)}</small>` : `<small class="soon">Скоро</small>`);
+    if (n) b.onclick = () => openDetail(id, true);
+    box.appendChild(b);
   });
 }
-function openSong(id){ openPanel('music'); renderSongs(id); }
+const audio = $('player'); let curSong = null;
+function fmt(s){ s = Math.floor(s || 0); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+function openDetail(id, autoplay){
+  const row = SHELF.find(r => r[0] === id); const list = songs(id); const s = list[0];
+  $('shelf').hidden = true; $('detail').hidden = false; $('music').scrollTop = 0;
+  $('dLabel').className = 'lbl' + (row[2] ? '' : ' ph'); $('dLabel').innerHTML = row[2] ? labelHTML(row[2]) : BRO_PH;
+  $('dName').textContent = row[1]; $('dSong').textContent = s ? s.title : '';
+  $('dEmpty').hidden = !!s; $('dEmpty').textContent = 'Песня скоро появится.'; $('dPlayer').hidden = !s;
+  $('dLyricsBtn').hidden = !(s && s.lyrics); $('dLyrics').hidden = true; $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('dLyricsBtn').setAttribute('aria-expanded','false');
+  if (s && curSong !== s.file){ audio.src = s.file; curSong = s.file; }
+  if (s && autoplay) audio.play().catch(() => {});
+  syncPlay();
+  if (s && !S.heard.includes(id)) { S.heard.push(id); save(); }
+}
+function syncPlay(){ const on = !audio.paused; $('dPlay').textContent = on ? '❚❚' : '▶'; $('stage').classList.toggle('playing', on); }
+$('dPlay').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
+audio.addEventListener('play', syncPlay); audio.addEventListener('pause', syncPlay); audio.addEventListener('ended', syncPlay);
+audio.addEventListener('timeupdate', () => { if (audio.duration) $('dSeek').value = Math.round(audio.currentTime / audio.duration * 1000); $('dTime').textContent = fmt(audio.currentTime); });
+$('dSeek').oninput = e => { if (audio.duration) audio.currentTime = e.target.value / 1000 * audio.duration; };
+$('dLyricsBtn').onclick = () => { const l = $('dLyrics'); l.hidden = !l.hidden; $('dLyricsBtn').setAttribute('aria-expanded', String(!l.hidden)); };
+$('detailBack').onclick = renderShelf;
+function openSong(id){ openPanel('music'); openDetail(id, true); }
 function renderBook(){
   const ol = $('tocList'); ol.innerHTML = '';
   TITLES.forEach((t, i) => { const li = document.createElement('li'); const b = document.createElement('button'); b.className = 'ch';

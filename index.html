@@ -7,13 +7,13 @@
 <meta name="description" content="Мир Дриады. Кипер помнит всё, только не по порядку. Садись, он расскажет.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <svg id="roots" aria-hidden="true"></svg>
 
 <header class="top">
-  <span class="mark">Мир Дриады</span>
+  <button class="mark" id="homeBtn" title="На главную">Мир Дриады</button>
   <nav class="nav" aria-label="Разделы">
     <button data-tab="story" class="on">История</button>
     <button data-tab="people">Персонажи</button>
@@ -25,6 +25,7 @@
 <main id="app" class="mode-talk">
   <!-- reading layer -->
   <section class="read" id="read" aria-live="polite">
+    <button class="toKeeper" id="toKeeper">← К Киперу</button>
     <div class="art"><img id="artImg" alt=""><img id="artImg2" alt="" class="next"></div>
     <div class="pages">
       <p class="chap" id="chapTitle"></p>
@@ -105,12 +106,29 @@
 </aside>
 
 <!-- music -->
-<aside class="panel" id="music" hidden>
-  <div class="panel-head"><p class="panel-title">Музыка</p><button class="back" data-close>Закрыть</button></div>
-  <p class="panel-lead">У каждого своя песня. Новые появляются по ходу истории.</p>
-  <ul class="songs" id="songList"></ul>
-  <audio id="player" controls preload="none" hidden></audio>
-</aside>
+<section class="sound" id="music" hidden aria-label="Звук мира">
+  <h2 class="sound-title">Звук мира</h2>
+  <div class="shelf" id="shelf"></div>
+  <div class="detail" id="detail" hidden>
+    <button class="back detail-back" id="detailBack">← Все персонажи</button>
+    <div class="stage" id="stage">
+      <div class="disc big"><div class="lbl" id="dLabel"></div><span class="pin"></span></div>
+      <div class="meta">
+        <p class="d-name" id="dName"></p>
+        <h3 class="d-song" id="dSong"></h3>
+        <p class="d-empty" id="dEmpty" hidden></p>
+        <div class="player" id="dPlayer">
+          <button class="play" id="dPlay" aria-label="Играть">▶</button>
+          <input type="range" id="dSeek" min="0" max="1000" value="0" aria-label="Перемотка">
+          <span class="time" id="dTime">0:00</span>
+        </div>
+        <button class="linkish" id="dLyricsBtn" aria-expanded="false">Текст песни</button>
+        <pre class="lyrics" id="dLyrics" hidden></pre>
+      </div>
+    </div>
+  </div>
+  <audio id="player" preload="metadata"></audio>
+</section>
 
 <!-- book in order -->
 <aside class="panel" id="toc" hidden>
@@ -121,6 +139,7 @@
 </aside>
 
 <script src="assets/chapters.js?v=3"></script>
-<script src="app.js?v=5"></script>
+<script src="assets/songs.js?v=6"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>
