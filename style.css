@@ -192,3 +192,13 @@ button,input{font:inherit;color:inherit}
 @media (min-width:761px){.panel,.chat{top:58px;border-top:1px solid var(--faint);border-top-left-radius:14px}}
 @media (max-width:760px){.panel{top:50px;border-top:1px solid var(--faint)}}
 .line{min-height:0}
+
+/* оригинальные рисунки на бумаге */
+.art{-webkit-mask-image:none;mask-image:none;padding:0}
+.art img{inset:5%;width:90%;height:90%;object-fit:contain;filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))}
+@keyframes panUp{from{transform:scale(1.04) translateY(1.5%)}to{transform:scale(1.04) translateY(-1.5%)}}
+@keyframes panDown{from{transform:scale(1.04) translateY(-1.5%)}to{transform:scale(1.04) translateY(1.5%)}}
+@keyframes panIn{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes panLeft{from{transform:scale(1.04) translateX(1.5%)}to{transform:scale(1.04) translateX(-1.5%)}}
+.card img,.songs img,.chat-head img{background:#efe9dc}
+.top{background:linear-gradient(var(--bg) 55%,transparent);padding-bottom:14px}

@@ -7,7 +7,7 @@ const app = $('app'), keeper = $('keeper'), lineEl = $('line'), optsEl = $('opts
 /* ---------- данные ---------- */
 /* need = сколько глав прочитано, чтобы открылся чат */
 const PEOPLE = {
-  keeper:        {name:'Кипер',    face:'assets/img/keeper.jpg',  need:0,  who:'хранитель, помнит всё'},
+  keeper:        {name:'Кипер',    face:'assets/img/keeper_paper.jpg',  need:0,  who:'хранитель, помнит всё'},
   dream:         {name:'Дрим',     face:'assets/img/dream.jpg',   need:1,  who:'садовник Нитей'},
   weaver:        {name:'Вивер',    face:'assets/img/weaver.jpg',  need:1,  who:'единственная, кто растёт'},
   liora:         {name:'Лиора',    face:'assets/img/liora.jpg',   need:1,  who:'поёт над Нитями'},
@@ -32,15 +32,15 @@ const TITLES = ['Перед первым криком','Мир стал мень
 
 /* кадры чтения: [начало абзаца, рисунок, движение камеры, действие Кипера] */
 const FRAMES = {
-  0: [['', 'dryad','pan-up'], ['Рядом с ней остался Кипер','keeper','pan-in','look'], ['Только Дрим не оставлял','dream','pan-down'],
+  0: [['', 'dryad','pan-up'], ['Рядом с ней остался Кипер','keeper_paper','pan-in','look'], ['Только Дрим не оставлял','dream','pan-down'],
       ['Особенно когда внутри','dream','pan-in'], ['Пак действовал','pak','pan-in'], ['Лиора садилась','liora','pan-up'],
       ['Кристалл настраивал','crystal','pan-left'], ['Кот появился позже','cat','pan-left'], ['А выведенная Жажда','forest','pan-down'],
       ['За пределами Сада','fallow','pan-still'], ['На Земле сменялись','dryad','pan-in'], ['Пока однажды Дрим','dryad','pan-down'],
       ['Ветви над Дримом опять','dryad','pan-down','weave']],
   1: [['', 'dryad','pan-down'], ['Раньше Вивер помещалась','weaver','pan-up'], ['Вивер остановилась рядом','dream','pan-in'],
       ['Они дошли до края Сада','dream','pan-left'], ['— Я пойду к Лиоре','liora','pan-left'], ['Он постоял ещё немного','dryad','pan-down']],
-  2: [['', 'keeper','pan-in'], ['Дрим провёл рукой по стволу','dryad','pan-up'], ['— Я хочу знать, кто такая Вивер','dream','pan-in'],
-      ['Кипер медленно повернул','keeper','pan-in'], ['Он поскрёб рогом о дерево','keeper','pan-in','scratch'], ['Жук снова появился','dryad','pan-down']],
+  2: [['', 'keeper_paper','pan-in'], ['Дрим провёл рукой по стволу','dryad','pan-up'], ['— Я хочу знать, кто такая Вивер','dream','pan-in'],
+      ['Кипер медленно повернул','keeper_paper','pan-in'], ['Он поскрёб рогом о дерево','keeper_paper','pan-in','scratch'], ['Жук снова появился','dryad','pan-down']],
 };
 
 /* сцены */
@@ -313,6 +313,8 @@ function renderBook(){
     b.innerHTML = `<span class="n">${i===0?'·':i}</span><span>${esc(t)}</span>` + (!have ? ' <span class="n">скоро</span>' : (i > S.read ? ' <span class="n">ещё рано</span>' : ''));
     b.onclick = () => { closePanels(); token++; startRead(i, null); }; li.appendChild(b); ol.appendChild(li); });
 }
+
+$('resetBtn').onclick = () => { try { localStorage.removeItem('keeper-state'); } catch(e) {} location.reload(); };
 
 /* старт */
 setTimeout(() => go(S.node && S.node !== 'start' ? 'back' : 'start'), 600);
