@@ -460,6 +460,7 @@ const BACKNOTE = {
   dream:{ru:'Я не знаю, откуда ты. Но я здесь.',en:"I don't know where you came from. But I'm here."},
   drpak:{ru:'Это не я. Это она. Я просто стоял рядом.',en:"That wasn't me. That was her. I was just standing there."},
   liora:{ru:'Я знаю. Поэтому и не говорила.',en:"I know. That's why I didn't tell you."},
+  shiny:{ru:'Ой, это что, золото? Подойди поближе, дорогой.',en:'Oh! Is that gold? Come a little closer, darling.'},
   keeper:{ru:'Если увидишь жука, не говори ему, что я спрашивал.',en:"If you see the beetle, don't tell him I asked."},
 };
 const WITH = {cat:{ru:'с Котом',en:'Cat'},weaver:{ru:'с Вивер',en:'Weaver'},crystal:{ru:'с Кристаллом',en:'Crystal'},keeper:{ru:'с Кипером',en:'Kiper'},dream:{ru:'с Дримом',en:'Dream'},liora:{ru:'с Лиорой',en:'Liora'},drpak:{ru:'с Паком',en:'Pak'},shiny:{ru:'с Шайни',en:'Shiny'},shiny_bro:{ru:'с Братом',en:"Shiny's Brother"},talk_mushroom:{ru:'с Грибом',en:'Mushroom'},angry_forest:{ru:'со Злым Лесом',en:'the Angry Forest'}};
