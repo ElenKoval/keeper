@@ -453,8 +453,18 @@ function openDetail(id, autoplay){
   $('dTalk').textContent = (LANG === 'en' ? 'Talk to ' : 'Поговорить ') + tr(WITH[id] || {ru:nm(id),en:nm(id)});
   // если уже играет песня этого героя — показываем её
   const playing = list.findIndex(x => x.file === curSong); if (playing >= 0) dIdx = playing;
-  selectTrack(dIdx, autoplay);
+  selectTrack(dIdx, autoplay); renderCrate();
 }
+function renderCrate(){
+  const box = $('crateSleeves'); box.innerHTML = '';
+  SHELF.filter(([id]) => songs(id).length).forEach(([id], k) => { const has = true, cur = id === detailId;
+    const b = document.createElement('button'); b.className = 'cs' + (has ? '' : ' empty') + (cur ? ' out' : '');
+    b.style.setProperty('--tilt', ((k * 37) % 7 - 3) * .6 + 'deg'); b.disabled = !has || cur;
+    b.innerHTML = `<span>${esc(nm(id))}</span>`; b.title = has ? nm(id) : tr(UI.soonLow);
+    if (has && !cur) b.onclick = () => { b.classList.add('pull'); setTimeout(() => openDetail(id, false), 260); };
+    box.appendChild(b); });
+}
+$('crateFront').onclick = renderShelf;
 function curTrack(){ return songs(detailId)[dIdx]; }
 function selectTrack(i, play){
   const list = songs(detailId); dIdx = i; const s = list[i];
@@ -548,7 +558,7 @@ const STATIC = {
   nPeople:{ru:'Рисунки и персонажи',en:'Drawings & characters'}, nMusic:{ru:'Включить музыку',en:'Play some music'}, nBook:{ru:'Открыть книгу',en:'Open the book'},
   doodle:{ru:'жук — ?',en:'beetle — ?'}, toKeeperArrow:{ru:'← К Киперу',en:'← To Kiper'}, toKeeper:{ru:'К Киперу',en:'To Kiper'},
   soundTitle:{ru:'Звук мира',en:'The Sound of the World'}, allChars:{ru:'← Все персонажи',en:'← All characters'}, lyrics:{ru:'Текст песни',en:'Lyrics'},
-  allDrawings:{ru:'← Все рисунки',en:'← All drawings'}, expand:UI.expand, soundSub:{ru:'Песни из Сада, Леса и дальше',en:'Songs from the Garden, the Forest, and Beyond'}, allRecords:{ru:'Все записи',en:'All records'}, flip:{ru:'Перевернуть ↻',en:'Turn over ↻'},
+  allDrawings:{ru:'← Все рисунки',en:'← All drawings'}, expand:UI.expand, allRecordsShelf:{ru:'Все пластинки',en:'All records'}, soundSub:{ru:'Песни из Сада, Леса и дальше',en:'Songs from the Garden, the Forest, and Beyond'}, allRecords:{ru:'Все записи',en:'All records'}, flip:{ru:'Перевернуть ↻',en:'Turn over ↻'},
   shelfView:{ru:'все пластинки на полке',en:'all records on the shelf'}, lyricsHide:{ru:'Свернуть ↑',en:'Fold away ↑'}, clearChat:{ru:'Очистить чат',en:'Clear chat'}, restartChat:{ru:'Начать разговор заново',en:'Start the conversation over'},
   write:{ru:'Поговори со мной…',en:'Talk to me…'}, close:{ru:'Закрыть',en:'Close'}, album:{ru:'Из альбома',en:'From the album'}, book:{ru:'Книга',en:'The Book'},
   bookLead:{ru:'Ну если ты настаиваешь на порядке…',en:'Well, if you insist on order…'}, reset:{ru:'Начать всё сначала',en:'Start everything over'},
