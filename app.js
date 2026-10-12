@@ -79,10 +79,13 @@ const FIDX = {}; Object.keys(FRAMES).forEach(c => { const P = window.CHAPTERS[c]
 /* сцены */
 const N = {
   start: {steps:[
-      {act:'scratch', note:{ru:'Кипер чешется рогом о кору.',en:'Kiper scratches his horn against the bark.'}},
-      {act:'look', say:{ru:'О. Ты надолго?',en:'Oh. Are you staying long?'}},
-      {act:'twitch', say:{ru:'Впрочем, откуда тебе знать. Я вот тоже не знаю, надолго ли я. Садись. Я хочу рассказать тебе одну историю.',en:'Then again, how would you know. I don\'t know if I\'m staying long either. Sit down. I want to tell you a story.'}},
-      {say:{ru:'Она ещё не закончилась. Или уже? Нет. Не стал бы я рассказывать закончившуюся, это невежливо по отношению к концу.',en:'It hasn\'t ended yet. Or has it? No. I wouldn\'t tell a finished one. That would be rude to the ending.'}}],
+      {act:'look', say:{ru:'Ой, у тебя что-то выпало?',en:'Oh, did you drop something?'}},
+      {say:{ru:'Нет?.. А что это там лежит зелёное?',en:'No?.. Then what\'s that green thing lying there?'}},
+      {act:'twitch', say:{ru:'О! Это мой друг! Хочешь, он станет и твоим другом? У жуков, знаешь ли, друзей немного…',en:'Oh! That\'s my friend! Want him to be your friend too? Beetles, you know, don\'t have many friends…'}},
+      {act:'look', say:{ru:'Ой. Куда он опять уполз? Ты не видел?',en:'Oh. Where did he crawl off to again? Did you see?'}},
+      {say:{ru:'Ладно. Я его всегда нахожу. Или он меня. Или место находит нас обоих одновременно.',en:'Never mind. I always find him. Or he finds me. Or the place finds us both at once.'}},
+      {say:{ru:'Ты вообще знаешь, что жук здесь не всегда был? Или был. Но Дрим заметил его не сразу.',en:'Did you know the beetle wasn\'t always here? Or maybe he was. But Dream didn\'t notice him right away.'}},
+      {act:'twitch', say:{ru:'Ты Дрима знаешь? Нет?.. Оууу. Тогда слушай.',en:'Do you know Dream? No?.. Ohhh. Then listen.'}}],
     opts:[{label:{ru:'Я слушаю',en:'I\'m listening'}, go:'listen'}, {label:{ru:'А ты кто?',en:'And who are you?'}, go:'who'}]},
   who: {steps:[{say:{ru:'Кипер. Я здесь всё храню.',en:'Kiper. I keep everything here.'}}, {act:'look', note:{ru:'Смотрит под себя.',en:'Looks down at his feet.'}, say:{ru:'Почти всё. Жука опять потерял. Но историю пока помню. Она больше жука, её труднее потерять.',en:'Almost everything. Lost the beetle again. But I still remember the story. It\'s bigger than the beetle, harder to lose.'}}],
     opts:[{label:{ru:'Ну рассказывай',en:'Go on, then'}, go:'pro_in'}]},
