@@ -463,7 +463,7 @@ audio.volume = .8;
 $('dVol').oninput = e => { audio.volume = e.target.value / 100; audio.muted = false; $('dWave').style.opacity = audio.volume ? 1 : .2; };
 $('dMute').onclick = () => { audio.muted = !audio.muted; $('dWave').style.opacity = audio.muted ? .2 : 1; };
 $('dLyricsBtn').onclick = () => { const sh = $('sheet'), on = !sh.classList.contains('out'); sh.classList.toggle('out', on); $('dLyricsBtn').setAttribute('aria-expanded', String(on));
-  $('record').style.setProperty('--sheet', on ? Math.min($('dLyrics').scrollHeight + 40, innerHeight * .45) + 'px' : ''); if (!on) $('record').style.removeProperty('--sheet'); };
+  if (on) $('dLyrics').scrollTop = 0; };
 $('dFlip').onclick = $('dFlipBack').onclick = () => $('sleeve').classList.toggle('flipped');
 $('dTalk').onclick = () => { const id = detailId; $('music').hidden = true; openChat(id); };
 $('detailBack').onclick = renderShelf;
