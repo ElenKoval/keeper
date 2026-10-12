@@ -525,3 +525,11 @@ body.reading .vin.show{transform:scale(.8)}
 .vin-thread .track{background:#666}
 @media (max-width:760px){.vin-meta{padding-bottom:44px}.vin-x{padding-bottom:70px}}
 @media (max-width:760px){.vin{bottom:calc(98px + env(safe-area-inset-bottom,0px))}}
+/* объёмные Нити */
+#roots path{opacity:1}
+#roots .sh{stroke:#000;opacity:.7}
+#roots .body{stroke:#9d978c}
+#roots .hl{stroke:#f3efe6;opacity:.85}
+#roots .shine{stroke:#fff;fill:none;stroke-linecap:round;stroke-dasharray:.06 1.2;stroke-dashoffset:1.1;animation:shine 8s linear infinite;opacity:.9}
+@keyframes shine{from{stroke-dashoffset:1.1}to{stroke-dashoffset:-.1}}
+@media (prefers-reduced-motion:reduce){#roots .shine{display:none}}

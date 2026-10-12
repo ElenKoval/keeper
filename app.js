@@ -95,16 +95,24 @@ const save = () => { try { localStorage.setItem('keeper-state', JSON.stringify(S
 /* ---------- корни ---------- */
 const roots = $('roots');
 const rnd = (a,b) => a + Math.random()*(b-a);
-function drawRoots(){   // Нити растут снизу вверх
+function drawRoots(){   // Нити растут снизу вверх, объёмные: тень, тело и блик; дальние тоньше и тусклее
   const W = innerWidth, H = innerHeight; roots.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  let g = ''; const n = Math.round(W/55);
-  for (let i=0;i<n;i++){
-    const x = rnd(0,W), len = rnd(.08,.4)*H; let d = `M${x.toFixed(1)} ${H}`, cx = x;
-    const k = Math.max(3, Math.round(len/80));
-    for (let j=1;j<=k;j++){ const ny = H - len*j/k, nx = x + rnd(-14,14); d += ` Q${(cx+rnd(-14,14)).toFixed(1)} ${(ny+len/k/2).toFixed(1)} ${nx.toFixed(1)} ${ny.toFixed(1)}`; cx = nx; }
-    if (Math.random()<.5){ const by = H - len*rnd(.3,.7); d += ` M${(x+rnd(-8,8)).toFixed(1)} ${by.toFixed(1)} q${rnd(-30,30).toFixed(1)} ${(-rnd(20,50)).toFixed(1)} ${rnd(-50,50).toFixed(1)} ${(-rnd(40,110)).toFixed(1)}`; }
-    g += `<g class="sway up" style="--d:${rnd(7,13).toFixed(1)}s;--a:${rnd(.4,1.2).toFixed(2)}deg"><path class="grow" pathLength="1" style="animation-delay:${rnd(0,1.5).toFixed(2)}s" d="${d}" stroke-width="${rnd(.6,1.6).toFixed(2)}" opacity="${rnd(.12,.4).toFixed(2)}"/></g>`;
-  }
+  let g = '<defs><filter id="far" x="-50%" y="-5%" width="200%" height="110%"><feGaussianBlur stdDeviation="1.2"/></filter></defs>';
+  const n = Math.round(W/48), items = [];
+  for (let i=0;i<n;i++) items.push({x:rnd(0,W), z:Math.random()});
+  items.sort((a,b) => a.z - b.z);                       // сначала дальние
+  items.forEach(({x, z}) => {
+    const len = (.28 + z*.5) * H * rnd(.8,1.1);
+    let d = `M${x.toFixed(1)} ${H+4}`, cx = x; const k = Math.max(4, Math.round(len/70));
+    for (let j=1;j<=k;j++){ const ny = H - len*j/k, nx = x + rnd(-18,18)*(.6+z); d += ` Q${(cx+rnd(-18,18)).toFixed(1)} ${(ny+len/k/2).toFixed(1)} ${nx.toFixed(1)} ${ny.toFixed(1)}`; cx = nx; }
+    const w = .7 + z*2.6, op = .18 + z*.55, delay = rnd(0,1.6).toFixed(2), far = z < .3 ? ' filter="url(#far)"' : '';
+    g += `<g class="sway up" style="--d:${rnd(7,13).toFixed(1)}s;--a:${rnd(.4,1.1).toFixed(2)}deg" opacity="${op.toFixed(2)}"${far}>` +
+      `<path class="grow sh" pathLength="1" style="animation-delay:${delay}s" d="${d}" stroke-width="${(w+1.6).toFixed(2)}" transform="translate(1.2 0)"/>` +
+      `<path class="grow body" pathLength="1" style="animation-delay:${delay}s" d="${d}" stroke-width="${w.toFixed(2)}"/>` +
+      `<path class="grow hl" pathLength="1" style="animation-delay:${delay}s" d="${d}" stroke-width="${Math.max(.35, w*.32).toFixed(2)}" transform="translate(${(-w*.22).toFixed(2)} 0)"/>` +
+      (z > .55 ? `<path class="shine" pathLength="1" style="animation-delay:${rnd(2,9).toFixed(1)}s;animation-duration:${rnd(6,11).toFixed(1)}s" d="${d}" stroke-width="${Math.max(.5, w*.45).toFixed(2)}" transform="translate(${(-w*.22).toFixed(2)} 0)"/>` : '') +
+      `</g>`;
+  });
   roots.innerHTML = g;
 }
 drawRoots(); let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawRoots, 250); });
