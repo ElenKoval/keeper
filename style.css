@@ -838,3 +838,18 @@ body.reading .vin.show{transform:scale(.8)}
 .cs.fx-old::after{content:"";position:absolute;right:-6px;top:10px;width:30px;height:1px;background:rgba(255,255,255,.3);transform:rotate(38deg)}
 .cs span{position:relative;z-index:1;text-shadow:0 1px 6px #000,0 0 2px #000}
 .cs.fx-old{min-width:110px}
+/* записка на телефоне: свёрнута в уголок */
+.note-tab{display:none}
+@media (max-width:760px){
+  .note-tab{display:block;grid-column:1/-1;background:none;border:0;padding:0 0 4px;text-align:left;font-family:'Caveat',cursive;font-size:1rem;color:#6b665d;cursor:pointer}
+  .note-tab::after{content:" ▾"}
+  .note:not(.min) .note-tab::after{content:" ▴"}
+  .note.min{left:auto;right:10px;width:auto!important;padding:14px 14px 6px 16px;transform:rotate(-3deg);display:block}
+  .note.min > :not(.note-tab):not(.nail){display:none!important}
+  .note.min .note-tab{padding:0}
+  #app,.person,.sound,.gallery,.pages{padding-bottom:80px!important}
+  .floor{bottom:70px}
+  .panel{bottom:0}
+  .vin{bottom:calc(64px + env(safe-area-inset-bottom,0px))!important}
+}
+@media (max-width:760px){.sound .toKeeper{position:static;align-self:flex-start;margin:-30px 0 14px}}

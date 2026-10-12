@@ -591,6 +591,15 @@ $('langBtn').onclick = () => {
 };
 applyStatic();
 
+/* телефон: записка свёрнута в уголок, раскрывается по нажатию */
+const mq = matchMedia('(max-width:760px)');
+function noteMin(on){ $('note').classList.toggle('min', on); $('noteTab').setAttribute('aria-expanded', String(!on)); }
+if (mq.matches) noteMin(true);
+mq.addEventListener?.('change', e => noteMin(e.matches));
+$('noteTab').onclick = e => { e.stopPropagation(); noteMin(!$('note').classList.contains('min')); };
+document.querySelectorAll('.note button[data-tab]').forEach(b => b.addEventListener('click', () => { if (mq.matches) noteMin(true); }));
+document.addEventListener('click', e => { if (mq.matches && !$('note').contains(e.target)) noteMin(true); });
+
 /* старт */
 setTimeout(() => go(S.node && S.node !== 'start' ? 'back' : 'start'), 600);
 })();
