@@ -338,15 +338,24 @@ function openDetail(id, autoplay){
   $('dLyricsBtn').hidden = !(s && s.lyrics); $('dLyrics').hidden = true; $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('dLyricsBtn').setAttribute('aria-expanded','false');
   if (s && curSong !== s.file){ audio.src = s.file; curSong = s.file; }
   if (s && autoplay) audio.play().catch(() => {});
-  syncPlay();
+  syncPlay(); paintSeek();
   if (s && !S.heard.includes(id)) { S.heard.push(id); save(); }
 }
 function syncPlay(){ const on = !audio.paused; $('dPlay').textContent = on ? '❚❚' : '▶'; $('stage').classList.toggle('playing', on); }
 $('dPlay').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
 ['play','pause','ended'].forEach(ev => audio.addEventListener(ev, () => { if (chatWith) syncP(); }));
 audio.addEventListener('play', syncPlay); audio.addEventListener('pause', syncPlay); audio.addEventListener('ended', syncPlay);
-audio.addEventListener('timeupdate', () => { if (audio.duration) $('dSeek').value = Math.round(audio.currentTime / audio.duration * 1000); $('dTime').textContent = fmt(audio.currentTime); });
-$('dSeek').oninput = e => { if (audio.duration) audio.currentTime = e.target.value / 1000 * audio.duration; };
+function paintSeek(){ const p = audio.duration ? audio.currentTime / audio.duration * 100 : 0; $('dFill').style.width = p + '%'; $('dKnob').style.left = p + '%';
+  $('dTime').textContent = fmt(audio.currentTime); $('dDur').textContent = fmt(audio.duration); }
+audio.addEventListener('timeupdate', paintSeek); audio.addEventListener('loadedmetadata', paintSeek);
+(() => { const th = $('dThread'); let drag = false;
+  const at = e => { const r = th.getBoundingClientRect(); const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); if (audio.duration) { audio.currentTime = x * audio.duration; paintSeek(); } };
+  th.addEventListener('pointerdown', e => { drag = true; th.setPointerCapture(e.pointerId); at(e); });
+  th.addEventListener('pointermove', e => { if (drag) at(e); });
+  th.addEventListener('pointerup', () => { drag = false; }); })();
+audio.volume = .8;
+$('dVol').oninput = e => { audio.volume = e.target.value / 100; audio.muted = false; $('dWave').style.opacity = audio.volume ? 1 : .2; };
+$('dMute').onclick = () => { audio.muted = !audio.muted; $('dWave').style.opacity = audio.muted ? .2 : 1; };
 $('dLyricsBtn').onclick = () => { const l = $('dLyrics'); l.hidden = !l.hidden; $('dLyricsBtn').setAttribute('aria-expanded', String(!l.hidden)); };
 $('detailBack').onclick = renderShelf;
 function openSong(id){ openPanel('music'); openDetail(id, true); }
