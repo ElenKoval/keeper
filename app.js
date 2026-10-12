@@ -442,7 +442,7 @@ const BACKNOTE = {
 const WITH = {cat:{ru:'с Котом',en:'Cat'},weaver:{ru:'с Вивер',en:'Weaver'},crystal:{ru:'с Кристаллом',en:'Crystal'},keeper:{ru:'с Кипером',en:'Kiper'},dream:{ru:'с Дримом',en:'Dream'},liora:{ru:'с Лиорой',en:'Liora'},drpak:{ru:'с Паком',en:'Pak'},shiny:{ru:'с Шайни',en:'Shiny'},shiny_bro:{ru:'с Братом',en:"Shiny's Brother"},talk_mushroom:{ru:'с Грибом',en:'Mushroom'},angry_forest:{ru:'со Злым Лесом',en:'the Angry Forest'}};
 let dIdx = 0;
 function openDetail(id, autoplay){
-  detailId = id; dIdx = 0;
+  detailId = id; dIdx = 0; $('shelfBack').hidden = true;
   const row = SHELF.find(r => r[0] === id); const list = songs(id);
   $('shelf').hidden = true; $('detail').hidden = false; $('music').scrollTop = 0;
   $('dLabel').className = 'lbl' + (row[2] ? '' : ' ph'); $('dLabel').innerHTML = row[2] ? labelHTML(row[2]) : tr(UI.bro);
