@@ -16,7 +16,7 @@
   <button class="mark" id="homeBtn" hidden>Мир Дриады</button>
   <nav class="note" id="note" aria-label="Разделы">
     <span class="nail" aria-hidden="true"></span>
-    <button class="note-tab" id="noteTab" aria-label="Меню" aria-expanded="false">записка Кипера</button>
+    <button class="note-tab" id="noteTab" aria-label="Меню" aria-expanded="false" data-i18n="noteTabT">записка Кипера</button>
     <p class="note-head" data-i18n="noteHead">Чтобы опять не объяснять</p>
     <button data-tab="story" class="on" data-i18n="nStory">Продолжить историю</button>
     <button data-tab="people" data-i18n="nPeople">Рисунки и персонажи</button>
@@ -126,7 +126,7 @@
       <button class="txt small expand" id="pExpand" data-i18n="expand">Развернуть разговор</button>
       <div class="talklog" id="chatLog"></div>
       <form class="chat-form" id="chatForm" autocomplete="off">
-        <label class="sr" for="chatInput">Твоё сообщение</label>
+        <label class="sr" for="chatInput" data-i18n="yourMsg">Твоё сообщение</label>
         <input id="chatInput" maxlength="800" placeholder="Поговори со мной…" data-i18n-ph="write">
         <button type="submit" aria-label="Отправить">→</button>
       </form>
@@ -225,6 +225,6 @@
 
 <script src="assets/chapters.js?v=30"></script>
 <script src="assets/songs.js?v=71"></script>
-<script src="app.js?v=84"></script>
+<script src="app.js?v=85"></script>
 </body>
 </html>
