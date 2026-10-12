@@ -7,7 +7,7 @@
 <meta name="description" content="Мир Дриады. Кипер помнит всё, только не по порядку. Садись, он расскажет.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alice&family=Caveat:wght@400;600&family=PT+Serif:ital@0;1&family=Forum&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=25">
+<link rel="stylesheet" href="style.css?v=27">
 </head>
 <body>
 <svg id="roots" aria-hidden="true"></svg>
@@ -16,19 +16,19 @@
   <button class="mark" id="homeBtn" hidden>Мир Дриады</button>
   <nav class="note" id="note" aria-label="Разделы">
     <span class="nail" aria-hidden="true"></span>
-    <p class="note-head">Чтобы опять не объяснять</p>
-    <button data-tab="story" class="on">Продолжить историю</button>
-    <button data-tab="people">Рисунки и персонажи</button>
-    <button data-tab="music">Включить музыку</button>
-    <button data-tab="book">Открыть книгу</button>
-    <p class="note-doodle" aria-hidden="true">жук — ?</p>
+    <p class="note-head" data-i18n="noteHead">Чтобы опять не объяснять</p>
+    <button data-tab="story" class="on" data-i18n="nStory">Продолжить историю</button>
+    <button data-tab="people" data-i18n="nPeople">Рисунки и персонажи</button>
+    <button data-tab="music" data-i18n="nMusic">Включить музыку</button>
+    <button data-tab="book" data-i18n="nBook">Открыть книгу</button>
+    <div class="note-foot"><button class="lang" id="langBtn" aria-label="Switch language">EN</button><p class="note-doodle" aria-hidden="true" data-i18n="doodle">жук — ?</p></div>
   </nav>
 </header>
 
 <main id="app" class="mode-talk">
   <!-- reading layer -->
   <section class="read" id="read" aria-live="polite">
-    <button class="toKeeper" id="toKeeper">← К Киперу</button>
+    <button class="toKeeper" id="toKeeper" data-i18n="toKeeperArrow">← К Киперу</button>
     <div class="art"><img id="artImg" alt=""><img id="artImg2" alt="" class="next"></div>
     <div class="pages">
       <p class="chap" id="chapTitle"></p>
@@ -89,8 +89,8 @@
 <!-- character page -->
 <section class="person" id="chat" hidden aria-label="Персонаж">
   <div class="person-bar">
-    <button class="txt" id="chatBack">← Все рисунки</button>
-    <button class="txt" id="personHome">К Киперу</button>
+    <button class="txt" id="chatBack" data-i18n="allDrawings">← Все рисунки</button>
+    <button class="txt" id="personHome" data-i18n="toKeeper">К Киперу</button>
   </div>
   <div class="person-grid">
     <div class="person-left">
@@ -98,7 +98,7 @@
       <div class="thumbs" id="pThumbs"></div>
       <div class="pplayer" id="pSong" hidden>
         <div class="pp-row">
-          <button class="pp-play" id="pPlay" aria-label="Играть">▶</button>
+          <button class="pp-play" id="pPlay" aria-label="Play">▶</button>
           <div class="pp-mid">
             <p class="pp-title" id="pSongTitle"></p>
             <div class="thread" id="pThread"><span class="track"></span><span class="fill" id="pFill"></span><span class="knob" id="pKnob"></span></div>
@@ -116,15 +116,15 @@
         <h2 class="person-name" id="chatName"></h2>
         <div class="pmenu">
           <button class="txt dots" id="pMenuBtn" aria-label="Ещё" aria-expanded="false">⋯</button>
-          <div class="pmenu-list" id="pMenu" hidden><button class="txt" id="clearChat">Начать разговор заново</button></div>
+          <div class="pmenu-list" id="pMenu" hidden><button class="txt" id="clearChat" data-i18n="restartChat">Начать разговор заново</button></div>
         </div>
       </div>
-      <button class="txt small expand" id="pExpand">Развернуть разговор</button>
+      <button class="txt small expand" id="pExpand" data-i18n="expand">Развернуть разговор</button>
       <div class="talklog" id="chatLog"></div>
       <p class="asleep" id="pAsleep" hidden></p>
       <form class="chat-form" id="chatForm" autocomplete="off">
         <label class="sr" for="chatInput">Твоё сообщение</label>
-        <input id="chatInput" maxlength="800" placeholder="Напиши…">
+        <input id="chatInput" maxlength="800" placeholder="Напиши…" data-i18n-ph="write">
         <button type="submit" aria-label="Отправить">→</button>
       </form>
     </div>
@@ -132,29 +132,29 @@
 </section>
 
 <!-- zoom -->
-<div class="lightbox" id="lightbox" hidden><img id="lbImg" alt=""><button class="txt lb-x" id="lbX">Закрыть</button></div>
+<div class="lightbox" id="lightbox" hidden><img id="lbImg" alt=""><button class="txt lb-x" id="lbX" data-i18n="close">Закрыть</button></div>
 
 <!-- gallery -->
 <section class="gallery" id="people" hidden aria-label="Из альбома">
-  <div class="gal-bar"><button class="txt" data-close>← К Киперу</button></div>
-  <h2 class="gal-title">Из альбома</h2>
+  <div class="gal-bar"><button class="txt" data-close data-i18n="toKeeperArrow">← К Киперу</button></div>
+  <h2 class="gal-title" data-i18n="album">Из альбома</h2>
   <div class="gal" id="cards"></div>
 </section>
 
 <!-- music -->
 <section class="sound" id="music" hidden aria-label="Звук мира">
-  <button class="toKeeper" id="musicHome">← К Киперу</button>
-  <h2 class="sound-title">Звук мира</h2>
+  <button class="toKeeper" id="musicHome" data-i18n="toKeeperArrow">← К Киперу</button>
+  <h2 class="sound-title" data-i18n="soundTitle">Звук мира</h2>
   <div class="shelf" id="shelf"></div>
   <div class="detail" id="detail" hidden>
-    <button class="detail-back" id="detailBack">← Все персонажи</button>
+    <button class="detail-back" id="detailBack" data-i18n="allChars">← Все персонажи</button>
     <div class="stage" id="stage">
       <div class="disc big"><span class="grooves"></span><div class="lbl" id="dLabel"></div><span class="pin"></span></div>
       <div class="meta">
         <p class="d-name" id="dName"></p>
         <h3 class="d-song" id="dSong"></h3>
         <p class="d-empty" id="dEmpty" hidden></p>
-        <button class="lyr-btn" id="dLyricsBtn" aria-expanded="false">Текст песни</button>
+        <button class="lyr-btn" id="dLyricsBtn" aria-expanded="false" data-i18n="lyrics">Текст песни</button>
         <pre class="lyrics" id="dLyrics" hidden></pre>
       </div>
       <div class="player" id="dPlayer">
@@ -175,11 +175,11 @@
 
 <!-- book in order -->
 <aside class="panel" id="toc" hidden>
-  <div class="panel-head"><p class="panel-title">Книга</p><button class="back" data-close>Закрыть</button></div>
-  <p class="panel-lead">Ну если ты настаиваешь на порядке…</p>
+  <div class="panel-head"><p class="panel-title" data-i18n="book">Книга</p><button class="back" data-close data-i18n="close">Закрыть</button></div>
+  <p class="panel-lead" data-i18n="bookLead">Ну если ты настаиваешь на порядке…</p>
   <ol id="tocList"></ol>
-  <button class="linkish" id="resetBtn">Начать всё сначала</button>
-  <div class="foot-copy"><a href="https://ai-character-platform.onrender.com/pages/about.html" target="_blank" rel="noopener">Об авторе и мире</a><span>© 2026 sunnyChimera. Тексты и рисунки. Все права защищены · Персонажи отвечают с помощью ИИ</span></div>
+  <button class="linkish" id="resetBtn" data-i18n="reset">Начать всё сначала</button>
+  <div class="foot-copy"><a href="https://ai-character-platform.onrender.com/pages/about.html" target="_blank" rel="noopener" data-i18n="about">Об авторе и мире</a><span data-i18n="legal">© 2026 sunnyChimera. Тексты и рисунки. Все права защищены · Персонажи отвечают с помощью ИИ</span></div>
 </aside>
 
 <div class="vin" id="mini">
@@ -191,13 +191,13 @@
   <button class="vin-x" id="miniX" aria-label="Выключить музыку">×</button>
 </div>
 <footer class="foot">
-  <span class="foot-brand">Мир Дриады · <em>Часть первая</em></span>
-  <a href="https://ai-character-platform.onrender.com/pages/about.html" target="_blank" rel="noopener">Об авторе и мире</a>
-  <span class="foot-legal">© 2026 sunnyChimera. Тексты и рисунки. Все права защищены · Персонажи отвечают с помощью ИИ</span>
+  <span class="foot-brand" data-i18n-html="footBrand">Мир Дриады · <em>Часть первая</em></span>
+  <a href="https://ai-character-platform.onrender.com/pages/about.html" target="_blank" rel="noopener" data-i18n="about">Об авторе и мире</a>
+  <span class="foot-legal" data-i18n="legal">© 2026 sunnyChimera. Тексты и рисунки. Все права защищены · Персонажи отвечают с помощью ИИ</span>
 </footer>
 
-<script src="assets/chapters.js?v=3"></script>
+<script src="assets/chapters.js?v=26"></script>
 <script src="assets/songs.js?v=6"></script>
-<script src="app.js?v=25"></script>
+<script src="app.js?v=26"></script>
 </body>
 </html>

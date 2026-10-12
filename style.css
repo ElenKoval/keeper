@@ -533,3 +533,15 @@ body.reading .vin.show{transform:scale(.8)}
 #roots .shine{stroke:#fff;fill:none;stroke-linecap:round;stroke-dasharray:.06 1.2;stroke-dashoffset:1.1;animation:shine 8s linear infinite;opacity:.9}
 @keyframes shine{from{stroke-dashoffset:1.1}to{stroke-dashoffset:-.1}}
 @media (prefers-reduced-motion:reduce){#roots .shine{display:none}}
+/* переключатель языка */
+.lang{position:fixed;left:18px;top:calc(14px + env(safe-area-inset-top,0px));pointer-events:auto;background:none;border:0;color:#9a9a9a;font-family:'PT Serif',Georgia,serif;font-size:.9rem;letter-spacing:.14em;cursor:pointer;padding:4px 2px;z-index:61}
+.lang:hover{color:#fff}
+.person .lang,.gallery .lang{display:none}
+@media (max-width:760px){.lang{top:calc(10px + env(safe-area-inset-top,0px));left:auto;right:14px}}
+/* язык — пометка внизу записки */
+.note-foot{display:flex;align-items:baseline;width:100%;margin-top:6px}
+.note .lang{position:static;font-family:'Caveat',cursive;font-size:1.1rem;letter-spacing:.06em;color:#5f5a52;padding:0 4px;border:1px solid rgba(43,41,37,.35);border-radius:2px;transform:rotate(-3deg)}
+.note .lang:hover{color:#1d1b18;border-color:#2b2925}
+.note .lang::after,.note .lang::before{display:none}
+.note-foot .note-doodle{margin:0 0 0 auto}
+@media (max-width:760px){.note-foot{grid-column:1/-1;margin-top:2px}.note-foot .note-doodle{display:block;font-size:.85rem}.note .lang{font-size:.95rem}}
