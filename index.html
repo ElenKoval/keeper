@@ -7,7 +7,7 @@
 <meta name="description" content="Мир Дриады. Кипер помнит всё, только не по порядку. Садись, он расскажет.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alice&family=Caveat:wght@400;600&family=PT+Serif:ital@0;1&family=Forum&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=70">
+<link rel="stylesheet" href="style.css?v=73">
 </head>
 <body>
 <svg id="roots" aria-hidden="true"></svg>
@@ -99,10 +99,11 @@
       <figure class="person-art"><button class="zoom" id="pZoom" aria-label="Увеличить рисунок"><img id="pArt" alt=""></button><span class="ph" id="pPh" hidden></span></figure>
       <div class="thumbs" id="pThumbs"></div>
       <div class="pplayer" id="pSong" hidden>
+        <div class="scard" id="pCard" hidden><p class="sc-head" id="pCardHead"></p><p class="sc-quote" id="pCardQuote"></p></div>
         <div class="pp-row">
           <button class="pp-play" id="pPlay" aria-label="Play">▶</button>
           <div class="pp-mid">
-            <p class="pp-title" id="pSongTitle"></p>
+            <p class="pp-title"><span id="pSongTitle"></span> <small id="pSongDur"></small></p>
             <div class="thread" id="pThread"><span class="track"></span><span class="fill" id="pFill"></span><span class="knob" id="pKnob"></span></div>
             <div class="times"><span id="pTime">0:00</span><span id="pDur">0:00</span></div>
           </div>
@@ -111,6 +112,7 @@
         <div class="pp-list" id="pList"></div>
         <button class="txt small" id="pLyricsBtn" aria-expanded="false">Lyrics</button>
         <pre class="lyrics left" id="pLyrics" hidden></pre>
+        <p class="sc-aside" id="pCardAside" hidden></p>
       </div>
     </div>
     <div class="person-right" id="pRight">
@@ -118,6 +120,7 @@
         <h2 class="person-name" id="chatName"></h2>
         <div class="pmenu" hidden><button id="pMenuBtn"></button><div id="pMenu"></div></div>
       </div>
+      <div class="margins" id="pSay" hidden></div>
       <button class="txt small expand" id="pExpand" data-i18n="expand">Развернуть разговор</button>
       <div class="talklog" id="chatLog"></div>
       <form class="chat-form" id="chatForm" autocomplete="off">
@@ -219,7 +222,7 @@
 </footer>
 
 <script src="assets/chapters.js?v=30"></script>
-<script src="assets/songs.js?v=58"></script>
-<script src="app.js?v=69"></script>
+<script src="assets/songs.js?v=71"></script>
+<script src="app.js?v=71"></script>
 </body>
 </html>

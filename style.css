@@ -853,3 +853,26 @@ body.reading .vin.show{transform:scale(.8)}
   .vin{bottom:calc(64px + env(safe-area-inset-bottom,0px))!important}
 }
 @media (max-width:760px){.sound .toKeeper{position:static;align-self:flex-start;margin:-30px 0 14px}}
+
+/* страница героя: заметки на полях и карточка песни */
+.margins{display:flex;flex-direction:column;gap:10px;margin:16px 0 6px;padding:12px 0 14px;border-top:1px dashed #2e2e2e;border-bottom:1px dashed #2e2e2e;max-width:34rem}
+.mnote{margin:0;font-family:'Caveat',cursive;font-size:1.3rem;line-height:1.2;color:#bdb6a8;transform:rotate(var(--r,0deg));transform-origin:left center}
+.mnote:nth-child(even){margin-left:1.5em}
+.mwho{background:none;border:0;padding:0;cursor:pointer;font:inherit;color:#e8e2d4;text-decoration:underline;text-decoration-color:#555;text-underline-offset:3px}
+.mwho:hover{color:#fff;text-decoration-color:#ccc}
+.pplayer.carded{background:#ece6d8;color:#2b2925;padding:16px 20px 14px;box-shadow:0 10px 26px rgba(0,0,0,.6);transform:rotate(-.6deg);max-width:440px;gap:8px}
+.scard{display:flex;flex-direction:column;gap:2px}
+.sc-head{margin:0;font-family:'PT Serif',Georgia,serif;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:#6b665d}
+.sc-quote{margin:0;font-family:'Caveat',cursive;font-size:1.35rem;line-height:1.15;color:#2b2925}
+.carded .pp-play{border-color:#2b2925;color:#2b2925;width:40px;height:40px}
+.carded .pp-play:hover{background:rgba(0,0,0,.06)}
+.carded .pp-title{color:#2b2925;font-size:1.05rem}
+.carded .pp-title small{font-family:'PT Serif',Georgia,serif;font-size:.8rem;color:#6b665d}
+.carded .thread .track{background:#c4bba8}.carded .thread .fill{background:#2b2925}
+.carded .thread .knob{background:#2b2925;border:0}
+.carded .times{color:#6b665d}
+.carded .pp-vol{accent-color:#2b2925;width:60px}
+.carded .txt{color:#5f5a52}.carded .txt:hover{color:#000}
+.carded .lyrics.left{color:#2b2925;font-family:'Caveat',cursive;font-size:1.2rem;line-height:1.25}
+.sc-aside{margin:2px 0 0;font-family:'PT Serif',Georgia,serif;font-style:italic;font-size:.82rem;color:#7a746a}
+@media (min-width:761px){.person-art img{max-height:56vh}}

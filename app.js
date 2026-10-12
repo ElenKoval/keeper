@@ -32,6 +32,19 @@ const PEOPLE = {
   shiny_bro:     {name:{ru:'Брат',en:'Shiny\'s Brother'},  works:[], hello:{ru:'К ней — только через меня.',en:'To get to her, you go through me.'}},
   talk_mushroom: {name:{ru:'Гриб',en:'Mushroom'},  works:[['grib',.72]], hello:{ru:'Высота пахнет иначе, когда ты наконец перестаёшь бояться упасть.',en:'Height smells different once you finally stop fearing the fall.'}},
 };
+/* страница героя: что о нём говорят другие и карточка песни (пока только Пак) */
+const SAY = {
+  drpak: [
+    {who:'liora', ru:'Он всегда приходит раньше, чем я успеваю позвать.', en:'He always comes before I even call.'},
+    {who:'weaver', ru:'Ворчит. И считает меня поломкой.', en:'He grumbles. And thinks I\'m a malfunction.'},
+    {who:'cat', ru:'Он ни разу меня не прогнал. Хотя очень старался делать вид.', en:'He never once sent me away. Though he tried hard to look like he might.'},
+    {who:'keeper', ru:'Пак? Помню. Или это было завтра?', en:'Pak? I remember. Or was that tomorrow?'},
+  ],
+};
+const SONGCARD = {
+  drpak: {head:{ru:'Лиора о Паке',en:'Liora about Pak'}, quote:{ru:'«Он будет утверждать, что ничего подобного не было».',en:'"He\'ll insist none of this ever happened."'},
+          aside:{ru:'Пак отказывается обсуждать эту запись.',en:'Pak refuses to discuss this record.'}},
+};
 const face = id => { const w = (PEOPLE[id]||{}).works; return w && w.length ? `assets/img/${w[0][0]}.jpg?v=4` : ''; };
 /* Звук мира: порядок пластинок и наклейки; треки – в assets/songs.js */
 const SHELF = [['dream','Дрим','dream'],['cat','Кот','cat'],['weaver','Вивер','weaver'],['crystal','Кристалл','crystal'],
@@ -317,6 +330,12 @@ function openChat(id, first){
     b.innerHTML = `<img src="assets/img/${w[0]}.jpg?v=4" alt="">`; b.onclick = () => showWork(i); th.appendChild(b); });
   $('chatName').textContent = tr(p.name);
   renderPersonSong();
+  const say = SAY[id] || []; $('pSay').hidden = !say.length;
+  $('pSay').innerHTML = say.map((x, k) => `<p class="mnote" style="--r:${[-1.5,1,-.5,1.5][k % 4]}deg"><button class="mwho" data-id="${x.who}">${esc(nm(x.who))}:</button> ${esc(tr(x))}</p>`).join('');
+  $('pSay').querySelectorAll('.mwho').forEach(b => b.onclick = () => openChat(b.dataset.id));
+  const sc = SONGCARD[id]; $('pCard').hidden = !sc; $('pCardAside').hidden = !sc;
+  if (sc){ $('pCardHead').textContent = tr(sc.head); $('pCardQuote').textContent = tr(sc.quote); $('pCardAside').textContent = tr(sc.aside); }
+  $('pSong').classList.toggle('carded', !!sc);
   const log = $('chatLog'); log.innerHTML = '';
   const can = !p.sleeps && !p.nochat; $('chatForm').hidden = !can; $('pAsleep').hidden = can || !p.sleeps; $('pAsleep').textContent = tr(p.sleeps) || '';
   $('clearChat').hidden = !can; $('pExpand').hidden = !can;
@@ -337,7 +356,7 @@ let pSongIdx = 0;
 function renderPersonSong(){
   const list = songs(chatWith); $('pSong').hidden = !list.length; if (!list.length) return;
   if (pSongIdx >= list.length) pSongIdx = 0;
-  const s = list[pSongIdx]; $('pSongTitle').textContent = s.title;
+  const s = list[pSongIdx]; $('pSongTitle').textContent = s.title; $('pSongDur').textContent = s.dur ? '· ' + s.dur : '';
   $('pList').innerHTML = list.length > 1 ? list.map((x, i) => `<button class="txt small${i===pSongIdx?' on':''}" data-i="${i}">${esc(x.title)}</button>`).join('') : '';
   $('pList').querySelectorAll('button').forEach(b => b.onclick = () => { pSongIdx = +b.dataset.i; renderPersonSong(); });
   $('pLyricsBtn').hidden = !s.lyrics; $('pLyrics').textContent = s.lyrics || ''; $('pLyrics').hidden = true; $('pLyricsBtn').setAttribute('aria-expanded','false');
