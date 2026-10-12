@@ -568,11 +568,14 @@ body.reading .vin.show{transform:scale(.8)}
 .front .d-empty{position:relative}
 .talkto{position:relative;margin-top:auto;background:none;border:0;padding:0;cursor:pointer;font-family:'Caveat',cursive;font-size:calc(var(--s) * .062);color:#cfcfcf;text-decoration:underline;text-decoration-color:#666;text-underline-offset:4px;transform:rotate(-2deg)}
 .talkto:hover{color:#fff;text-decoration-color:#ccc}
-.flip{position:absolute;right:7%;bottom:6%;background:none;border:0;cursor:pointer;font-family:'PT Serif',Georgia,serif;font-size:.78rem;color:#7d7d7d;letter-spacing:.06em}
+.flip{position:absolute;z-index:3;right:7%;bottom:6%;background:none;border:0;cursor:pointer;font-family:'PT Serif',Georgia,serif;font-size:.78rem;color:#7d7d7d;letter-spacing:.06em}
 .flip:hover{color:#fff}
-.back img{max-width:100%;max-height:72%;object-fit:contain;box-shadow:0 6px 18px rgba(0,0,0,.6)}
+.back img{max-width:100%;max-height:64%;object-fit:contain;box-shadow:0 6px 18px rgba(0,0,0,.6)}
 .backnote{font-family:'Caveat',cursive;font-size:calc(var(--s) * .06);line-height:1.15;color:#2b2925;background:#ece6d8;padding:6px 12px;margin:0;max-width:88%;transform:rotate(-2.5deg);box-shadow:0 4px 10px rgba(0,0,0,.5)}
 .backnote:empty{display:none}
+.credits{order:1;margin:0;font-family:'PT Serif',Georgia,serif;font-size:.62rem;letter-spacing:.1em;color:#7d7d7d;text-transform:uppercase;white-space:nowrap}
+.back .backnote{order:2}
+@media (max-width:760px){.credits{font-size:.5rem;letter-spacing:.05em}}
 .tab{position:absolute;z-index:2;left:-26px;top:16%;writing-mode:vertical-rl;transform:rotate(180deg);background:#e9e3d5;color:#2b2925;border:0;cursor:pointer;font-family:'Caveat',cursive;font-size:1.05rem;padding:12px 5px 16px;box-shadow:0 4px 10px rgba(0,0,0,.5);clip-path:polygon(0 0,100% 6%,100% 94%,0 100%)}
 .tab:hover{background:#fff}
 .sheet{position:absolute;z-index:2;left:5%;width:84%;top:calc(-26px - var(--sheet,0px));height:calc(var(--s) * .6 + var(--sheet,0px));background:#ece6d8;box-shadow:0 6px 16px rgba(0,0,0,.55);transition:top .6s ease,height .6s ease;overflow:hidden;
