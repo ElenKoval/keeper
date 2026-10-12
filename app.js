@@ -436,7 +436,7 @@ function openDetail(id, autoplay){
   $('dName').textContent = nm(id) || row[1]; $('dSong').textContent = s ? s.title : '';
   $('dEmpty').hidden = !!s; $('dEmpty').textContent = tr(UI.songSoon); $('dPlayer').hidden = !s;
   $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('record').style.setProperty('--drop','0px'); $('dLyricsBtn').setAttribute('aria-expanded','false'); $('record').style.removeProperty('--sheet');
-  $('sleeve').classList.remove('flipped');
+  $('sleeve').classList.remove('flipped'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
   const w = (PEOPLE[id] || {}).works || []; $('dBackArt').src = w.length ? `assets/img/${w[0][0]}.jpg?v=3` : ''; $('dBackArt').hidden = !w.length;
   $('dBackNote').textContent = tr(BACKNOTE[id]) || '';
   const canTalk = PEOPLE[id] && !PEOPLE[id].sleeps; $('dTalk').hidden = !canTalk;
@@ -468,7 +468,16 @@ $('dLyricsBtn').onclick = () => { const sh = $('sheet'), on = !sh.classList.cont
 $('dLyricsTop').onclick = () => $('dLyricsBtn').click();
 $('dFlip').onclick = $('dFlipBack').onclick = () => $('sleeve').classList.toggle('flipped');
 $('dTalk').onclick = () => { const id = detailId; $('music').hidden = true; openChat(id); };
-$('detailBack').onclick = renderShelf;
+function renderRecs(){
+  const ul = $('recsList'); ul.innerHTML = '';
+  [...SHELF].sort((a, b) => (songs(b[0]).length > 0) - (songs(a[0]).length > 0)).forEach(([id]) => { const list = songs(id), li = document.createElement('li');
+    const b = document.createElement('button'); b.disabled = !list.length; if (id === detailId) b.className = 'cur';
+    b.innerHTML = `<b>${esc(nm(id))}</b><small>${list.length ? esc(list[0].title) : tr(UI.soonLow)}</small>`;
+    b.onclick = () => { $('recs').classList.remove('out'); $('record').classList.remove('recs-open'); setTimeout(() => openDetail(id, false), 250); };
+    li.appendChild(b); ul.appendChild(li); });
+}
+$('detailBack').onclick = () => { const r = $('recs'); if (!r.classList.contains('out')) renderRecs(); r.classList.toggle('out'); $('record').classList.toggle('recs-open', r.classList.contains('out')); };
+$('recsShelf').onclick = () => { $('recs').classList.remove('out'); $('record').classList.remove('recs-open'); renderShelf(); };
 /* мини-плеер: музыка играет дальше, пока ходишь по сайту */
 function miniSync(){
   const onDetail = (!$('music').hidden && !$('detail').hidden) || (!$('chat').hidden && personSongOn());
@@ -519,7 +528,7 @@ const STATIC = {
   doodle:{ru:'жук — ?',en:'beetle — ?'}, toKeeperArrow:{ru:'← К Киперу',en:'← To Kiper'}, toKeeper:{ru:'К Киперу',en:'To Kiper'},
   soundTitle:{ru:'Звук мира',en:'The Sound of the World'}, allChars:{ru:'← Все персонажи',en:'← All characters'}, lyrics:{ru:'Текст песни',en:'Lyrics'},
   allDrawings:{ru:'← Все рисунки',en:'← All drawings'}, expand:UI.expand, allRecords:{ru:'Все записи',en:'All records'}, flip:{ru:'Перевернуть ↻',en:'Turn over ↻'},
-  lyricsHide:{ru:'Свернуть ↑',en:'Fold away ↑'}, clearChat:{ru:'Очистить чат',en:'Clear chat'}, restartChat:{ru:'Начать разговор заново',en:'Start the conversation over'},
+  shelfView:{ru:'все пластинки на полке',en:'all records on the shelf'}, lyricsHide:{ru:'Свернуть ↑',en:'Fold away ↑'}, clearChat:{ru:'Очистить чат',en:'Clear chat'}, restartChat:{ru:'Начать разговор заново',en:'Start the conversation over'},
   write:{ru:'Поговори со мной…',en:'Talk to me…'}, close:{ru:'Закрыть',en:'Close'}, album:{ru:'Из альбома',en:'From the album'}, book:{ru:'Книга',en:'The Book'},
   bookLead:{ru:'Ну если ты настаиваешь на порядке…',en:'Well, if you insist on order…'}, reset:{ru:'Начать всё сначала',en:'Start everything over'},
   footBrand:{ru:'Мир Дриады · <em>Часть первая</em>',en:"The Dryad's World · <em>Part One</em>"}, about:{ru:'Об авторе и мире',en:'About the author & world'},

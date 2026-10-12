@@ -658,3 +658,24 @@ body.reading .vin.show{transform:scale(.8)}
 .sheet-top:hover{color:#000}
 .sheet:not(.out) .sheet-top{display:none}
 @media (min-width:761px){.sheet,.sheet.out{width:calc(var(--s) * 1.45)}}
+/* «Все записи» — лист выезжает влево из-за конверта */
+.recs{position:absolute;z-index:2;top:4%;left:0;width:calc(var(--s) * .78);max-height:calc(var(--s) * .92);overflow-y:auto;background:#ece6d8;color:#2b2925;
+  padding:14px 18px 12px;box-shadow:0 12px 28px rgba(0,0,0,.6);transform:translateX(0) rotate(0);opacity:0;pointer-events:none;
+  transition:transform .7s cubic-bezier(.3,.7,.2,1),opacity .3s;clip-path:polygon(2% 0,100% 0,100% 100%,0 100%,1% 70%,0 40%)}
+.recs.out{transform:translateX(calc(var(--s) * -.86)) rotate(-1.5deg);opacity:1;pointer-events:auto}
+.recs-head{margin:0 0 6px;font-family:'Caveat',cursive;font-size:1.05rem;color:#6b665d}
+.recs ul{list-style:none;margin:0;padding:0}
+.recs li button{display:flex;flex-direction:column;align-items:flex-start;width:100%;background:none;border:0;padding:4px 0;cursor:pointer;text-align:left;font-family:'Caveat',cursive;color:#2b2925}
+.recs li button b{font-weight:600;font-size:1.3rem;line-height:1.05}
+.recs li button small{font-size:.98rem;color:#6b665d;line-height:1.1}
+.recs li button:hover:not(:disabled) b{text-decoration:underline;text-underline-offset:3px}
+.recs li button:disabled{opacity:.38;cursor:default}
+.recs li button.cur b::after{content:" ✓";font-weight:400}
+.recs-shelf{margin-top:8px;background:none;border:0;padding:0;cursor:pointer;font-family:'Caveat',cursive;font-size:1rem;color:#6b665d;text-decoration:underline}
+.tab{z-index:4}
+@media (max-width:760px){.recs{width:calc(var(--s) * 1.3);max-height:none}.recs.out{transform:translateX(-4%) rotate(-1deg);z-index:5}}
+@media (min-width:761px){
+  .record{transition:margin-bottom .7s cubic-bezier(.3,.7,.2,1),transform .7s cubic-bezier(.3,.7,.2,1)}
+  .record.recs-open{transform:translateX(calc(var(--s) * .45))}
+  .recs.out{transform:translateX(calc(var(--s) * -.82)) rotate(-1.5deg)}
+}
