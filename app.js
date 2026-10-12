@@ -427,6 +427,7 @@ const BACKNOTE = {
   weaver:{ru:'Лужи цветут. Никто не предупреждал. Теперь ты знаешь.',en:'Puddles bloom. Nobody warned me. Now you know.'},
   crystal:{ru:'Слушай медленно. Я настраивал долго.',en:'Listen slowly. I took a long time to tune it.'},
   dream:{ru:'Я не знаю, откуда ты. Но я здесь.',en:"I don't know where you came from. But I'm here."},
+  drpak:{ru:'Это не я. Это она. Я просто стоял рядом.',en:"That wasn't me. That was her. I was just standing there."},
   liora:{ru:'Я знаю. Поэтому и не говорила.',en:"I know. That's why I didn't tell you."},
   keeper:{ru:'Если увидишь жука, не говори ему, что я спрашивал.',en:"If you see the beetle, don't tell him I asked."},
 };
@@ -436,7 +437,7 @@ function openDetail(id, autoplay){
   const row = SHELF.find(r => r[0] === id); const list = songs(id); const s = list[0];
   $('shelf').hidden = true; $('detail').hidden = false; $('music').scrollTop = 0;
   $('dLabel').className = 'lbl' + (row[2] ? '' : ' ph'); $('dLabel').innerHTML = row[2] ? labelHTML(row[2]) : tr(UI.bro);
-  $('dName').textContent = nm(id) || row[1]; $('dSong').textContent = s ? s.title : '';
+  $('dName').textContent = (nm(id) || row[1]) + (s && s.by ? ' · ' + tr(s.by) : ''); $('dSong').textContent = s ? s.title : '';
   $('dEmpty').hidden = !!s; $('dEmpty').textContent = tr(UI.songSoon); $('dPlayer').hidden = !s;
   $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('record').style.setProperty('--drop','0px'); $('dLyricsBtn').setAttribute('aria-expanded','false'); $('record').style.removeProperty('--sheet');
   $('sleeve').classList.remove('flipped'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
