@@ -7,7 +7,7 @@
 <meta name="description" content="Мир Дриады. Кипер помнит всё, только не по порядку. Садись, он расскажет.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alice&family=Caveat:wght@400;600&family=PT+Serif:ital@0;1&family=Forum&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=24">
 </head>
 <body>
 <svg id="roots" aria-hidden="true"></svg>
@@ -18,7 +18,7 @@
     <span class="nail" aria-hidden="true"></span>
     <p class="note-head">Чтобы опять не объяснять</p>
     <button data-tab="story" class="on">Продолжить историю</button>
-    <button data-tab="people">Позвать кого-нибудь</button>
+    <button data-tab="people">Рисунки и персонажи</button>
     <button data-tab="music">Включить музыку</button>
     <button data-tab="book">Открыть книгу</button>
     <p class="note-doodle" aria-hidden="true">жук — ?</p>
@@ -89,36 +89,57 @@
 <!-- character page -->
 <section class="person" id="chat" hidden aria-label="Персонаж">
   <div class="person-bar">
-    <button class="toKeeper static" id="personHome">← К Киперу</button>
-    <button class="back" id="chatBack">Все персонажи</button>
+    <button class="txt" id="chatBack">← Все рисунки</button>
+    <button class="txt" id="personHome">К Киперу</button>
   </div>
   <div class="person-grid">
-    <figure class="person-art"><img id="pArt" alt=""><span class="ph" id="pPh" hidden></span></figure>
-    <div class="person-side">
-      <h2 class="person-name" id="chatName"></h2>
-      <p class="person-who" id="chatSub"></p>
-      <div class="psong" id="pSong" hidden>
-        <button class="play" id="pPlay" aria-label="Играть">▶</button>
-        <div><small>Песня</small><b id="pSongTitle"></b></div>
+    <div class="person-left">
+      <figure class="person-art"><button class="zoom" id="pZoom" aria-label="Увеличить рисунок"><img id="pArt" alt=""></button><span class="ph" id="pPh" hidden></span></figure>
+      <div class="thumbs" id="pThumbs"></div>
+      <div class="pplayer" id="pSong" hidden>
+        <div class="pp-row">
+          <button class="pp-play" id="pPlay" aria-label="Играть">▶</button>
+          <div class="pp-mid">
+            <p class="pp-title" id="pSongTitle"></p>
+            <div class="thread" id="pThread"><span class="track"></span><span class="fill" id="pFill"></span><span class="knob" id="pKnob"></span></div>
+            <div class="times"><span id="pTime">0:00</span><span id="pDur">0:00</span></div>
+          </div>
+          <input type="range" class="pp-vol" id="pVol" min="0" max="100" value="80" aria-label="Громкость">
+        </div>
+        <div class="pp-list" id="pList"></div>
+        <button class="txt small" id="pLyricsBtn" aria-expanded="false">Lyrics</button>
+        <pre class="lyrics left" id="pLyrics" hidden></pre>
       </div>
-      <div class="person-chat">
-        <div class="chat-top"><button class="linkish" id="clearChat">Очистить чат</button></div>
-        <div class="chat-log" id="chatLog"></div>
-        <form class="chat-form" id="chatForm" autocomplete="off">
-          <label class="sr" for="chatInput">Твоё сообщение</label>
-          <input id="chatInput" maxlength="800" placeholder="Скажи что-нибудь…">
-          <button type="submit" aria-label="Отправить">→</button>
-        </form>
+    </div>
+    <div class="person-right" id="pRight">
+      <div class="pname-row">
+        <h2 class="person-name" id="chatName"></h2>
+        <div class="pmenu">
+          <button class="txt dots" id="pMenuBtn" aria-label="Ещё" aria-expanded="false">⋯</button>
+          <div class="pmenu-list" id="pMenu" hidden><button class="txt" id="clearChat">Начать разговор заново</button></div>
+        </div>
       </div>
+      <button class="txt small expand" id="pExpand">Развернуть разговор</button>
+      <div class="talklog" id="chatLog"></div>
+      <p class="asleep" id="pAsleep" hidden></p>
+      <form class="chat-form" id="chatForm" autocomplete="off">
+        <label class="sr" for="chatInput">Твоё сообщение</label>
+        <input id="chatInput" maxlength="800" placeholder="Напиши…">
+        <button type="submit" aria-label="Отправить">→</button>
+      </form>
     </div>
   </div>
 </section>
 
-<!-- characters -->
-<aside class="panel" id="people" hidden>
-  <div class="panel-head"><p class="panel-title">Персонажи</p><button class="back" data-close>Закрыть</button></div>
-  <div class="cards" id="cards"></div>
-</aside>
+<!-- zoom -->
+<div class="lightbox" id="lightbox" hidden><img id="lbImg" alt=""><button class="txt lb-x" id="lbX">Закрыть</button></div>
+
+<!-- gallery -->
+<section class="gallery" id="people" hidden aria-label="Из альбома">
+  <div class="gal-bar"><button class="txt" data-close>← К Киперу</button></div>
+  <h2 class="gal-title">Из альбома</h2>
+  <div class="gal" id="cards"></div>
+</section>
 
 <!-- music -->
 <section class="sound" id="music" hidden aria-label="Звук мира">
@@ -161,10 +182,13 @@
   <div class="foot-copy"><a href="https://ai-character-platform.onrender.com/pages/about.html" target="_blank" rel="noopener">Об авторе и мире</a><span>© 2026 sunnyChimera. Тексты и рисунки. Все права защищены · Персонажи отвечают с помощью ИИ</span></div>
 </aside>
 
-<div class="mini" id="mini" hidden>
-  <button class="mini-disc" id="miniDisc" aria-label="Пауза"><span class="lbl" id="miniLbl"></span><span class="pin"></span><span class="mini-ico" id="miniIco">❚❚</span></button>
-  <button class="mini-meta" id="miniOpen"><b id="miniTitle"></b><small id="miniName"></small></button>
-  <button class="mini-x" id="miniX" aria-label="Выключить музыку">×</button>
+<div class="vin" id="mini">
+  <button class="vin-disc" id="miniDisc" aria-label="Пауза"><span class="vin-grooves"></span><span class="lbl" id="miniLbl"></span><span class="pin"></span><span class="mini-ico" id="miniIco">❚❚</span></button>
+  <div class="vin-meta">
+    <button class="vin-title" id="miniOpen"><b id="miniTitle"></b><small id="miniName"></small></button>
+    <div class="thread vin-thread" id="miniThread"><span class="track"></span><span class="fill" id="miniFill"></span><span class="knob" id="miniKnob"></span></div>
+  </div>
+  <button class="vin-x" id="miniX" aria-label="Выключить музыку">×</button>
 </div>
 <footer class="foot">
   <span class="foot-brand">Мир Дриады · <em>Часть первая</em></span>
@@ -174,6 +198,6 @@
 
 <script src="assets/chapters.js?v=3"></script>
 <script src="assets/songs.js?v=6"></script>
-<script src="app.js?v=20"></script>
+<script src="app.js?v=22"></script>
 </body>
 </html>

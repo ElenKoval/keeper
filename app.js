@@ -5,20 +5,22 @@ const $ = id => document.getElementById(id);
 const app = $('app'), keeper = $('keeper'), lineEl = $('line'), optsEl = $('opts'), floor = $('floor');
 
 /* ---------- данные ---------- */
-/* need = сколько глав прочитано, чтобы открылся чат */
+/* Альбом: рисунки (имя файла, соотношение сторон), первая реплика, есть ли чат */
 const PEOPLE = {
-  keeper:        {name:'Кипер',    face:'assets/img/keeper_paper.jpg?v=3',  need:0,  who:'хранитель, помнит всё'},
-  dream:         {name:'Дрим',     face:'assets/img/dream.jpg?v=3',   need:1,  who:'садовник Нитей'},
-  weaver:        {name:'Вивер',    face:'assets/img/weaver.jpg?v=3',  need:1,  who:'единственная, кто растёт'},
-  liora:         {name:'Лиора',    face:'assets/img/liora.jpg?v=3',   need:1,  who:'поёт над Нитями'},
-  drpak:         {name:'Пак',      face:'assets/img/pak.jpg?v=3',     need:1,  who:'хирург, режет Жажду'},
-  crystal:       {name:'Кристалл', face:'assets/img/crystal.jpg?v=3', need:1,  who:'настраивает Нити, как струны'},
-  cat:           {name:'Кот',      face:'assets/img/cat.jpg?v=3',     need:1,  who:'самый младший в Саду'},
-  angry_forest:  {name:'Злой Лес', face:'assets/img/forest.jpg?v=3',  need:6,  who:'принимает Тени'},
-  shiny:         {name:'Шайни',    face:'assets/img/shiny.jpg?v=3',   need:11, who:''},
-  shiny_bro:     {name:'Брат',     face:'',     need:11, who:''},
-  talk_mushroom: {name:'Гриб',     face:'assets/img/grib.jpg?v=3',    need:13, who:''},
+  keeper:        {name:'Кипер',    works:[['keeper_paper',.715]], hello:'Тсс. Не шевелись. Ты стоишь на моём вчера. Вот. Теперь можно.'},
+  dream:         {name:'Дрим',     works:[['dream',.739],['dream_2',1.363]], hello:'Я здесь. Что у тебя?'},
+  weaver:        {name:'Вивер',    works:[['weaver',1.618],['weaver_forest',1.472],['weaver_symbol',.738]], hello:'О! Ты кто? Ты тоже застреваешь в корнях?'},
+  liora:         {name:'Лиора',    works:[['liora',.757]], hello:'Ох. Садись ближе, здесь тепло.'},
+  drpak:         {name:'Пак',      works:[['pak',.745]], hello:'Ты по делу? Если нет, тоже говори. Только короче.'},
+  crystal:       {name:'Кристалл', works:[['crystal',1.401]], hello:'Вы так стараетесь убежать друг от друга, что забыли, как звучите вместе.'},
+  cat:           {name:'Кот',      works:[['cat',1.412]], hello:'О. Привет. Ты тоже не спишь?'},
+  dryad:         {name:'Дриада',   works:[['dryad',.75]], sleeps:'Она спит. Здесь можно только смотреть.'},
+  angry_forest:  {name:'Злой Лес', works:[['forest',1.41],['forest_2',1.512]], hello:'Всё, от чего тебя спасли, до сих пор живёт во мне.'},
+  shiny:         {name:'Шайни',    works:[['shiny',1.41]], hello:'Этот свет не для продажи.'},
+  shiny_bro:     {name:'Брат',     works:[], hello:'К ней — только через меня.'},
+  talk_mushroom: {name:'Гриб',     works:[['grib',.72]], hello:'Высота пахнет иначе, когда ты наконец перестаёшь бояться упасть.'},
 };
+const face = id => { const w = (PEOPLE[id]||{}).works; return w && w.length ? `assets/img/${w[0][0]}.jpg?v=3` : ''; };
 /* Звук мира: порядок пластинок и наклейки; треки – в assets/songs.js */
 const SHELF = [['dream','Дрим','dream'],['cat','Кот','cat'],['weaver','Вивер','weaver'],['crystal','Кристалл','crystal'],
   ['keeper','Кипер','keeper_paper'],['shiny','Шайни','shiny'],['shiny_bro','Брат',''],['liora','Лиора','liora'],
@@ -257,37 +259,75 @@ function openChat(id, first){
   PANELS.forEach(p => $(p).hidden = true); setTab('people');
   chatWith = id; if (!S.met.includes(id)) S.met.push(id); save();
   const p = PEOPLE[id];
-  $('pArt').hidden = !p.face; $('pPh').hidden = !!p.face; if (p.face) $('pArt').src = p.face; else $('pPh').textContent = BRO_PH;
-  $('chatName').textContent = p.name; $('chatSub').textContent = p.who || '';
-  const list = songs(id); $('pSong').hidden = !list.length;
-  if (list.length){ $('pSongTitle').textContent = list[0].title; syncP(); }
-  const log = $('chatLog'); log.innerHTML = ''; (S.chats[id] || []).forEach(m => addMsg(m.role==='user'?'me':'them', m.text));
-  if (!log.children.length) addMsg('them hello', HELLO[id] || 'Привет.');
+  showWork(0);
+  const th = $('pThumbs'); th.innerHTML = '';
+  if (p.works.length > 1) p.works.forEach((w, i) => { const b = document.createElement('button'); b.className = 'thumb' + (i ? '' : ' on');
+    b.innerHTML = `<img src="assets/img/${w[0]}.jpg?v=3" alt="">`; b.onclick = () => showWork(i); th.appendChild(b); });
+  $('chatName').textContent = p.name;
+  renderPersonSong();
+  const log = $('chatLog'); log.innerHTML = '';
+  const can = !p.sleeps; $('chatForm').hidden = !can; $('pAsleep').hidden = can; $('pAsleep').textContent = p.sleeps || '';
+  $('pMenuBtn').hidden = !can; $('pExpand').hidden = !can;
+  if (can){ (S.chats[id] || []).forEach(m => addMsg(m.role === 'user' ? 'me' : 'them', m.text)); if (!log.children.length) addMsg('them', p.hello || 'Привет.'); }
+  $('chat').classList.remove('expanded'); $('pMenu').hidden = true;
   $('chat').hidden = false; $('chat').scrollTop = 0;
-  if (first){ const q = first; sendChat(q.charAt(0).toUpperCase() + q.slice(1)); }
+  if (first) sendChat(first.charAt(0).toUpperCase() + first.slice(1));
 }
-const HELLO = {keeper:'Спрашивай. Или я спрошу. Подожди, я вспомню, о чём.', dream:'Здравствуй. Садись, если хочешь.', weaver:'О! Ты кто? Ты тоже застреваешь в корнях?'};
-function syncP(){ const list = songs(chatWith); const on = list.length && !audio.paused && curSong === list[0].file; $('pPlay').textContent = on ? '❚❚' : '▶'; }
-$('pPlay').onclick = () => { const s = songs(chatWith)[0]; if (!s) return; if (curSong !== s.file){ audio.src = s.file; curSong = s.file; } curId = chatWith;
+function showWork(i){
+  const p = PEOPLE[chatWith], w = p.works[i];
+  $('pZoom').hidden = !w; $('pPh').hidden = !!w; $('pPh').textContent = BRO_PH;
+  if (w) $('pArt').src = `assets/img/${w[0]}.jpg?v=3`;
+  document.querySelectorAll('.thumb').forEach((b, k) => b.classList.toggle('on', k === i));
+}
+$('pZoom').onclick = () => { $('lbImg').src = $('pArt').src; $('lightbox').hidden = false; };
+$('lbX').onclick = $('lightbox').onclick = e => { if (e.target.id !== 'lbImg') $('lightbox').hidden = true; };
+let pSongIdx = 0;
+function renderPersonSong(){
+  const list = songs(chatWith); $('pSong').hidden = !list.length; if (!list.length) return;
+  if (pSongIdx >= list.length) pSongIdx = 0;
+  const s = list[pSongIdx]; $('pSongTitle').textContent = s.title;
+  $('pList').innerHTML = list.length > 1 ? list.map((x, i) => `<button class="txt small${i===pSongIdx?' on':''}" data-i="${i}">${esc(x.title)}</button>`).join('') : '';
+  $('pList').querySelectorAll('button').forEach(b => b.onclick = () => { pSongIdx = +b.dataset.i; renderPersonSong(); });
+  $('pLyricsBtn').hidden = !s.lyrics; $('pLyrics').textContent = s.lyrics || ''; $('pLyrics').hidden = true; $('pLyricsBtn').setAttribute('aria-expanded','false');
+  syncP();
+}
+function personSongOn(){ const s = songs(chatWith)[pSongIdx]; return s && curSong === s.file; }
+function syncP(){
+  if (!chatWith || $('pSong').hidden) return;
+  const mine = personSongOn(); $('pPlay').textContent = mine && !audio.paused ? '❚❚' : '▶';
+  const p = mine && audio.duration ? audio.currentTime / audio.duration * 100 : 0;
+  $('pFill').style.width = p + '%'; $('pKnob').style.left = p + '%';
+  $('pTime').textContent = fmt(mine ? audio.currentTime : 0); $('pDur').textContent = fmt(mine ? audio.duration : 0);
+}
+$('pPlay').onclick = () => { const s = songs(chatWith)[pSongIdx]; if (!s) return;
+  if (curSong !== s.file){ audio.src = s.file; curSong = s.file; } curId = chatWith;
   audio.paused ? audio.play().catch(() => {}) : audio.pause(); if (!S.heard.includes(chatWith)) { S.heard.push(chatWith); save(); } };
-function addMsg(cls, text){ const d = document.createElement('div'); d.className = 'msg ' + cls; d.textContent = text; $('chatLog').appendChild(d); d.scrollIntoView({block:'end'}); return d; }
+$('pLyricsBtn').onclick = () => { const l = $('pLyrics'); l.hidden = !l.hidden; $('pLyricsBtn').setAttribute('aria-expanded', String(!l.hidden)); };
+$('pVol').oninput = e => { audio.volume = e.target.value / 100; audio.muted = false; const d = $('dVol'); if (d) d.value = e.target.value; };
+(() => { const th = $('pThread'); let drag = false;
+  const at = e => { if (!personSongOn() || !audio.duration) return; const r = th.getBoundingClientRect(); audio.currentTime = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * audio.duration; syncP(); };
+  th.addEventListener('pointerdown', e => { drag = true; th.setPointerCapture(e.pointerId); at(e); });
+  th.addEventListener('pointermove', e => { if (drag) at(e); });
+  th.addEventListener('pointerup', () => { drag = false; }); })();
+$('pMenuBtn').onclick = () => { const m = $('pMenu'); m.hidden = !m.hidden; $('pMenuBtn').setAttribute('aria-expanded', String(!m.hidden)); };
+$('pExpand').onclick = () => { const on = $('chat').classList.toggle('expanded'); $('pExpand').textContent = on ? '← К рисунку' : 'Развернуть разговор'; if (on) $('chatLog').lastElementChild?.scrollIntoView({block:'end'}); };
+function addMsg(cls, text){
+  const d = document.createElement('div'); d.className = 'line-msg ' + cls;
+  const who = cls.includes('me') ? 'Ты' : (PEOPLE[chatWith] || {}).name || '';
+  d.innerHTML = `<span class="who">${esc(who)}</span><span class="said"></span>`; d.querySelector('.said').textContent = text;
+  $('chatLog').appendChild(d); $('chatLog').scrollTop = $('chatLog').scrollHeight; return d.querySelector('.said');
+}
 async function sendChat(m){
   const id = chatWith; addMsg('me', m); const w = addMsg('them wait', '…');
   const h = S.chats[id] || (S.chats[id] = []);
-  try{ const a = await ask(id, m, h); h.push({role:'user', text:m}, {role:'model', text:a}); S.chats[id] = h.slice(-40); save(); w.className = 'msg them'; w.textContent = a; }
-  catch(e){ w.className = 'msg them wait'; w.textContent = 'Тишина.'; }
-  finally{ w.scrollIntoView({block:'end'}); }
+  try{ const a = await ask(id, m, h); h.push({role:'user', text:m}, {role:'model', text:a}); S.chats[id] = h.slice(-40); save(); w.parentNode.classList.remove('wait'); w.textContent = a; }
+  catch(e){ w.textContent = 'Тишина.'; }
+  finally{ $('chatLog').scrollTop = $('chatLog').scrollHeight; }
 }
 $('chatForm').addEventListener('submit', e => { e.preventDefault(); const i = $('chatInput'); const m = i.value.trim(); if (!m) return; i.value = ''; sendChat(m); });
 $('chatBack').onclick = () => { $('chat').hidden = true; openPanel('people'); };
 $('personHome').onclick = () => $('homeBtn').click();
-let clearArmed = false, clearT;
-$('clearChat').onclick = () => {
-  const b = $('clearChat');
-  if (!clearArmed){ clearArmed = true; b.textContent = 'Точно очистить?'; clearT = setTimeout(() => { clearArmed = false; b.textContent = 'Очистить чат'; }, 3000); return; }
-  clearTimeout(clearT); clearArmed = false; b.textContent = 'Очистить чат';
-  S.chats[chatWith] = []; save(); $('chatLog').innerHTML = ''; addMsg('them hello', HELLO[chatWith] || 'Привет.');
-};
+$('clearChat').onclick = () => { S.chats[chatWith] = []; save(); $('chatLog').innerHTML = ''; addMsg('them', PEOPLE[chatWith].hello || 'Привет.'); $('pMenu').hidden = true; };
 
 /* разделы: История · Персонажи · Музыка · Книга */
 const PANELS = ['people','music','toc'];
@@ -307,10 +347,11 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePanel
 function renderPeople(){
   const box = $('cards'); box.innerHTML = '';
   Object.entries(PEOPLE).forEach(([id, p]) => {
-    const open = S.read >= p.need;
-    const b = document.createElement('button'); b.className = 'card'; b.disabled = !open;
-    b.innerHTML = (p.face ? `<img src="${p.face}" alt="">` : `<span class="ph">${BRO_PH}</span>`) + `<b>${esc(p.name)}</b><small>${open ? esc(p.who || '') : ''}</small>`;
-    if (open) b.onclick = () => { $('people').hidden = true; openChat(id); };
+    const w = p.works[0], ar = w ? w[1] : .75;
+    const b = document.createElement('button'); b.className = 'gal-item'; b.style.setProperty('--ar', ar);
+    b.innerHTML = (w ? `<img src="assets/img/${w[0]}.jpg?v=3" alt="${esc(p.name)}" loading="lazy">` : `<span class="ph">${BRO_PH}</span>`) +
+      `<span class="gal-name">${esc(p.name)} <span class="meet">Познакомиться →</span></span>`;
+    b.onclick = () => openChat(id);
     box.appendChild(b);
   });
 }
@@ -323,7 +364,7 @@ function renderShelf(){
     const n = songs(id).length; const b = document.createElement('button'); b.className = 'rec'; b.disabled = !n;
     b.innerHTML = `<span class="disc"><span class="lbl${img ? '' : ' ph'}">${img ? labelHTML(img) : BRO_PH}</span><span class="pin"></span></span><b>${esc(name)}</b>` +
       (n ? `<small>${n} ${plural(n)}</small>` : `<small class="soon">Скоро</small>`);
-    if (n) b.onclick = () => openDetail(id, true);
+    if (n) b.onclick = () => openDetail(id, false);
     box.appendChild(b);
   });
 }
@@ -344,7 +385,7 @@ function openDetail(id, autoplay){
 }
 function syncPlay(){ const on = !audio.paused; $('dPlay').textContent = on ? '❚❚' : '▶'; $('stage').classList.toggle('playing', on); }
 $('dPlay').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
-['play','pause','ended'].forEach(ev => audio.addEventListener(ev, () => { if (chatWith) syncP(); }));
+['play','pause','ended','timeupdate','loadedmetadata'].forEach(ev => audio.addEventListener(ev, () => { if (chatWith) syncP(); }));
 audio.addEventListener('play', syncPlay); audio.addEventListener('pause', syncPlay); audio.addEventListener('ended', syncPlay);
 function paintSeek(){ const p = audio.duration ? audio.currentTime / audio.duration * 100 : 0; $('dFill').style.width = p + '%'; $('dKnob').style.left = p + '%';
   $('dTime').textContent = fmt(audio.currentTime); $('dDur').textContent = fmt(audio.duration); }
@@ -361,15 +402,23 @@ $('dLyricsBtn').onclick = () => { const l = $('dLyrics'); l.hidden = !l.hidden; 
 $('detailBack').onclick = renderShelf;
 /* мини-плеер: музыка играет дальше, пока ходишь по сайту */
 function miniSync(){
-  const onDetail = !$('music').hidden && !$('detail').hidden;
+  const onDetail = (!$('music').hidden && !$('detail').hidden) || (!$('chat').hidden && personSongOn());
   const show = !!curSong && !onDetail && (!audio.paused || audio.currentTime > 0) && !audio.ended;
-  $('mini').hidden = !show; if (!show || !curId) return;
+  $('mini').classList.toggle('show', show); if (!show || !curId) return;
+  const pr = audio.duration ? audio.currentTime / audio.duration * 100 : 0; $('miniFill').style.width = pr + '%'; $('miniKnob').style.left = pr + '%';
   const row = SHELF.find(r => r[0] === curId) || [curId, (PEOPLE[curId]||{}).name || '', ''];
   if ($('mini').dataset.id !== curId){ $('mini').dataset.id = curId; $('miniLbl').className = 'lbl' + (row[2] ? '' : ' ph'); $('miniLbl').innerHTML = row[2] ? labelHTML(row[2]) : ''; }
   $('miniTitle').textContent = (songs(curId)[0] || {}).title || ''; $('miniName').textContent = row[1];
   $('miniIco').textContent = audio.paused ? '▶' : '❚❚'; $('mini').classList.toggle('playing', !audio.paused);
 }
-['play','pause','ended','emptied'].forEach(ev => audio.addEventListener(ev, miniSync));
+['play','pause','ended','emptied','timeupdate'].forEach(ev => audio.addEventListener(ev, miniSync));
+(() => { const th = $('miniThread'); let drag = false;
+  const at = e => { if (!audio.duration) return; const r = th.getBoundingClientRect(); audio.currentTime = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * audio.duration; miniSync(); };
+  th.addEventListener('pointerdown', e => { drag = true; th.setPointerCapture(e.pointerId); at(e); });
+  th.addEventListener('pointermove', e => { if (drag) at(e); });
+  th.addEventListener('pointerup', () => { drag = false; }); })();
+/* редкая реакция Кипера на музыку */
+audio.addEventListener('play', () => { if (app.classList.contains('mode-talk') && $('music').hidden && $('chat').hidden && !busy && Math.random() < .3) { act('twitch'); showLine('А, эту оставь. Под неё я лучше вспоминаю неправильно.'); } });
 setInterval(miniSync, 700);
 /* пластинки крутит скрипт: на паузе угол замирает, при игре продолжается с того же места */
 let discAngle = 0, lastT = 0;
@@ -383,7 +432,7 @@ let discAngle = 0, lastT = 0;
 $('miniDisc').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
 $('miniOpen').onclick = () => { if (curId) { openPanel('music'); openDetail(curId, false); } };
 $('miniX').onclick = () => { audio.pause(); audio.removeAttribute('src'); audio.load(); curSong = null; curId = null; miniSync(); syncPlay(); };
-function openSong(id){ openPanel('music'); openDetail(id, true); }
+function openSong(id){ openPanel('music'); openDetail(id, false); }
 function renderBook(){
   const ol = $('tocList'); ol.innerHTML = '';
   TITLES.forEach((t, i) => { const li = document.createElement('li'); const b = document.createElement('button'); b.className = 'ch';
