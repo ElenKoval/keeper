@@ -983,3 +983,8 @@ body.reading .vin.show{transform:scale(.8)}
   .talklog::-webkit-scrollbar{width:6px}.talklog::-webkit-scrollbar-thumb{background:#4a4740;border-radius:3px}
   .talklog:empty{display:block;flex:0 0 0}
 }
+
+/* пыль из-под лап Кипера */
+.dust{position:fixed;z-index:3;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(210,200,180,.55),rgba(210,200,180,0) 70%);animation:dust .85s ease-out forwards}
+@keyframes dust{from{transform:translate(0,0) scale(var(--s));opacity:.9}to{transform:translate(var(--dx),-18px) scale(calc(var(--s)*3));opacity:0}}

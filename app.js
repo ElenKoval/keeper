@@ -82,7 +82,7 @@ const N = {
       {act:'look', say:{ru:'Ой, у тебя что-то выпало?',en:'Oh, did you drop something?'}},
       {say:{ru:'Нет?.. А что это там лежит зелёное?',en:'No?.. Then what\'s that green thing lying there?'}},
       {act:'twitch', say:{ru:'О! Это мой друг! Хочешь, он станет и твоим другом? У жуков, знаешь ли, друзей немного…',en:'Oh! That\'s my friend! Want him to be your friend too? Beetles, you know, don\'t have many friends…'}},
-      {act:'look', say:{ru:'Ой. Куда он опять уполз? Ты не видел?',en:'Oh. Where did he crawl off to again? Did you see?'}},
+      {act:'search', say:{ru:'Ой. Куда он опять уполз? Ты не видел?',en:'Oh. Where did he crawl off to again? Did you see?'}},
       {say:{ru:'Ладно. Я его всегда нахожу. Или он меня. Или место находит нас обоих одновременно.',en:'Never mind. I always find him. Or he finds me. Or the place finds us both at once.'}},
       {say:{ru:'Ты вообще знаешь, что жук здесь не всегда был? Или был. Но Дрим заметил его не сразу.',en:'Did you know the beetle wasn\'t always here? Or maybe he was. But Dream didn\'t notice him right away.'}},
       {act:'twitch', say:{ru:'Ты Дрима знаешь? Нет?.. Оууу. Тогда слушай.',en:'Do you know Dream? No?.. Ohhh. Then listen.'}}],
@@ -160,7 +160,39 @@ const lids = [$('lidL'), $('lidR')];
 function setLids(c){ lids.forEach(l => { l.classList.toggle('open', !c); l.style.transform = c ? 'translateY(0px)' : `translateY(-${l.id==='lidL'?400:280}px)`; }); }
 function blink(d){ setLids(true); setTimeout(() => { setLids(false); if (d) setTimeout(() => blink(false), 220); }, 130); }
 (function loop(){ setTimeout(() => { blink(Math.random()<.25); loop(); }, 2600 + Math.random()*4200); })();
-function act(name){ if (!name) return; const c = 'a-'+name; keeper.classList.remove(c); void keeper.offsetWidth; keeper.classList.add(c);
+/* ---------- Кипер скачет: прыжки с пружинкой из одного рисунка ---------- */
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let hopping = false, lastPoke = Date.now();
+function dust(){ const r = keeper.getBoundingClientRect(); for (let i=0;i<5;i++){ const d = document.createElement('i'); d.className = 'dust';
+  d.style.left = (r.left + r.width*(.35 + Math.random()*.3)) + 'px'; d.style.top = (r.bottom - r.height*.1) + 'px';
+  d.style.setProperty('--dx', ((Math.random()-.5)*70).toFixed(0)+'px'); d.style.setProperty('--s', (.6+Math.random()*.8).toFixed(2));
+  document.body.appendChild(d); setTimeout(() => d.remove(), 900); } }
+function hops(x0, dx, n, h, ms){            // n прыжков из x0 на dx; возвращает анимацию
+  const K = [], step = dx/n, r = Math.sign(dx)*7, T = (x,y,a,sx,sy) => `translate(${x}px,${y}px) rotate(${a}deg) scale(${sx},${sy})`;
+  K.push({offset:0, transform:T(x0,0,0,1,1)});
+  for (let i=0;i<n;i++){ const a = x0+step*i, b = a+step, o = i/n, w = 1/n;
+    K.push({offset:o+w*.14, transform:T(a,0,r*.3,1.07,.9), easing:'cubic-bezier(.2,.7,.4,1)'});
+    K.push({offset:o+w*.5, transform:T((a+b)/2,-h,r,.95,1.08), easing:'cubic-bezier(.6,0,.8,.4)'});
+    K.push({offset:o+w*.86, transform:T(b,0,r*.4,1.09,.88)});
+    K.push({offset:o+w, transform:T(b,0,0,1,1)});
+    setTimeout(dust, ms*(o+w*.86)); }
+  keeper.style.transformOrigin = '50% 100%';
+  return keeper.animate(K, {duration:ms, fill:'forwards'});
+}
+const wait = t => new Promise(r => setTimeout(r, t));
+async function runSeq(parts){ if (hopping || RM) return; hopping = true; let x = 0, prev = null;
+  for (const p of parts){ if (p.pause){ await wait(p.pause); if (p.blink) blink(false); continue; }
+    const to = p.off ? (p.off < 0 ? -(keeper.getBoundingClientRect().right + 60) : innerWidth) : (p.to ?? 0);
+    const a = hops(x, to - x, p.n, p.h || 46, p.n * (p.ms || 330)); await a.finished; if (prev) prev.cancel(); prev = a; x = to; }
+  if (prev) prev.cancel(); hopping = false; }
+function search(){ return runSeq([{to:-120,n:2,h:34},{pause:700,blink:1},{to:110,n:3,h:40},{pause:600,blink:1},{to:0,n:2,h:28}]); }
+function dash(say){ return runSeq([{off:-1,n:4,h:60,ms:260},{pause:1400},{to:0,n:4,h:60,ms:280}]).then(() => { if (say && !busy) showLine(say); }); }
+// иногда, если долго тихо, Кипер убегает проверить, не жук ли там
+setInterval(() => { if (document.hidden || hopping || busy || !app.classList.contains('mode-talk') || !$('music').hidden || !$('chat').hidden) return;
+  if (Date.now() - lastPoke > 45000 && Math.random() < .35){ lastPoke = Date.now(); dash({ru:'Показалось, что жук.',en:'Thought I saw the beetle.'}); } }, 5000);
+
+window.keeperHop = {dash, search};
+function act(name){ if (!name) return; if (name==='search') return search(); if (name==='dash') return dash(); const c = 'a-'+name; keeper.classList.remove(c); void keeper.offsetWidth; keeper.classList.add(c);
   setTimeout(() => keeper.classList.remove(c), 2600); if (name==='look'||name==='twitch') blink(false); }
 const BF = [0,1,2,3].map(i => `assets/img/bug${i}.png`); let fr = 0;
 setInterval(() => { fr = (fr+1)%4; document.querySelectorAll('.bugframe').forEach(b => b.setAttribute('href', BF[fr])); const w = $('walkBug'); if (!w.hidden) w.src = BF[fr]; }, 110);
@@ -174,7 +206,7 @@ const POKES_RU = ['Тсс. Не шевелись. Ты стоишь на моё�
 const POKES_EN = ['Shh. Don\'t move. You\'re standing on my yesterday. There. Now you can.','I remember everything. Just not in order.','Have you seen a beetle? Small, dark. Always going somewhere.','Legs are a terrible thing. The more you have, the harder it is to pretend you\'re standing still.','Good. Good.'];
 function swayNote(){ const n = $('note'); n.classList.remove('swing'); void n.offsetWidth; n.classList.add('swing'); }
 setInterval(() => { if (Math.random() < .35) swayNote(); }, 14000);
-keeper.addEventListener('click', () => { swayNote(); if (app.classList.contains('mode-read')) return; act('twitch'); if (!busy) { const P = LANG === 'en' ? POKES_EN : POKES_RU; showLine(P[Math.floor(Math.random()*P.length)]); }; });
+keeper.addEventListener('click', () => { swayNote(); lastPoke = Date.now(); if (app.classList.contains('mode-read') || hopping) return; if (Math.random() < .2) return dash({ru:'Нет. Не он.',en:'No. Not him.'}); act('twitch'); if (!busy) { const P = LANG === 'en' ? POKES_EN : POKES_RU; showLine(P[Math.floor(Math.random()*P.length)]); }; });
 
 /* ---------- реплики ---------- */
 let busy = false, timer = null, token = 0;
