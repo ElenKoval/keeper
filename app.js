@@ -270,16 +270,22 @@ $('pPlay').onclick = () => { const s = songs(chatWith)[0]; if (!s) return; if (c
   audio.paused ? audio.play().catch(() => {}) : audio.pause(); if (!S.heard.includes(chatWith)) { S.heard.push(chatWith); save(); } };
 function addMsg(cls, text){ const d = document.createElement('div'); d.className = 'msg ' + cls; d.textContent = text; $('chatLog').appendChild(d); d.scrollIntoView({block:'end'}); return d; }
 async function sendChat(m){
-  const id = chatWith; addMsg('me', m); const w = addMsg('them wait', PEOPLE[id].name + ' думает…');
-  const slow = setTimeout(() => { w.textContent = PEOPLE[id].name + ' думает… (сервер просыпается, это бывает до минуты)'; }, 6000);
+  const id = chatWith; addMsg('me', m); const w = addMsg('them wait', '…');
   const h = S.chats[id] || (S.chats[id] = []);
   try{ const a = await ask(id, m, h); h.push({role:'user', text:m}, {role:'model', text:a}); S.chats[id] = h.slice(-40); save(); w.className = 'msg them'; w.textContent = a; }
-  catch(e){ w.className = 'msg them wait'; w.textContent = 'Не дозвалась. Попробуй ещё раз.'; }
-  finally{ clearTimeout(slow); w.scrollIntoView({block:'end'}); }
+  catch(e){ w.className = 'msg them wait'; w.textContent = 'Тишина.'; }
+  finally{ w.scrollIntoView({block:'end'}); }
 }
 $('chatForm').addEventListener('submit', e => { e.preventDefault(); const i = $('chatInput'); const m = i.value.trim(); if (!m) return; i.value = ''; sendChat(m); });
 $('chatBack').onclick = () => { $('chat').hidden = true; openPanel('people'); };
 $('personHome').onclick = () => $('homeBtn').click();
+let clearArmed = false, clearT;
+$('clearChat').onclick = () => {
+  const b = $('clearChat');
+  if (!clearArmed){ clearArmed = true; b.textContent = 'Точно очистить?'; clearT = setTimeout(() => { clearArmed = false; b.textContent = 'Очистить чат'; }, 3000); return; }
+  clearTimeout(clearT); clearArmed = false; b.textContent = 'Очистить чат';
+  S.chats[chatWith] = []; save(); $('chatLog').innerHTML = ''; addMsg('them hello', HELLO[chatWith] || 'Привет.');
+};
 
 /* разделы: История · Персонажи · Музыка · Книга */
 const PANELS = ['people','music','toc'];
@@ -301,7 +307,7 @@ function renderPeople(){
   Object.entries(PEOPLE).forEach(([id, p]) => {
     const open = S.read >= p.need;
     const b = document.createElement('button'); b.className = 'card'; b.disabled = !open;
-    b.innerHTML = (p.face ? `<img src="${p.face}" alt="">` : `<span class="ph">${BRO_PH}</span>`) + `<b>${esc(p.name)}</b><small>${open ? esc(p.who || 'поговорить') : 'встретишь дальше в истории'}</small>`;
+    b.innerHTML = (p.face ? `<img src="${p.face}" alt="">` : `<span class="ph">${BRO_PH}</span>`) + `<b>${esc(p.name)}</b><small>${open ? esc(p.who || '') : ''}</small>`;
     if (open) b.onclick = () => { $('people').hidden = true; openChat(id); };
     box.appendChild(b);
   });

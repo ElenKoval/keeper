@@ -269,3 +269,5 @@ button,input{font:inherit;color:inherit}
 @media (max-width:760px){.person-chat{max-height:none;min-height:300px}}
 .person-chat .chat-log{flex:1}
 .msg.hello{font-style:italic}
+.chat-top{display:flex;justify-content:flex-end;padding:8px 14px 0}
+.chat-top .linkish{font-size:.85rem}
