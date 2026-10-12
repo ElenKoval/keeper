@@ -285,3 +285,4 @@ button,input{font:inherit;color:inherit}
 .foot-copy{margin-top:auto;padding-top:20px;border-top:1px solid var(--faint);display:flex;flex-direction:column;gap:6px;font-size:.78rem;color:var(--dim)}
 @media (min-width:761px){.foot-copy{display:none}}
 @media (max-width:760px){.foot{display:none}}
+.top{justify-content:flex-end}
