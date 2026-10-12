@@ -240,7 +240,7 @@ const IMG = k => `assets/img/${k}.jpg?v=3`;
 function startRead(ch, then){
   const c = CH(ch); app.className = 'mode-read'; document.body.classList.add('reading');
   $('chapTitle').textContent = c.title; textEl.innerHTML = ''; pages.scrollTop = 0;
-  R = {ch, then, i:0, frame:-1}; setFrame(0); $('nextCh').hidden = true; $('moreBtn').hidden = false; $('allBtn').hidden = false; $('moreBtn').textContent = tr(UI.more); $('allBtn').textContent = tr(UI.all);
+  R = {ch, then, i:0, frame:-1}; setFrame(0); $('nextCh').hidden = true; document.querySelector('.readnav').classList.remove('done'); $('moreBtn').hidden = false; $('allBtn').hidden = false; $('moreBtn').textContent = tr(UI.more); $('allBtn').textContent = tr(UI.all);
   revealMore();
 }
 function setFrame(k){
@@ -252,22 +252,30 @@ function setFrame(k){
 function addPara(){
   const c = CH(R.ch); if (R.i >= c.paras.length) return false;
   const t = c.paras[R.i];
-  FRAMES[R.ch].forEach((f, k) => { if (k && FIDX[R.ch][k] === R.i) setFrame(k); });
-  const p = document.createElement('p'); p.textContent = t; textEl.appendChild(p); R.i++; return true;
+  let fk = -1; FRAMES[R.ch].forEach((f, k) => { if (FIDX[R.ch][k] === R.i) fk = k; });
+  const p = document.createElement('p'); p.textContent = t; if (fk >= 0) p.dataset.frame = fk; textEl.appendChild(p); R.i++; return true;
 }
 function revealMore(){
   let n = 0; while (n < 260 && addPara()) n += CH(R.ch).paras[R.i-1].length;
-  const last = textEl.lastElementChild; if (last) setTimeout(() => last.scrollIntoView({behavior:'smooth', block:'end'}), 60);
+  const last = textEl.lastElementChild; if (last) setTimeout(() => { last.scrollIntoView({behavior:'smooth', block:'end'}); setTimeout(syncFrame, 500); }, 60);
   if (R.i >= CH(R.ch).paras.length) chapterDone();
 }
 $('moreBtn').onclick = () => { if (R.i >= CH(R.ch).paras.length) return endRead(); revealMore(); };
-$('allBtn').onclick = () => { while (addPara()); chapterDone(); };
+$('allBtn').onclick = () => { while (addPara()); chapterDone(); syncFrame(); };
+/* рисунок меняется по тому абзацу, который сейчас читаешь */
+function syncFrame(){
+  if (!R) return; const mid = pages.getBoundingClientRect().top + pages.clientHeight * .45; let k = 0;
+  textEl.querySelectorAll('p[data-frame]').forEach(p => { if (p.getBoundingClientRect().top < mid) k = +p.dataset.frame; });
+  setFrame(k);
+}
+let sfT; pages.addEventListener('scroll', () => { clearTimeout(sfT); sfT = setTimeout(syncFrame, 120); }, {passive:true});
 function chapterDone(){
   $('moreBtn').textContent = tr(UI.back); $('allBtn').hidden = true;
   S.read = Math.max(S.read, R.ch + 1); save();
   const nx = R.ch + 1, b = $('nextCh');
   b.hidden = nx >= window.CHAPTERS.length;
-  if (!b.hidden) b.textContent = (LANG === 'en' ? 'Next chapter: ' : 'Следующая глава: ') + CH(nx).title + ' →';
+  if (!b.hidden) b.innerHTML = `<small>${LANG === 'en' ? 'Next chapter' : 'Следующая глава'}</small><span>${esc(CH(nx).title)} →</span>`;
+  document.querySelector('.readnav').classList.add('done');
 }
 $('nextCh').onclick = () => { const nx = R.ch + 1; token++; startRead(nx, null); pages.scrollTop = 0; };
 document.addEventListener('keydown', e => { if (app.classList.contains('mode-read') && (e.key===' '||e.key==='ArrowRight') && document.activeElement.tagName!=='INPUT'){ e.preventDefault(); $('moreBtn').click(); } });
