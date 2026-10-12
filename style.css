@@ -614,3 +614,19 @@ body.reading .vin.show{transform:scale(.8)}
 .person .chat-form{margin-top:10px}
 @media (max-width:760px){.talklog{max-height:none}}
 .person-art img{width:auto;max-width:100%;height:auto}
+/* книга: закреплённое название главы, стрелки назад/вперёд, спокойные рисунки */
+.chap-bar{position:sticky;top:-1px;z-index:3;display:flex;align-items:center;gap:14px;background:linear-gradient(#0a0a0a 82%,transparent);padding:14px 0 16px;margin:0 0 6px;max-width:36rem}
+.chap-head{flex:1;min-width:0}
+.chap-head small{display:block;font-family:'PT Serif',Georgia,serif;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:#8f8f8f}
+.chap-bar .chap{margin:2px 0 0;font-size:clamp(1.5rem,3vw,2.2rem)}
+.chap-nav{flex:none;width:42px;height:42px;border-radius:50%;border:1px solid #444;background:none;color:#e6e6e6;font-size:1.15rem;cursor:pointer}
+.chap-nav:hover:not(:disabled){border-color:#ddd;color:#fff}
+.chap-nav:disabled{opacity:.25;cursor:default}
+.pages{padding-top:60px}
+.art img{animation:none!important;transform:none!important;transition:opacity 1.6s ease}
+.bigx{margin-left:auto;background:none;border:0;color:#cfcfcf;font-size:2.6rem;line-height:1;cursor:pointer;padding:0 4px;font-weight:300}
+.bigx:hover{color:#fff}
+@media (max-width:760px){.pages{padding-top:6px}.chap-nav{width:36px;height:36px}}
+@media (min-width:761px){.pages{padding-top:0}.chap-bar{top:0;padding-top:64px}}
+.chap-bar{margin-left:-2px;padding-right:4px}
+@media (min-width:761px){.read .art{margin-top:56px}}

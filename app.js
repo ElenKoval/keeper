@@ -59,6 +59,7 @@ const FRAMES = {
 /* номера абзацев, где меняются рисунки (абзацы в русской и английской версиях совпадают) */
 const DEFAULT_ART = ['dryad','weaver','keeper_paper','liora','cat','forest','weaver_forest','pak','cat','cat','shiny','crystal','liora_dead','weaver_symbol'];
 for (let c = 0; c < window.CHAPTERS.length; c++) if (!FRAMES[c]) FRAMES[c] = [['', DEFAULT_ART[c] || 'dryad', 'pan-in']];
+Object.keys(FRAMES).forEach(c => { const seen = new Set(); FRAMES[c] = FRAMES[c].filter(f => { if (seen.has(f[1])) return false; seen.add(f[1]); return true; }); });
 const FIDX = {}; Object.keys(FRAMES).forEach(c => { const P = window.CHAPTERS[c].paras; FIDX[c] = FRAMES[c].map(f => f[0] ? P.findIndex(p => p.startsWith(f[0])) : 0); });
 
 /* сцены */
@@ -239,14 +240,15 @@ let R = null;
 const IMG = k => `assets/img/${k}.jpg?v=3`;
 function startRead(ch, then){
   const c = CH(ch); app.className = 'mode-read'; document.body.classList.add('reading');
-  $('chapTitle').textContent = c.title; textEl.innerHTML = ''; pages.scrollTop = 0;
+  $('chapTitle').textContent = c.title; $('chapNum').textContent = ch === 0 ? (LANG === 'en' ? 'Prologue' : 'Пролог') : (LANG === 'en' ? 'Chapter ' : 'Глава ') + ch;
+  $('prevCh').disabled = ch === 0; $('nextChTop').disabled = ch >= window.CHAPTERS.length - 1; textEl.innerHTML = ''; pages.scrollTop = 0;
   R = {ch, then, i:0, frame:-1}; setFrame(0); $('nextCh').hidden = true; document.querySelector('.readnav').classList.remove('done'); $('moreBtn').hidden = false; $('allBtn').hidden = false; $('moreBtn').textContent = tr(UI.more); $('allBtn').textContent = tr(UI.all);
   revealMore();
 }
 function setFrame(k){
   const f = FRAMES[R.ch][k]; if (!f || k === R.frame) return; R.frame = k;
   const a = $('artImg'), b = $('artImg2'); const cur = a.classList.contains('next') ? b : a, nxt = cur === a ? b : a;
-  nxt.src = IMG(f[1]); nxt.className = f[2]; requestAnimationFrame(() => { nxt.classList.remove('next'); cur.classList.add('next'); });
+  nxt.src = IMG(f[1]); nxt.className = ''; requestAnimationFrame(() => { nxt.classList.remove('next'); cur.classList.add('next'); });
   if (f[3]) act(f[3]);
 }
 function addPara(){
@@ -277,7 +279,10 @@ function chapterDone(){
   if (!b.hidden) b.innerHTML = `<small>${LANG === 'en' ? 'Next chapter' : 'Следующая глава'}</small><span>${esc(CH(nx).title)} →</span>`;
   document.querySelector('.readnav').classList.add('done');
 }
-$('nextCh').onclick = () => { const nx = R.ch + 1; token++; startRead(nx, null); pages.scrollTop = 0; };
+function gotoCh(n){ if (!R || n < 0 || n >= window.CHAPTERS.length) return; token++; startRead(n, null); pages.scrollTop = 0; }
+$('nextCh').onclick = () => gotoCh(R.ch + 1);
+$('nextChTop').onclick = () => gotoCh(R.ch + 1);
+$('prevCh').onclick = () => gotoCh(R.ch - 1);
 document.addEventListener('keydown', e => { if (app.classList.contains('mode-read') && (e.key===' '||e.key==='ArrowRight') && document.activeElement.tagName!=='INPUT'){ e.preventDefault(); $('moreBtn').click(); } });
 function endRead(){ S.read = Math.max(S.read, R.ch + 1); save(); const then = R.then; R = null; if (then) go(then); else go(S.resume || 'later'); }
 
@@ -497,8 +502,8 @@ function openSong(id){ openPanel('music'); openDetail(id, false); }
 function renderBook(){
   const ol = $('tocList'); ol.innerHTML = '';
   titles().forEach((t, i) => { const li = document.createElement('li'); const b = document.createElement('button'); b.className = 'ch';
-    const have = i < window.CHAPTERS.length, ok = have && i <= S.read; b.disabled = !ok;
-    b.innerHTML = `<span class="n">${i===0?'·':i}</span><span>${esc(t)}</span>` + (!have ? ` <span class="n">${tr(UI.soonLow)}</span>` : (i > S.read ? ` <span class="n">${tr(UI.early)}</span>` : ''));
+    const have = i < window.CHAPTERS.length, ok = have; b.disabled = !ok;
+    b.innerHTML = `<span class="n">${i===0?(LANG==='en'?'Prologue':'Пролог'):i}</span><span>${esc(t)}</span>` + (!have ? ` <span class="n">${tr(UI.soonLow)}</span>` : '');
     b.onclick = () => { closePanels(); token++; startRead(i, null); }; li.appendChild(b); ol.appendChild(li); });
 }
 
