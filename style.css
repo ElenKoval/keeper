@@ -953,3 +953,7 @@ body.reading .vin.show{transform:scale(.8)}
 .margins{margin-top:8px}
 @media (max-width:760px){.person-right{padding:20px 16px 18px 26px}.sheetbg .holes{left:6px}}
 @media (min-width:761px){.person-right{min-height:calc(100vh - 110px)}}
+/* лист чуть светлее */
+.sheetbg{background:linear-gradient(175deg,rgba(236,230,216,.13),rgba(236,230,216,.09) 60%,rgba(236,230,216,.11))}
+.sheetbg .ghost{opacity:.09}
+.sheetbg .holes{background:radial-gradient(circle,#0a0a0a 0 3.5px,rgba(236,230,216,.2) 4.5px,transparent 5px) 0 0/9px 26px repeat-y}

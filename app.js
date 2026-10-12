@@ -331,7 +331,7 @@ function openChat(id, first){
     b.innerHTML = `<img src="assets/img/${w[0]}.jpg?v=4" alt="">`; b.onclick = () => showWork(i); th.appendChild(b); });
   $('chatName').textContent = tr(p.name);
   renderPersonSong();
-  const say = SAY[id] || []; $('pSay').hidden = !say.length;
+  const say = []; $('pSay').hidden = !say.length;
   $('pSay').innerHTML = say.map((x, k) => `<p class="mnote" style="--r:${[-1.5,1,-.5,1.5][k % 4]}deg"><button class="mwho" data-id="${x.who}">${esc(nm(x.who))}:</button> ${esc(tr(x))}</p>`).join('');
   $('pSay').querySelectorAll('.mwho').forEach(b => b.onclick = () => openChat(b.dataset.id));
   const sc = SONGCARD[id]; $('pCard').hidden = !sc; $('pCardAside').hidden = !sc;
