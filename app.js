@@ -365,12 +365,21 @@ function miniSync(){
   const show = !!curSong && !onDetail && (!audio.paused || audio.currentTime > 0) && !audio.ended;
   $('mini').hidden = !show; if (!show || !curId) return;
   const row = SHELF.find(r => r[0] === curId) || [curId, (PEOPLE[curId]||{}).name || '', ''];
-  $('miniLbl').className = 'lbl' + (row[2] ? '' : ' ph'); $('miniLbl').innerHTML = row[2] ? labelHTML(row[2]) : '';
+  if ($('mini').dataset.id !== curId){ $('mini').dataset.id = curId; $('miniLbl').className = 'lbl' + (row[2] ? '' : ' ph'); $('miniLbl').innerHTML = row[2] ? labelHTML(row[2]) : ''; }
   $('miniTitle').textContent = (songs(curId)[0] || {}).title || ''; $('miniName').textContent = row[1];
   $('miniIco').textContent = audio.paused ? '▶' : '❚❚'; $('mini').classList.toggle('playing', !audio.paused);
 }
 ['play','pause','ended','emptied'].forEach(ev => audio.addEventListener(ev, miniSync));
 setInterval(miniSync, 700);
+/* пластинки крутит скрипт: на паузе угол замирает, при игре продолжается с того же места */
+let discAngle = 0, lastT = 0;
+(function spinLoop(t){
+  if (lastT && !audio.paused) discAngle = (discAngle + (t - lastT) * 360 / 14000) % 360;
+  lastT = t;
+  $('dLabel').style.transform = `rotate(${discAngle}deg)`;   // крутится наклейка, блик на пластинке стоит, как в жизни
+  $('miniLbl').style.transform = `rotate(${discAngle}deg)`;
+  requestAnimationFrame(spinLoop);
+})();
 $('miniDisc').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
 $('miniOpen').onclick = () => { if (curId) { openPanel('music'); openDetail(curId, false); } };
 $('miniX').onclick = () => { audio.pause(); audio.removeAttribute('src'); audio.load(); curSong = null; curId = null; miniSync(); syncPlay(); };
