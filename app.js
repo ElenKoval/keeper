@@ -464,6 +464,7 @@ function renderCrate(){
   SHELF.filter(([id]) => songs(id).length).forEach(([id], k) => { const has = true, cur = id === detailId;
     const b = document.createElement('button'); b.className = 'cs' + (has ? '' : ' empty') + (cur ? ' out' : '');
     b.style.setProperty('--tilt', ((k * 37) % 7 - 3) * .6 + 'deg'); b.disabled = !has || cur;
+    const sl = SLEEVES[id]; if (sl){ b.classList.add('cover', 'fx-' + (sl.fx || 'none')); b.style.setProperty('--cov', sl.sym ? `url(assets/img/${sl.sym}.png?v=1)` : `url(assets/img/${sl.img}.jpg?v=4)`); }
     b.innerHTML = `<span>${esc(nm(id))}</span>`; b.title = has ? nm(id) : tr(UI.soonLow);
     if (has && !cur) b.onclick = () => { b.classList.add('pull'); setTimeout(() => openDetail(id, false), 260); };
     box.appendChild(b); });
