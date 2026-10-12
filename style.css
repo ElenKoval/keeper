@@ -827,3 +827,6 @@ body.reading .vin.show{transform:scale(.8)}
 .shelf-back{position:relative}
 .bb-t::before{position:static;margin:0 0 0 -2px}
 .bb-t::before{display:none}
+/* вкладыш с текстом чуть уже конверта */
+.sheet,.sheet.out{left:calc(var(--s) * .04)!important;width:calc(var(--s) * .92)!important}
+@media (max-width:760px){.sheet,.sheet.out{left:calc(var(--s) * .04)!important;width:calc(var(--s) * .92)!important}}
