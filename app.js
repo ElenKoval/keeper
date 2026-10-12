@@ -57,6 +57,8 @@ const FRAMES = {
 };
 
 /* номера абзацев, где меняются рисунки (абзацы в русской и английской версиях совпадают) */
+const DEFAULT_ART = ['dryad','weaver','keeper_paper','liora','cat','forest','weaver_forest','pak','cat','cat','shiny','crystal','liora_dead','weaver_symbol'];
+for (let c = 0; c < window.CHAPTERS.length; c++) if (!FRAMES[c]) FRAMES[c] = [['', DEFAULT_ART[c] || 'dryad', 'pan-in']];
 const FIDX = {}; Object.keys(FRAMES).forEach(c => { const P = window.CHAPTERS[c].paras; FIDX[c] = FRAMES[c].map(f => f[0] ? P.findIndex(p => p.startsWith(f[0])) : 0); });
 
 /* сцены */
@@ -238,7 +240,7 @@ const IMG = k => `assets/img/${k}.jpg?v=3`;
 function startRead(ch, then){
   const c = CH(ch); app.className = 'mode-read'; document.body.classList.add('reading');
   $('chapTitle').textContent = c.title; textEl.innerHTML = ''; pages.scrollTop = 0;
-  R = {ch, then, i:0, frame:-1}; setFrame(0); $('moreBtn').hidden = false; $('allBtn').hidden = false; $('moreBtn').textContent = tr(UI.more); $('allBtn').textContent = tr(UI.all);
+  R = {ch, then, i:0, frame:-1}; setFrame(0); $('nextCh').hidden = true; $('moreBtn').hidden = false; $('allBtn').hidden = false; $('moreBtn').textContent = tr(UI.more); $('allBtn').textContent = tr(UI.all);
   revealMore();
 }
 function setFrame(k){
@@ -256,10 +258,18 @@ function addPara(){
 function revealMore(){
   let n = 0; while (n < 260 && addPara()) n += CH(R.ch).paras[R.i-1].length;
   const last = textEl.lastElementChild; if (last) setTimeout(() => last.scrollIntoView({behavior:'smooth', block:'end'}), 60);
-  if (R.i >= CH(R.ch).paras.length){ $('moreBtn').textContent = tr(UI.back); $('allBtn').hidden = true; }
+  if (R.i >= CH(R.ch).paras.length) chapterDone();
 }
 $('moreBtn').onclick = () => { if (R.i >= CH(R.ch).paras.length) return endRead(); revealMore(); };
-$('allBtn').onclick = () => { while (addPara()); $('moreBtn').textContent = tr(UI.back); $('allBtn').hidden = true; };
+$('allBtn').onclick = () => { while (addPara()); chapterDone(); };
+function chapterDone(){
+  $('moreBtn').textContent = tr(UI.back); $('allBtn').hidden = true;
+  S.read = Math.max(S.read, R.ch + 1); save();
+  const nx = R.ch + 1, b = $('nextCh');
+  b.hidden = nx >= window.CHAPTERS.length;
+  if (!b.hidden) b.textContent = (LANG === 'en' ? 'Next chapter: ' : 'Следующая глава: ') + CH(nx).title + ' →';
+}
+$('nextCh').onclick = () => { const nx = R.ch + 1; token++; startRead(nx, null); pages.scrollTop = 0; };
 document.addEventListener('keydown', e => { if (app.classList.contains('mode-read') && (e.key===' '||e.key==='ArrowRight') && document.activeElement.tagName!=='INPUT'){ e.preventDefault(); $('moreBtn').click(); } });
 function endRead(){ S.read = Math.max(S.read, R.ch + 1); save(); const then = R.then; R = null; if (then) go(then); else go(S.resume || 'later'); }
 
@@ -397,6 +407,13 @@ function renderShelf(){
 const audio = $('player'); let curSong = null, curId = null;
 function fmt(s){ s = Math.floor(s || 0); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
 let detailId = null;
+const BACKNOTE = {
+  cat:{ru:'Двести сорок семь. Четыре за водонапорной башней не видно. Я всё равно их считаю.',en:'Two hundred forty-seven. Four are hidden behind the water tower. I count them anyway.'},
+  weaver:{ru:'Лужи цветут. Никто не предупреждал. Теперь ты знаешь.',en:'Puddles bloom. Nobody warned me. Now you know.'},
+  crystal:{ru:'Слушай медленно. Я настраивал долго.',en:'Listen slowly. I took a long time to tune it.'},
+  keeper:{ru:'Если увидишь жука, не говори ему, что я спрашивал.',en:"If you see the beetle, don't tell him I asked."},
+};
+const WITH = {cat:{ru:'с Котом',en:'Cat'},weaver:{ru:'с Вивер',en:'Weaver'},crystal:{ru:'с Кристаллом',en:'Crystal'},keeper:{ru:'с Кипером',en:'Kiper'},dream:{ru:'с Дримом',en:'Dream'},liora:{ru:'с Лиорой',en:'Liora'},drpak:{ru:'с Паком',en:'Pak'},shiny:{ru:'с Шайни',en:'Shiny'},shiny_bro:{ru:'с Братом',en:"Shiny's Brother"},talk_mushroom:{ru:'с Грибом',en:'Mushroom'},angry_forest:{ru:'со Злым Лесом',en:'the Angry Forest'}};
 function openDetail(id, autoplay){
   detailId = id;
   const row = SHELF.find(r => r[0] === id); const list = songs(id); const s = list[0];
@@ -404,7 +421,12 @@ function openDetail(id, autoplay){
   $('dLabel').className = 'lbl' + (row[2] ? '' : ' ph'); $('dLabel').innerHTML = row[2] ? labelHTML(row[2]) : tr(UI.bro);
   $('dName').textContent = nm(id) || row[1]; $('dSong').textContent = s ? s.title : '';
   $('dEmpty').hidden = !!s; $('dEmpty').textContent = tr(UI.songSoon); $('dPlayer').hidden = !s;
-  $('dLyricsBtn').hidden = !(s && s.lyrics); $('dLyrics').hidden = true; $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('dLyricsBtn').setAttribute('aria-expanded','false');
+  $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('dLyricsBtn').setAttribute('aria-expanded','false'); $('record').style.removeProperty('--sheet');
+  $('sleeve').classList.remove('flipped');
+  const w = (PEOPLE[id] || {}).works || []; $('dBackArt').src = w.length ? `assets/img/${w[0][0]}.jpg?v=3` : ''; $('dBackArt').hidden = !w.length;
+  $('dBackNote').textContent = tr(BACKNOTE[id]) || '';
+  const canTalk = PEOPLE[id] && !PEOPLE[id].sleeps; $('dTalk').hidden = !canTalk;
+  $('dTalk').textContent = (LANG === 'en' ? 'Talk to ' : 'Поговорить ') + tr(WITH[id] || {ru:nm(id),en:nm(id)});
   if (s && curSong !== s.file){ audio.src = s.file; curSong = s.file; }
   if (s) curId = id;
   if (s && autoplay) audio.play().catch(() => {});
@@ -426,7 +448,10 @@ audio.addEventListener('timeupdate', paintSeek); audio.addEventListener('loadedm
 audio.volume = .8;
 $('dVol').oninput = e => { audio.volume = e.target.value / 100; audio.muted = false; $('dWave').style.opacity = audio.volume ? 1 : .2; };
 $('dMute').onclick = () => { audio.muted = !audio.muted; $('dWave').style.opacity = audio.muted ? .2 : 1; };
-$('dLyricsBtn').onclick = () => { const l = $('dLyrics'); l.hidden = !l.hidden; $('dLyricsBtn').setAttribute('aria-expanded', String(!l.hidden)); };
+$('dLyricsBtn').onclick = () => { const sh = $('sheet'), on = !sh.classList.contains('out'); sh.classList.toggle('out', on); $('dLyricsBtn').setAttribute('aria-expanded', String(on));
+  $('record').style.setProperty('--sheet', on ? Math.min($('dLyrics').scrollHeight + 40, innerHeight * .45) + 'px' : ''); if (!on) $('record').style.removeProperty('--sheet'); };
+$('dFlip').onclick = $('dFlipBack').onclick = () => $('sleeve').classList.toggle('flipped');
+$('dTalk').onclick = () => { const id = detailId; $('music').hidden = true; openChat(id); };
 $('detailBack').onclick = renderShelf;
 /* мини-плеер: музыка играет дальше, пока ходишь по сайту */
 function miniSync(){
@@ -477,7 +502,8 @@ const STATIC = {
   nPeople:{ru:'Рисунки и персонажи',en:'Drawings & characters'}, nMusic:{ru:'Включить музыку',en:'Play some music'}, nBook:{ru:'Открыть книгу',en:'Open the book'},
   doodle:{ru:'жук — ?',en:'beetle — ?'}, toKeeperArrow:{ru:'← К Киперу',en:'← To Kiper'}, toKeeper:{ru:'К Киперу',en:'To Kiper'},
   soundTitle:{ru:'Звук мира',en:'The Sound of the World'}, allChars:{ru:'← Все персонажи',en:'← All characters'}, lyrics:{ru:'Текст песни',en:'Lyrics'},
-  allDrawings:{ru:'← Все рисунки',en:'← All drawings'}, expand:UI.expand, restartChat:{ru:'Начать разговор заново',en:'Start the conversation over'},
+  allDrawings:{ru:'← Все рисунки',en:'← All drawings'}, expand:UI.expand, allRecords:{ru:'Все записи',en:'All records'}, flip:{ru:'Перевернуть ↻',en:'Turn over ↻'},
+  restartChat:{ru:'Начать разговор заново',en:'Start the conversation over'},
   write:{ru:'Напиши…',en:'Write…'}, close:{ru:'Закрыть',en:'Close'}, album:{ru:'Из альбома',en:'From the album'}, book:{ru:'Книга',en:'The Book'},
   bookLead:{ru:'Ну если ты настаиваешь на порядке…',en:'Well, if you insist on order…'}, reset:{ru:'Начать всё сначала',en:'Start everything over'},
   footBrand:{ru:'Мир Дриады · <em>Часть первая</em>',en:"The Dryad's World · <em>Part One</em>"}, about:{ru:'Об авторе и мире',en:'About the author & world'},
@@ -499,7 +525,7 @@ $('langBtn').onclick = () => {
   if (!$('music').hidden){ if (!$('detail').hidden && detailId) openDetail(detailId, false); else renderShelf(); }
   if (!$('chat').hidden && chatWith) openChat(chatWith);
   if ($('mini').dataset) { $('mini').dataset.id = ''; miniSync(); }
-  if (R){ const i = R.i, ch = R.ch, then = R.then; token++; startRead(ch, then); while (R.i < i && addPara()); if (R.i >= CH(ch).paras.length){ $('moreBtn').textContent = tr(UI.back); $('allBtn').hidden = true; } }
+  if (R){ const i = R.i, ch = R.ch, then = R.then; token++; startRead(ch, then); while (R.i < i && addPara()); if (R.i >= CH(ch).paras.length) chapterDone(); }
   else if (S.node && N[S.node] && N[S.node].read === undefined) go(S.node);
 };
 applyStatic();

@@ -7,7 +7,7 @@
 <meta name="description" content="Мир Дриады. Кипер помнит всё, только не по порядку. Садись, он расскажет.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alice&family=Caveat:wght@400;600&family=PT+Serif:ital@0;1&family=Forum&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=27">
+<link rel="stylesheet" href="style.css?v=31">
 </head>
 <body>
 <svg id="roots" aria-hidden="true"></svg>
@@ -36,6 +36,7 @@
       <div class="readnav">
         <button class="more" id="moreBtn">Дальше</button>
         <button class="linkish" id="allBtn">Показать главу целиком</button>
+        <button class="nextch" id="nextCh" hidden></button>
       </div>
     </div>
   </section>
@@ -147,25 +148,37 @@
   <h2 class="sound-title" data-i18n="soundTitle">Звук мира</h2>
   <div class="shelf" id="shelf"></div>
   <div class="detail" id="detail" hidden>
-    <button class="detail-back" id="detailBack" data-i18n="allChars">← Все персонажи</button>
     <div class="stage" id="stage">
-      <div class="disc big"><span class="grooves"></span><div class="lbl" id="dLabel"></div><span class="pin"></span></div>
-      <div class="meta">
-        <p class="d-name" id="dName"></p>
-        <h3 class="d-song" id="dSong"></h3>
-        <p class="d-empty" id="dEmpty" hidden></p>
-        <button class="lyr-btn" id="dLyricsBtn" aria-expanded="false" data-i18n="lyrics">Текст песни</button>
-        <pre class="lyrics" id="dLyrics" hidden></pre>
+      <div class="record" id="record">
+        <button class="tab" id="detailBack" data-i18n="allRecords">Все записи</button>
+        <div class="sheet" id="sheet"><button class="sheet-edge" id="dLyricsBtn" aria-expanded="false" data-i18n="lyrics">Текст песни</button><pre class="sheet-text" id="dLyrics"></pre></div>
+        <div class="disc big"><span class="grooves"></span><div class="lbl" id="dLabel"></div><span class="pin"></span></div>
+        <div class="sleeve" id="sleeve">
+          <div class="face front">
+            <span class="scuffs" aria-hidden="true"></span>
+            <svg class="pencil" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M8 86 C20 83 30 88 44 85" /><path d="M78 10 l8 6 M80 18 l6 -9"/><path d="M12 14 C14 22 11 28 14 34"/></svg>
+            <h3 class="d-song" id="dSong"></h3>
+            <p class="d-name" id="dName"></p>
+            <p class="d-empty" id="dEmpty" hidden></p>
+            <button class="talkto" id="dTalk"></button>
+            <button class="flip" id="dFlip" data-i18n="flip">Перевернуть ↻</button>
+          </div>
+          <div class="face back">
+            <img id="dBackArt" alt="">
+            <p class="backnote" id="dBackNote"></p>
+            <button class="flip" id="dFlipBack" data-i18n="flip">Перевернуть ↻</button>
+          </div>
+        </div>
       </div>
       <div class="player" id="dPlayer">
-        <button class="play" id="dPlay" aria-label="Играть">▶</button>
+        <button class="play" id="dPlay" aria-label="Play">▶</button>
         <div class="seek">
           <div class="thread" id="dThread"><span class="track"></span><span class="fill" id="dFill"></span><span class="knob" id="dKnob"></span></div>
           <div class="times"><span id="dTime">0:00</span><span id="dDur">0:00</span></div>
         </div>
         <div class="vol">
-          <button class="mute" id="dMute" aria-label="Звук"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path id="dWave" d="M16 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-          <input type="range" id="dVol" min="0" max="100" value="80" aria-label="Громкость">
+          <button class="mute" id="dMute" aria-label="Sound"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path id="dWave" d="M16 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+          <input type="range" id="dVol" min="0" max="100" value="80" aria-label="Volume">
         </div>
       </div>
     </div>
@@ -196,8 +209,8 @@
   <span class="foot-legal" data-i18n="legal">© 2026 sunnyChimera. Тексты и рисунки. Все права защищены · Персонажи отвечают с помощью ИИ</span>
 </footer>
 
-<script src="assets/chapters.js?v=26"></script>
+<script src="assets/chapters.js?v=30"></script>
 <script src="assets/songs.js?v=6"></script>
-<script src="app.js?v=26"></script>
+<script src="app.js?v=31"></script>
 </body>
 </html>
