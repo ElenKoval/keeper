@@ -616,7 +616,7 @@ $('langBtn').onclick = () => {
 applyStatic();
 
 /* телефон: записка свёрнута в уголок, раскрывается по нажатию */
-const mq = matchMedia('(max-width:760px)');
+const mq = matchMedia('(max-width:1279px)');
 function noteMin(on){ $('note').classList.toggle('min', on); $('noteTab').setAttribute('aria-expanded', String(!on)); }
 if (mq.matches) noteMin(true);
 mq.addEventListener?.('change', e => noteMin(e.matches));

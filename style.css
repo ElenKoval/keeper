@@ -957,3 +957,18 @@ body.reading .vin.show{transform:scale(.8)}
 .sheetbg{background:linear-gradient(175deg,rgba(236,230,216,.13),rgba(236,230,216,.09) 60%,rgba(236,230,216,.11))}
 .sheetbg .ghost{opacity:.09}
 .sheetbg .holes{background:radial-gradient(circle,#0a0a0a 0 3.5px,rgba(236,230,216,.2) 4.5px,transparent 5px) 0 0/9px 26px repeat-y}
+
+/* записка сворачивается и на узких компьютерных экранах */
+@media (min-width:761px) and (max-width:1279px){
+  .note-tab{display:block;background:none;border:0;padding:0;text-align:left;font-family:'Caveat',cursive;font-size:1.05rem;color:#6b665d;cursor:pointer;margin-bottom:4px}
+  .note-tab::after{content:" ▾"}
+  .note:not(.min) .note-tab::after{content:" ▴"}
+  .note.min{width:auto!important;padding:16px 16px 8px 18px}
+  .note.min > :not(.note-tab):not(.nail){display:none!important}
+  .sound,.person,.gallery{padding-right:28px!important}
+}
+/* страница героя: колонки ближе друг к другу */
+@media (min-width:761px){
+  .person-grid{grid-template-columns:minmax(280px,440px) minmax(0,720px);gap:40px;justify-content:center;max-width:1240px;margin:0 auto}
+  .person-bar{max-width:1240px;margin:0 auto 18px}
+}
