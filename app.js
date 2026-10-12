@@ -93,15 +93,15 @@ const save = () => { try { localStorage.setItem('keeper-state', JSON.stringify(S
 /* ---------- корни ---------- */
 const roots = $('roots');
 const rnd = (a,b) => a + Math.random()*(b-a);
-function drawRoots(){
+function drawRoots(){   // Нити растут снизу вверх
   const W = innerWidth, H = innerHeight; roots.setAttribute('viewBox', `0 0 ${W} ${H}`);
   let g = ''; const n = Math.round(W/55);
   for (let i=0;i<n;i++){
-    const x = rnd(0,W), len = rnd(.05,.34)*H; let d = `M${x.toFixed(1)} 0`, cx = x;
+    const x = rnd(0,W), len = rnd(.08,.4)*H; let d = `M${x.toFixed(1)} ${H}`, cx = x;
     const k = Math.max(3, Math.round(len/80));
-    for (let j=1;j<=k;j++){ const ny = len*j/k, nx = x + rnd(-14,14); d += ` Q${(cx+rnd(-14,14)).toFixed(1)} ${(ny-len/k/2).toFixed(1)} ${nx.toFixed(1)} ${ny.toFixed(1)}`; cx = nx; }
-    if (Math.random()<.6){ const by = len*rnd(.3,.7); d += ` M${(x+rnd(-8,8)).toFixed(1)} ${by.toFixed(1)} q${rnd(-30,30).toFixed(1)} ${rnd(20,50).toFixed(1)} ${rnd(-50,50).toFixed(1)} ${rnd(40,110).toFixed(1)}`; }
-    g += `<g class="sway" style="--d:${rnd(7,13).toFixed(1)}s;--a:${rnd(.4,1.2).toFixed(2)}deg"><path d="${d}" stroke-width="${rnd(.6,1.6).toFixed(2)}" opacity="${rnd(.1,.38).toFixed(2)}"/></g>`;
+    for (let j=1;j<=k;j++){ const ny = H - len*j/k, nx = x + rnd(-14,14); d += ` Q${(cx+rnd(-14,14)).toFixed(1)} ${(ny+len/k/2).toFixed(1)} ${nx.toFixed(1)} ${ny.toFixed(1)}`; cx = nx; }
+    if (Math.random()<.5){ const by = H - len*rnd(.3,.7); d += ` M${(x+rnd(-8,8)).toFixed(1)} ${by.toFixed(1)} q${rnd(-30,30).toFixed(1)} ${(-rnd(20,50)).toFixed(1)} ${rnd(-50,50).toFixed(1)} ${(-rnd(40,110)).toFixed(1)}`; }
+    g += `<g class="sway up" style="--d:${rnd(7,13).toFixed(1)}s;--a:${rnd(.4,1.2).toFixed(2)}deg"><path class="grow" pathLength="1" style="animation-delay:${rnd(0,1.5).toFixed(2)}s" d="${d}" stroke-width="${rnd(.6,1.6).toFixed(2)}" opacity="${rnd(.12,.4).toFixed(2)}"/></g>`;
   }
   roots.innerHTML = g;
 }

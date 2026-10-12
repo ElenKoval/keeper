@@ -271,3 +271,8 @@ button,input{font:inherit;color:inherit}
 .msg.hello{font-style:italic}
 .chat-top{display:flex;justify-content:flex-end;padding:8px 14px 0}
 .chat-top .linkish{font-size:.85rem}
+/* Нити растут снизу */
+.sway.up{transform-origin:50% 100%}
+#roots .grow{stroke-dasharray:1;stroke-dashoffset:1;animation:grow 3.5s ease-out forwards}
+@keyframes grow{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){#roots .grow{animation:none;stroke-dashoffset:0}}
