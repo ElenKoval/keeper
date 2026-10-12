@@ -19,13 +19,14 @@ const app = $('app'), keeper = $('keeper'), lineEl = $('line'), optsEl = $('opts
 /* Альбом: рисунки (имя файла, соотношение сторон), первая реплика, есть ли чат */
 const PEOPLE = {
   keeper:        {name:{ru:'Кипер',en:'Kiper'}, works:[['keeper_paper',.715]], hello:{ru:'Тсс. Не шевелись. Ты стоишь на моём вчера. Вот. Теперь можно.',en:'Shh. Don\'t move. You\'re standing on my yesterday. There. Now you can.'}},
-  dream:         {name:{ru:'Дрим',en:'Dream'},  works:[['dream',.739],['dream_2',1.363]], hello:{ru:'Я здесь. Что у тебя?',en:'I\'m here. What do you have?'}},
+  dream:         {name:{ru:'Дрим',en:'Dream'},  works:[['dream',.739],['dream_2b',.734]], hello:{ru:'Я здесь. Что у тебя?',en:'I\'m here. What do you have?'}},
   weaver:        {name:{ru:'Вивер',en:'Weaver'}, works:[['weaver',1.618],['weaver_forest',1.472],['weaver_symbol',.738]], hello:{ru:'О! Ты кто? Ты тоже застреваешь в корнях?',en:'Oh! Who are you? Do you get stuck in roots too?'}},
-  liora:         {name:{ru:'Лиора',en:'Liora'}, works:[['liora',.757]], hello:{ru:'Ох. Садись ближе, здесь тепло.',en:'Oh. Sit closer, it\'s warm here.'}},
+  liora:         {name:{ru:'Лиора',en:'Liora'}, works:[['liora',.757],['liora_dead',1.528]], hello:{ru:'Ох. Садись ближе, здесь тепло.',en:'Oh. Sit closer, it\'s warm here.'}},
   drpak:         {name:{ru:'Пак',en:'Pak'},   works:[['pak',.745]], hello:{ru:'Ты по делу? Если нет, тоже говори. Только короче.',en:'Are you here on business? If not, say it anyway. Just shorter.'}},
   crystal:       {name:{ru:'Кристалл',en:'Crystal'}, works:[['crystal',1.401]], hello:{ru:'Вы так стараетесь убежать друг от друга, что забыли, как звучите вместе.',en:'You try so hard to run from each other that you\'ve forgotten how you sound together.'}},
   cat:           {name:{ru:'Кот',en:'Cat'},   works:[['cat',1.412]], hello:{ru:'О. Привет. Ты тоже не спишь?',en:'Oh. Hi. You\'re not sleeping either?'}},
   dryad:         {name:{ru:'Дриада',en:'Dryad'},  works:[['dryad',.75]], sleeps:{ru:'Она спит. Здесь можно только смотреть.',en:'She is asleep. Here you can only look.'}},
+  fallow:        {name:{ru:'Пустошь',en:'The Fallow'}, works:[['fallow',1.679]], nochat:true},
   angry_forest:  {name:{ru:'Злой Лес',en:'Angry Forest'}, works:[['forest',1.41],['forest_2',1.512]], hello:{ru:'Всё, от чего тебя спасли, до сих пор живёт во мне.',en:'Everything you were saved from still lives in me.'}},
   shiny:         {name:{ru:'Шайни',en:'Shiny'}, works:[['shiny',1.41]], hello:{ru:'Этот свет не для продажи.',en:'This light is not for sale.'}},
   shiny_bro:     {name:{ru:'Брат',en:'Shiny\'s Brother'},  works:[], hello:{ru:'К ней — только через меня.',en:'To get to her, you go through me.'}},
@@ -317,7 +318,7 @@ function openChat(id, first){
   $('chatName').textContent = tr(p.name);
   renderPersonSong();
   const log = $('chatLog'); log.innerHTML = '';
-  const can = !p.sleeps; $('chatForm').hidden = !can; $('pAsleep').hidden = can; $('pAsleep').textContent = tr(p.sleeps) || '';
+  const can = !p.sleeps && !p.nochat; $('chatForm').hidden = !can; $('pAsleep').hidden = can || !p.sleeps; $('pAsleep').textContent = tr(p.sleeps) || '';
   $('clearChat').hidden = !can; $('pExpand').hidden = !can;
   if (can){ (S.chats[ck(id)] || []).forEach(m => addMsg(m.role === 'user' ? 'me' : 'them', m.text)); }
   $('chat').classList.remove('expanded'); $('pMenu').hidden = true;
@@ -439,7 +440,7 @@ function openDetail(id, autoplay){
   $('sleeve').classList.remove('flipped'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
   const w = (PEOPLE[id] || {}).works || []; $('dBackArt').src = w.length ? `assets/img/${w[0][0]}.jpg?v=3` : ''; $('dBackArt').hidden = !w.length;
   $('dBackNote').textContent = tr(BACKNOTE[id]) || '';
-  const canTalk = PEOPLE[id] && !PEOPLE[id].sleeps; $('dTalk').hidden = !canTalk;
+  const canTalk = PEOPLE[id] && !PEOPLE[id].sleeps && !PEOPLE[id].nochat; $('dTalk').hidden = !canTalk;
   $('dTalk').textContent = (LANG === 'en' ? 'Talk to ' : 'Поговорить ') + tr(WITH[id] || {ru:nm(id),en:nm(id)});
   if (s && curSong !== s.file){ audio.src = s.file; curSong = s.file; }
   if (s) curId = id;
