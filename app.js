@@ -410,14 +410,18 @@ function renderPeople(){
 const songs = id => (window.SONGS_DATA && window.SONGS_DATA[id]) || [];
 const labelHTML = img => img ? `<img src="assets/img/${img}.jpg?v=4" alt="">` : '';
 function renderShelf(){
-  $('detail').hidden = true; $('shelf').hidden = false; const box = $('shelf'); box.innerHTML = '';
+  const last = detailId; $('detail').hidden = true; $('shelf').hidden = false; const box = $('shelf'); box.innerHTML = '';
   SHELF.forEach(([id, name, img]) => {
     const n = songs(id).length; const b = document.createElement('button'); b.className = 'rec'; b.disabled = !n;
     b.innerHTML = `<span class="disc"><span class="lbl${img ? '' : ' ph'}">${img ? labelHTML(img) : tr(UI.bro)}</span><span class="pin"></span></span><b>${esc(nm(id) || name)}</b>` +
       (n ? `<small>${n} ${plural(n)}</small>` : `<small class="soon">${tr(UI.soon)}</small>`);
+    if (id === last && n){ b.classList.add('last'); b.insertAdjacentHTML('beforeend', `<em class="backtag">${LANG === 'en' ? '← back here' : '← вернуться сюда'}</em>`); }
     if (n) b.onclick = () => openDetail(id, false);
     box.appendChild(b);
   });
+  const bb = $('shelfBack');
+  if (last && songs(last).length){ bb.hidden = false; bb.innerHTML = `<span class="bb-disc"><span class="lbl">${labelHTML((SHELF.find(r => r[0] === last) || [])[2] || '')}</span></span><span class="bb-t">← ${LANG === 'en' ? 'back to' : 'назад к пластинке'}<b>${esc(nm(last))}</b></span>`; bb.onclick = () => openDetail(last, false); }
+  else bb.hidden = true;
 }
 const audio = $('player'); let curSong = null, curId = null;
 function fmt(s){ s = Math.floor(s || 0); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }

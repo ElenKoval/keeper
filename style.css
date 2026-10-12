@@ -810,3 +810,20 @@ body.reading .vin.show{transform:scale(.8)}
 .cs.out{visibility:visible;height:30px;opacity:.25;cursor:default}
 .cs.out span{display:none}
 @media (max-width:760px){.cs{min-width:60px;padding:10px 8px 0;height:86px}.cs span{font-size:1.1rem}.crate{padding-top:60px}.crate-sleeves{height:92px}}
+/* вернуться к последней пластинке */
+.shelf-back{display:flex;align-items:center;gap:14px;margin:0 auto 28px;background:none;border:0;cursor:pointer;padding:6px 18px 6px 6px;color:#cfcfcf;animation:rise .5s ease}
+.bb-disc{position:relative;width:62px;height:62px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle,#1a1a1a 0 14%,transparent 14.2%),repeating-radial-gradient(circle,rgba(255,255,255,.05) 0 1px,transparent 1px 3px),#101010;
+  box-shadow:0 0 0 1px #2a2a2a,0 6px 14px rgba(0,0,0,.6);transform:translateX(-6px);transition:transform .4s}
+.bb-disc .lbl{width:52%}
+.shelf-back:hover .bb-disc{transform:translateX(-16px) rotate(-40deg)}
+.bb-t{display:flex;flex-direction:column;align-items:flex-start;font-family:'Caveat',cursive;font-size:1.1rem;color:#8f8f8f;line-height:1.1}
+.bb-t::before{content:"←";font-family:'PT Serif',Georgia,serif;font-size:1rem;color:#8f8f8f;position:absolute;margin-left:-16px}
+.bb-t b{font-family:'Alice',Georgia,serif;font-weight:400;font-size:1.5rem;color:#f0f0f0}
+.shelf-back:hover .bb-t b{text-decoration:underline;text-underline-offset:5px}
+.rec.last .disc{transform:translateY(-10px);box-shadow:0 0 0 1px #555,0 16px 34px rgba(0,0,0,.7)}
+.backtag{font-family:'Caveat',cursive;font-style:normal;font-size:1rem;color:#bdbdbd;margin-top:-4px}
+.sound{justify-content:safe center}
+.shelf-back{position:relative}
+.bb-t::before{position:static;margin:0 0 0 -2px}
+.bb-t::before{display:none}
