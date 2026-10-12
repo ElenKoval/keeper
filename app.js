@@ -268,7 +268,7 @@ function openChat(id, first){
 }
 const HELLO = {keeper:'Спрашивай. Или я спрошу. Подожди, я вспомню, о чём.', dream:'Здравствуй. Садись, если хочешь.', weaver:'О! Ты кто? Ты тоже застреваешь в корнях?'};
 function syncP(){ const list = songs(chatWith); const on = list.length && !audio.paused && curSong === list[0].file; $('pPlay').textContent = on ? '❚❚' : '▶'; }
-$('pPlay').onclick = () => { const s = songs(chatWith)[0]; if (!s) return; if (curSong !== s.file){ audio.src = s.file; curSong = s.file; }
+$('pPlay').onclick = () => { const s = songs(chatWith)[0]; if (!s) return; if (curSong !== s.file){ audio.src = s.file; curSong = s.file; } curId = chatWith;
   audio.paused ? audio.play().catch(() => {}) : audio.pause(); if (!S.heard.includes(chatWith)) { S.heard.push(chatWith); save(); } };
 function addMsg(cls, text){ const d = document.createElement('div'); d.className = 'msg ' + cls; d.textContent = text; $('chatLog').appendChild(d); d.scrollIntoView({block:'end'}); return d; }
 async function sendChat(m){
@@ -327,7 +327,7 @@ function renderShelf(){
     box.appendChild(b);
   });
 }
-const audio = $('player'); let curSong = null;
+const audio = $('player'); let curSong = null, curId = null;
 function fmt(s){ s = Math.floor(s || 0); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
 function openDetail(id, autoplay){
   const row = SHELF.find(r => r[0] === id); const list = songs(id); const s = list[0];
@@ -337,6 +337,7 @@ function openDetail(id, autoplay){
   $('dEmpty').hidden = !!s; $('dEmpty').textContent = 'Песня скоро появится.'; $('dPlayer').hidden = !s;
   $('dLyricsBtn').hidden = !(s && s.lyrics); $('dLyrics').hidden = true; $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('dLyricsBtn').setAttribute('aria-expanded','false');
   if (s && curSong !== s.file){ audio.src = s.file; curSong = s.file; }
+  if (s) curId = id;
   if (s && autoplay) audio.play().catch(() => {});
   syncPlay(); paintSeek();
   if (s && !S.heard.includes(id)) { S.heard.push(id); save(); }
@@ -358,6 +359,21 @@ $('dVol').oninput = e => { audio.volume = e.target.value / 100; audio.muted = fa
 $('dMute').onclick = () => { audio.muted = !audio.muted; $('dWave').style.opacity = audio.muted ? .2 : 1; };
 $('dLyricsBtn').onclick = () => { const l = $('dLyrics'); l.hidden = !l.hidden; $('dLyricsBtn').setAttribute('aria-expanded', String(!l.hidden)); };
 $('detailBack').onclick = renderShelf;
+/* мини-плеер: музыка играет дальше, пока ходишь по сайту */
+function miniSync(){
+  const onDetail = !$('music').hidden && !$('detail').hidden;
+  const show = !!curSong && !onDetail && (!audio.paused || audio.currentTime > 0) && !audio.ended;
+  $('mini').hidden = !show; if (!show || !curId) return;
+  const row = SHELF.find(r => r[0] === curId) || [curId, (PEOPLE[curId]||{}).name || '', ''];
+  $('miniLbl').className = 'lbl' + (row[2] ? '' : ' ph'); $('miniLbl').innerHTML = row[2] ? labelHTML(row[2]) : '';
+  $('miniTitle').textContent = (songs(curId)[0] || {}).title || ''; $('miniName').textContent = row[1];
+  $('miniIco').textContent = audio.paused ? '▶' : '❚❚'; $('mini').classList.toggle('playing', !audio.paused);
+}
+['play','pause','ended','emptied'].forEach(ev => audio.addEventListener(ev, miniSync));
+setInterval(miniSync, 700);
+$('miniDisc').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
+$('miniOpen').onclick = () => { if (curId) { openPanel('music'); openDetail(curId, false); } };
+$('miniX').onclick = () => { audio.pause(); audio.removeAttribute('src'); audio.load(); curSong = null; curId = null; miniSync(); syncPlay(); };
 function openSong(id){ openPanel('music'); openDetail(id, true); }
 function renderBook(){
   const ol = $('tocList'); ol.innerHTML = '';

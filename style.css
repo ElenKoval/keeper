@@ -370,3 +370,20 @@ button,input{font:inherit;color:inherit}
 .vol input{width:72px;accent-color:#d0d0d0;cursor:pointer}
 @media (max-width:760px){.player{grid-template-columns:auto 1fr;grid-template-areas:"play seek" "vol vol"}.player .play{grid-area:play}.seek{grid-area:seek}.vol{grid-area:vol;justify-content:flex-end}}
 .disc.big{width:min(460px,58vh,82vw)}
+
+/* мини-плеер */
+.mini{position:fixed;left:18px;bottom:46px;z-index:55;display:flex;align-items:center;gap:10px;padding:6px 8px 6px 6px;background:rgba(18,16,13,.92);border:1px solid var(--faint);border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:min(340px,calc(100% - 36px));animation:rise .4s ease}
+.mini-disc{position:relative;width:46px;height:46px;flex:none;border-radius:50%;border:0;padding:0;cursor:pointer;display:grid;place-items:center;
+  background:radial-gradient(circle,#1a1a1a 0 14%,transparent 14.2%),repeating-radial-gradient(circle,rgba(255,255,255,.05) 0 1px,transparent 1px 3px),#101010;animation:spin 6s linear infinite;animation-play-state:paused}
+.mini.playing .mini-disc{animation-play-state:running}
+.mini-disc .lbl{width:56%}
+.mini-disc .pin{width:5px;height:5px}
+.mini-ico{position:absolute;inset:0;display:grid;place-items:center;font-size:.7rem;color:#fff;background:rgba(0,0,0,.45);border-radius:50%;opacity:0;transition:opacity .2s}
+.mini-disc:hover .mini-ico,.mini:not(.playing) .mini-ico{opacity:1}
+.mini.playing .mini-disc:hover .mini-ico{opacity:1}
+.mini-meta{background:none;border:0;cursor:pointer;text-align:left;min-width:0;padding:0;display:flex;flex-direction:column}
+.mini-meta b{font-weight:400;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-meta small{color:var(--dim);font-size:.78rem}
+.mini-x{background:none;border:0;color:var(--dim);font-size:1.3rem;line-height:1;cursor:pointer;padding:4px 8px}
+.mini-x:hover{color:var(--ink)}
+@media (max-width:760px){.mini{left:10px;bottom:118px}}
