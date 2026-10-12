@@ -424,7 +424,7 @@ function fmt(s){ s = Math.floor(s || 0); return Math.floor(s/60) + ':' + String(
 let detailId = null;
 /* обложки конвертов: рисунок героя на лицевой стороне + своя деталь */
 const SLEEVES = {
-  weaver: {img:'weaver', pos:'50% 42%', size:'175%', fx:'oil'},
+  weaver: {sym:'sym_weaver', fx:'old'},
 };
 const BACKNOTE = {
   cat:{ru:'Двести сорок семь. Четыре за водонапорной башней не видно. Я всё равно их считаю.',en:'Two hundred forty-seven. Four are hidden behind the water tower. I count them anyway.'},
@@ -446,7 +446,7 @@ function openDetail(id, autoplay){
   $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('record').style.setProperty('--drop','0px'); $('dLyricsBtn').setAttribute('aria-expanded','false'); $('record').style.removeProperty('--sheet');
   $('sleeve').classList.remove('flipped');
   const sl = SLEEVES[id]; $('dFront').className = 'face front' + (sl ? ' has-cover fx-' + (sl.fx || 'none') : '');
-  $('dCover').style.backgroundImage = sl ? `url(assets/img/${sl.img}.jpg?v=4)` : ''; $('dCover').style.backgroundPosition = sl ? sl.pos : ''; $('dCover').style.setProperty('--cs', sl && sl.size ? sl.size : 'cover'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
+  $('dCover').style.backgroundImage = sl ? (sl.sym ? `url(assets/img/${sl.sym}.png?v=1)` : `url(assets/img/${sl.img}.jpg?v=4)`) : ''; $('dCover').style.backgroundPosition = sl ? sl.pos : ''; $('dCover').style.setProperty('--cs', sl && sl.size ? sl.size : 'cover'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
   const w = (PEOPLE[id] || {}).works || []; $('dBackArt').src = w.length ? `assets/img/${w[0][0]}.jpg?v=4` : ''; $('dBackArt').hidden = !w.length;
   $('dBackNote').textContent = tr(BACKNOTE[id]) || '';
   const canTalk = PEOPLE[id] && !PEOPLE[id].sleeps && !PEOPLE[id].nochat; $('dTalk').hidden = !canTalk;

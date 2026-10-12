@@ -703,3 +703,39 @@ body.reading .vin.show{transform:scale(.8)}
 .front.has-cover > .scuffs,.front.has-cover > .pencil{position:absolute!important}
 .front.has-cover .cover-art{background-size:var(--cs,cover)}
 .front.has-cover .talkto{margin-bottom:1.2em}
+/* старый потёртый конверт (Вивер) */
+.wear{display:none;position:absolute;inset:0;pointer-events:none;z-index:1}
+.front.fx-old{background:
+  radial-gradient(circle at 0 0,rgba(255,255,255,.10),transparent 9%),radial-gradient(circle at 100% 0,rgba(255,255,255,.08),transparent 8%),
+  radial-gradient(circle at 100% 100%,rgba(255,255,255,.12),transparent 10%),radial-gradient(circle at 0 100%,rgba(255,255,255,.07),transparent 8%),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px),
+  linear-gradient(160deg,#24221f,#1a1917 50%,#151412)}
+.front.fx-old::after{display:none}
+.front.fx-old .cover-art{filter:none;opacity:.78;background-size:62%;background-repeat:no-repeat;background-position:50% 40%!important;
+  -webkit-mask-image:radial-gradient(circle at 48% 44%,#000 55%,rgba(0,0,0,.55) 70%,#000 80%);mask-image:radial-gradient(circle at 48% 44%,#000 55%,rgba(0,0,0,.55) 70%,#000 80%)}
+.front.fx-old .wear{display:block}
+/* вытертый круг от пластинки */
+.front.fx-old .ring{position:absolute;left:4%;top:4%;width:92%;height:92%;border-radius:50%;
+  background:radial-gradient(circle,transparent 0 60%,rgba(255,255,255,.07) 66%,rgba(255,255,255,.12) 69%,rgba(255,255,255,.05) 72%,transparent 74%),
+  radial-gradient(circle,rgba(255,255,255,.035) 0 18%,transparent 20%)}
+/* залом по диагонали угла */
+.front.fx-old .crease{position:absolute;right:-4%;top:12%;width:42%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transform:rotate(38deg);box-shadow:0 1px 0 rgba(0,0,0,.6)}
+/* разошедшийся шов снизу */
+.front.fx-old .seam{position:absolute;left:8%;bottom:0;width:34%;height:5px;background:linear-gradient(90deg,transparent,#0a0a0a 20%,#0a0a0a 80%,transparent);border-top:1px solid rgba(255,255,255,.14)}
+/* полоска старого скотча */
+.front.fx-old .tape{position:absolute;right:-3%;bottom:16%;width:22%;height:7%;background:rgba(220,210,180,.22);transform:rotate(-24deg);box-shadow:inset 0 0 6px rgba(0,0,0,.3)}
+.front.fx-old .d-song{margin-top:auto;font-size:calc(var(--s) * .1);opacity:.92}
+.front.fx-old .scuffs{opacity:.9}
+.front.fx-old .cover-art{background-size:56%;background-position:50% 18%!important;opacity:.85}
+.front.fx-old .ring{background:radial-gradient(circle,transparent 0 62%,rgba(255,255,255,.10) 66%,rgba(255,255,255,.2) 69%,rgba(255,255,255,.08) 72%,transparent 75%),radial-gradient(circle,rgba(255,255,255,.06) 0 17%,transparent 19%)}
+.front.fx-old{background:
+  radial-gradient(circle at 0 0,rgba(255,255,255,.2),transparent 10%),radial-gradient(circle at 100% 0,rgba(255,255,255,.14),transparent 9%),
+  radial-gradient(circle at 100% 100%,rgba(255,255,255,.22),transparent 11%),radial-gradient(circle at 0 100%,rgba(255,255,255,.12),transparent 9%),
+  linear-gradient(90deg,rgba(255,255,255,.07),transparent 3%,transparent 97%,rgba(255,255,255,.08)),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.015) 0 1px,transparent 1px 3px),
+  linear-gradient(160deg,#25231f,#1a1917 50%,#151412)}
+.front.fx-old .crease{background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
+.front.fx-old .tape{background:rgba(225,214,184,.32)}
+.front.fx-old .d-song{white-space:normal}
+.front.has-cover > .wear{position:absolute!important;inset:0}
+.front.fx-old .cover-art{background-size:48%;background-position:50% 9%!important}
