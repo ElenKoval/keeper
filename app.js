@@ -32,7 +32,7 @@ const PEOPLE = {
   shiny_bro:     {name:{ru:'Брат',en:'Shiny\'s Brother'},  works:[], hello:{ru:'К ней — только через меня.',en:'To get to her, you go through me.'}},
   talk_mushroom: {name:{ru:'Гриб',en:'Mushroom'},  works:[['grib',.72]], hello:{ru:'Высота пахнет иначе, когда ты наконец перестаёшь бояться упасть.',en:'Height smells different once you finally stop fearing the fall.'}},
 };
-const face = id => { const w = (PEOPLE[id]||{}).works; return w && w.length ? `assets/img/${w[0][0]}.jpg?v=3` : ''; };
+const face = id => { const w = (PEOPLE[id]||{}).works; return w && w.length ? `assets/img/${w[0][0]}.jpg?v=4` : ''; };
 /* Звук мира: порядок пластинок и наклейки; треки – в assets/songs.js */
 const SHELF = [['dream','Дрим','dream'],['cat','Кот','cat'],['weaver','Вивер','weaver'],['crystal','Кристалл','crystal'],
   ['keeper','Кипер','keeper_paper'],['shiny','Шайни','shiny'],['shiny_bro','Брат',''],['liora','Лиора','liora'],
@@ -238,7 +238,7 @@ function startBug(b){
 /* ---------- чтение ---------- */
 const textEl = $('text'), pages = document.querySelector('.pages');
 let R = null;
-const IMG = k => `assets/img/${k}.jpg?v=3`;
+const IMG = k => `assets/img/${k}.jpg?v=4`;
 function startRead(ch, then){
   const c = CH(ch); app.className = 'mode-read'; document.body.classList.add('reading');
   $('chapTitle').textContent = c.title; $('chapNum').textContent = ch === 0 ? (LANG === 'en' ? 'Prologue' : 'Пролог') : (LANG === 'en' ? 'Chapter ' : 'Глава ') + ch;
@@ -314,7 +314,7 @@ function openChat(id, first){
   showWork(0);
   const th = $('pThumbs'); th.innerHTML = '';
   if (p.works.length > 1) p.works.forEach((w, i) => { const b = document.createElement('button'); b.className = 'thumb' + (i ? '' : ' on');
-    b.innerHTML = `<img src="assets/img/${w[0]}.jpg?v=3" alt="">`; b.onclick = () => showWork(i); th.appendChild(b); });
+    b.innerHTML = `<img src="assets/img/${w[0]}.jpg?v=4" alt="">`; b.onclick = () => showWork(i); th.appendChild(b); });
   $('chatName').textContent = tr(p.name);
   renderPersonSong();
   const log = $('chatLog'); log.innerHTML = '';
@@ -328,7 +328,7 @@ function openChat(id, first){
 function showWork(i){
   const p = PEOPLE[chatWith], w = p.works[i];
   $('pZoom').hidden = !w; $('pPh').hidden = !!w; $('pPh').textContent = tr(UI.bro);
-  if (w) $('pArt').src = `assets/img/${w[0]}.jpg?v=3`;
+  if (w) $('pArt').src = `assets/img/${w[0]}.jpg?v=4`;
   document.querySelectorAll('.thumb').forEach((b, k) => b.classList.toggle('on', k === i));
 }
 $('pZoom').onclick = () => { $('lbImg').src = $('pArt').src; $('lightbox').hidden = false; };
@@ -401,14 +401,14 @@ function renderPeople(){
   Object.entries(PEOPLE).forEach(([id, p]) => {
     const w = p.works[0], ar = w ? w[1] : .75;
     const b = document.createElement('button'); b.className = 'gal-item'; b.style.setProperty('--ar', ar);
-    b.innerHTML = (w ? `<img src="assets/img/${w[0]}.jpg?v=3" alt="${esc(tr(p.name))}" loading="lazy">` : `<span class="ph">${tr(UI.bro)}</span>`) +
+    b.innerHTML = (w ? `<img src="assets/img/${w[0]}.jpg?v=4" alt="${esc(tr(p.name))}" loading="lazy">` : `<span class="ph">${tr(UI.bro)}</span>`) +
       `<span class="gal-name">${esc(tr(p.name))} <span class="meet">${tr(UI.meet)}</span></span>`;
     b.onclick = () => openChat(id);
     box.appendChild(b);
   });
 }
 const songs = id => (window.SONGS_DATA && window.SONGS_DATA[id]) || [];
-const labelHTML = img => img ? `<img src="assets/img/${img}.jpg?v=3" alt="">` : '';
+const labelHTML = img => img ? `<img src="assets/img/${img}.jpg?v=4" alt="">` : '';
 function renderShelf(){
   $('detail').hidden = true; $('shelf').hidden = false; const box = $('shelf'); box.innerHTML = '';
   SHELF.forEach(([id, name, img]) => {
@@ -438,7 +438,7 @@ function openDetail(id, autoplay){
   $('dEmpty').hidden = !!s; $('dEmpty').textContent = tr(UI.songSoon); $('dPlayer').hidden = !s;
   $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('record').style.setProperty('--drop','0px'); $('dLyricsBtn').setAttribute('aria-expanded','false'); $('record').style.removeProperty('--sheet');
   $('sleeve').classList.remove('flipped'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
-  const w = (PEOPLE[id] || {}).works || []; $('dBackArt').src = w.length ? `assets/img/${w[0][0]}.jpg?v=3` : ''; $('dBackArt').hidden = !w.length;
+  const w = (PEOPLE[id] || {}).works || []; $('dBackArt').src = w.length ? `assets/img/${w[0][0]}.jpg?v=4` : ''; $('dBackArt').hidden = !w.length;
   $('dBackNote').textContent = tr(BACKNOTE[id]) || '';
   const canTalk = PEOPLE[id] && !PEOPLE[id].sleeps && !PEOPLE[id].nochat; $('dTalk').hidden = !canTalk;
   $('dTalk').textContent = (LANG === 'en' ? 'Talk to ' : 'Поговорить ') + tr(WITH[id] || {ru:nm(id),en:nm(id)});
