@@ -910,3 +910,21 @@ body.reading .vin.show{transform:scale(.8)}
 .person-art{width:fit-content;max-width:100%}
 .zoom{width:auto;display:block}
 @media (max-width:760px){.person-art img{max-width:72vw}.pvinyl{right:-70px}.person.spinning .pvinyl{right:-80px}}
+/* пластинка — бледный фон под плеером */
+.pplayer{position:relative;isolation:isolate}
+.pvinyl.bg{position:absolute;z-index:-1;left:-40px;top:-30px;right:auto;bottom:auto;width:340px;height:340px;opacity:.22;cursor:default;pointer-events:none;
+  box-shadow:none;transition:opacity .6s}
+.person.spinning .pvinyl.bg{right:auto;opacity:.38}
+.pvinyl.bg .pv-ico{display:none}
+.pvinyl.bg .lbl{width:40%}
+.pvinyl.bg:hover{right:auto}
+@media (max-width:760px){.pvinyl.bg{width:260px;height:260px;left:-30px;top:-20px}.person.spinning .pvinyl.bg{right:auto}.person-art img{max-width:100%}}
+.pvinyl.bg{left:auto;right:-90px;top:-60px;width:420px;height:420px;opacity:1;
+  background:radial-gradient(circle,#161616 0 14%,transparent 14.2%),repeating-radial-gradient(circle,rgba(255,255,255,.045) 0 1px,transparent 1px 4px),#0d0d0d;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+  -webkit-mask-image:radial-gradient(circle,#000 40%,rgba(0,0,0,.35) 70%,transparent 72%);mask-image:radial-gradient(circle,#000 40%,rgba(0,0,0,.35) 70%,transparent 72%)}
+.pvinyl.bg .lbl{opacity:.18;filter:grayscale(1)}
+.pvinyl.bg .vin-grooves::before{opacity:.6}
+.person.spinning .pvinyl.bg{opacity:1;right:-90px}
+.person.spinning .pvinyl.bg .lbl{opacity:.32}
+@media (max-width:760px){.pvinyl.bg{width:300px;height:300px;right:-80px;top:-40px}.person.spinning .pvinyl.bg{right:-80px}}
