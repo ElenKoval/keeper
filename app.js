@@ -254,13 +254,20 @@ let chatWith = null;
 function openChat(id, first){
   PANELS.forEach(p => $(p).hidden = true); setTab('people');
   chatWith = id; if (!S.met.includes(id)) S.met.push(id); save();
-  const p = PEOPLE[id]; $('chatFace').src = p.face; $('chatName').textContent = p.name;
-  $('chatSub').textContent = p.who || '';
+  const p = PEOPLE[id];
+  $('pArt').hidden = !p.face; $('pPh').hidden = !!p.face; if (p.face) $('pArt').src = p.face; else $('pPh').textContent = BRO_PH;
+  $('chatName').textContent = p.name; $('chatSub').textContent = p.who || '';
+  const list = songs(id); $('pSong').hidden = !list.length;
+  if (list.length){ $('pSongTitle').textContent = list[0].title; syncP(); }
   const log = $('chatLog'); log.innerHTML = ''; (S.chats[id] || []).forEach(m => addMsg(m.role==='user'?'me':'them', m.text));
-  $('chat').hidden = false;
-  if (first){ const q = first.replace(/\?$/, '?'); sendChat(q.charAt(0).toUpperCase() + q.slice(1)); }
-  else $('chatInput').focus();
+  if (!log.children.length) addMsg('them hello', HELLO[id] || 'Привет.');
+  $('chat').hidden = false; $('chat').scrollTop = 0;
+  if (first){ const q = first; sendChat(q.charAt(0).toUpperCase() + q.slice(1)); }
 }
+const HELLO = {keeper:'Спрашивай. Или я спрошу. Подожди, я вспомню, о чём.', dream:'Здравствуй. Садись, если хочешь.', weaver:'О! Ты кто? Ты тоже застреваешь в корнях?'};
+function syncP(){ const list = songs(chatWith); const on = list.length && !audio.paused && curSong === list[0].file; $('pPlay').textContent = on ? '❚❚' : '▶'; }
+$('pPlay').onclick = () => { const s = songs(chatWith)[0]; if (!s) return; if (curSong !== s.file){ audio.src = s.file; curSong = s.file; }
+  audio.paused ? audio.play().catch(() => {}) : audio.pause(); if (!S.heard.includes(chatWith)) { S.heard.push(chatWith); save(); } };
 function addMsg(cls, text){ const d = document.createElement('div'); d.className = 'msg ' + cls; d.textContent = text; $('chatLog').appendChild(d); d.scrollIntoView({block:'end'}); return d; }
 async function sendChat(m){
   const id = chatWith; addMsg('me', m); const w = addMsg('them wait', PEOPLE[id].name + ' думает…');
@@ -271,7 +278,8 @@ async function sendChat(m){
   finally{ clearTimeout(slow); w.scrollIntoView({block:'end'}); }
 }
 $('chatForm').addEventListener('submit', e => { e.preventDefault(); const i = $('chatInput'); const m = i.value.trim(); if (!m) return; i.value = ''; sendChat(m); });
-$('chatBack').onclick = () => { $('chat').hidden = true; setTab('story'); };
+$('chatBack').onclick = () => { $('chat').hidden = true; openPanel('people'); };
+$('personHome').onclick = () => $('homeBtn').click();
 
 /* разделы: История · Персонажи · Музыка · Книга */
 const PANELS = ['people','music','toc'];
@@ -327,6 +335,7 @@ function openDetail(id, autoplay){
 }
 function syncPlay(){ const on = !audio.paused; $('dPlay').textContent = on ? '❚❚' : '▶'; $('stage').classList.toggle('playing', on); }
 $('dPlay').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
+['play','pause','ended'].forEach(ev => audio.addEventListener(ev, () => { if (chatWith) syncP(); }));
 audio.addEventListener('play', syncPlay); audio.addEventListener('pause', syncPlay); audio.addEventListener('ended', syncPlay);
 audio.addEventListener('timeupdate', () => { if (audio.duration) $('dSeek').value = Math.round(audio.currentTime / audio.duration * 1000); $('dTime').textContent = fmt(audio.currentTime); });
 $('dSeek').oninput = e => { if (audio.duration) audio.currentTime = e.target.value / 1000 * audio.duration; };
