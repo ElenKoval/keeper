@@ -286,3 +286,50 @@ button,input{font:inherit;color:inherit}
 @media (min-width:761px){.foot-copy{display:none}}
 @media (max-width:760px){.foot{display:none}}
 .top{justify-content:flex-end}
+
+/* записка Кипера вместо меню (временная, потом заменим фото настоящей) */
+.nav{display:none!important}
+.note{pointer-events:auto;position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:22px;z-index:60;width:228px;padding:30px 18px 16px 22px;
+  font-family:'Caveat','Bad Script',cursive;color:#2b2925;
+  background:radial-gradient(circle at 30% 20%,#f4efe4,#e6dfd0 70%,#d9d1bf);
+  box-shadow:0 8px 22px rgba(0,0,0,.55);transform:rotate(3.2deg);transform-origin:50% 12px;
+  clip-path:polygon(0 3%,8% 0,22% 2%,37% 0,55% 1.5%,71% 0,86% 2%,100% 0,99% 22%,100% 48%,98% 71%,100% 93%,93% 100%,78% 97%,64% 100%,47% 98%,33% 100%,18% 97%,4% 100%,1% 78%,0 52%,2% 27%);
+  display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.note.swing{animation:noteSwing 1.6s ease-out}
+@keyframes noteSwing{0%{transform:rotate(3.2deg)}20%{transform:rotate(8deg)}45%{transform:rotate(-1deg)}70%{transform:rotate(5deg)}100%{transform:rotate(3.2deg)}}
+.nail{position:absolute;top:9px;left:50%;width:9px;height:9px;margin-left:-4px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#8d8a84,#2a2723 70%);box-shadow:0 1px 2px rgba(0,0,0,.6)}
+.note-head{margin:0 0 6px;font-size:.98rem;color:#6b665d;transform:rotate(-1.5deg)}
+.note button{background:none;border:0;padding:1px 0;cursor:pointer;font:inherit;font-size:1.42rem;line-height:1.15;color:#2b2925;position:relative;text-align:left}
+.note button:nth-of-type(2){margin-left:6px}
+.note button:nth-of-type(3){margin-left:2px;transform:rotate(-1deg)}
+.note button:nth-of-type(4){margin-left:9px}
+.note button::after{content:"";position:absolute;left:-2px;right:-4px;bottom:1px;height:7px;opacity:0;transition:opacity .2s;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 8' preserveAspectRatio='none'%3E%3Cpath d='M2 5 C30 2 60 7 95 4 S160 2 198 5' fill='none' stroke='%232b2925' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+.note button:hover::after,.note button:focus-visible::after{opacity:.8}
+.note button:focus-visible{outline:1px dashed #2b2925;outline-offset:2px}
+.note button.on::before{content:"✓";position:absolute;left:-17px;top:2px;font-size:1.1rem;color:#4a463f}
+.note-doodle{margin:8px 0 0 auto;font-size:1rem;color:#7b766c;transform:rotate(-4deg)}
+/* оверлеи не прячутся под запиской */
+@media (min-width:761px){.panel,.chat{top:0;border-radius:0}.panel{width:min(560px,100%);right:auto;left:0;border-left:0;border-right:1px solid var(--faint)}
+  .sound,.person{padding-right:270px}}
+/* телефон: записка внизу, строки в две колонки */
+@media (max-width:760px){
+  .note{top:auto;bottom:calc(6px + env(safe-area-inset-bottom,0px));right:8px;left:8px;width:auto;transform:rotate(-1deg);padding:18px 14px 8px 18px;
+    display:grid;grid-template-columns:1fr 1fr;column-gap:10px;row-gap:0}
+  .note.swing{animation:none}
+  .note-head{grid-column:1/-1;font-size:.85rem;margin:0 0 2px}
+  .note button{font-size:1.18rem;margin-left:0!important;transform:none!important}
+  .note button.on::before{left:-13px;font-size:.9rem}
+  .note-doodle{display:none}
+  .nail{top:5px}
+  #app{padding-bottom:110px}
+  .floor{bottom:112px}
+  .panel{bottom:104px}
+  .person,.sound{padding-bottom:120px}
+  .pages{padding-bottom:120px}
+}
+.note{width:244px}
+@media (min-width:761px){
+  body.reading .note{transform:scale(.72) rotate(3.2deg);transform-origin:top right}
+  body.reading .pages{padding-right:200px}
+}

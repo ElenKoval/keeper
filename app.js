@@ -123,7 +123,9 @@ function hornCrawl(){ const pts = Math.random()<.5 ? HP : [...HP].reverse(); let
     hornBug.setAttribute('transform', `translate(${x} ${y}) rotate(${ang})`); requestAnimationFrame(step); }; step(); }
 setTimeout(hornCrawl, 9000);
 const POKES = ['Тсс. Не шевелись. Ты стоишь на моём вчера. Вот. Теперь можно.','Я помню всё. Только не по порядку.','Ты не видел жука? Маленький, тёмный. Всё время куда-то идёт.','Ноги – ужасная вещь. Чем их больше, тем труднее притворяться, что стоишь на месте.','Хорошо. Хорошо.'];
-keeper.addEventListener('click', () => { if (app.classList.contains('mode-read')) return; act('twitch'); if (!busy) showLine(POKES[Math.floor(Math.random()*POKES.length)]); });
+function swayNote(){ const n = $('note'); n.classList.remove('swing'); void n.offsetWidth; n.classList.add('swing'); }
+setInterval(() => { if (Math.random() < .35) swayNote(); }, 14000);
+keeper.addEventListener('click', () => { swayNote(); if (app.classList.contains('mode-read')) return; act('twitch'); if (!busy) showLine(POKES[Math.floor(Math.random()*POKES.length)]); });
 
 /* ---------- реплики ---------- */
 let busy = false, timer = null, token = 0;
@@ -136,7 +138,7 @@ function go(id){
   const my = ++token; S.node = id; if (RESUMABLE.has(id)) S.resume = id; save();
   optsEl.innerHTML = ''; floor.innerHTML = ''; hideBug();
   if (n.read !== undefined) return startRead(n.read, n.then);
-  app.className = 'mode-talk';
+  app.className = 'mode-talk'; document.body.classList.remove('reading');
   busy = true; let i = 0;
   const next = () => {
     if (my !== token) return;
@@ -205,7 +207,7 @@ const textEl = $('text'), pages = document.querySelector('.pages');
 let R = null;
 const IMG = k => `assets/img/${k}.jpg?v=3`;
 function startRead(ch, then){
-  const c = window.CHAPTERS[ch]; app.className = 'mode-read';
+  const c = window.CHAPTERS[ch]; app.className = 'mode-read'; document.body.classList.add('reading');
   $('chapTitle').textContent = c.title; textEl.innerHTML = ''; pages.scrollTop = 0;
   R = {ch, then, i:0, frame:-1}; setFrame(0); $('moreBtn').hidden = false; $('allBtn').hidden = false; $('moreBtn').textContent = 'Дальше';
   revealMore();
@@ -290,7 +292,7 @@ $('clearChat').onclick = () => {
 /* разделы: История · Персонажи · Музыка · Книга */
 const PANELS = ['people','music','toc'];
 function closePanels(){ PANELS.forEach(p => $(p).hidden = true); setTab('story'); }
-function setTab(name){ document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === name)); }
+function setTab(name){ document.querySelectorAll('.note button').forEach(b => b.classList.toggle('on', b.dataset.tab === name)); }
 function openPanel(name){
   PANELS.forEach(p => $(p).hidden = true); $('chat').hidden = true;
   if (name === 'people') renderPeople(), $('people').hidden = false;
@@ -298,7 +300,7 @@ function openPanel(name){
   if (name === 'book') renderBook(), $('toc').hidden = false;
   setTab(name);
 }
-document.querySelectorAll('.nav button').forEach(b => b.onclick = () => b.dataset.tab === 'story' ? $('homeBtn').click() : openPanel(b.dataset.tab));
+document.querySelectorAll('.note button').forEach(b => b.onclick = () => b.dataset.tab === 'story' ? $('homeBtn').click() : openPanel(b.dataset.tab));
 document.querySelectorAll('[data-close]').forEach(b => b.onclick = closePanels);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePanels(); $('chat').hidden = true; } });
 
