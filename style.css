@@ -652,3 +652,9 @@ body.reading .vin.show{transform:scale(.8)}
 .sheet:not(.out) .sheet-edge::after{content:"  ↓";color:#6b665d}
 @media (max-width:760px){.sheet.out,.sheet{left:4%;width:calc(var(--s) * 1.6);transform:none}}
 .sheet:not(.out) .sheet-text{display:none}.sheet-edge{z-index:1}
+/* текст песни почерком, как записка; свернуть и сверху, и снизу */
+.sheet-text{font-family:'Caveat','Bad Script',cursive;font-size:1.35rem;line-height:1.3;color:#2b2925;padding-top:40px}
+.sheet-top{position:absolute;top:0;right:0;left:0;z-index:1;height:34px;padding:0 14px;text-align:right;background:linear-gradient(#ece6d8 70%,rgba(236,230,216,0));border:0;cursor:pointer;font-family:'Caveat',cursive;font-size:1.15rem;color:#5f5a52}
+.sheet-top:hover{color:#000}
+.sheet:not(.out) .sheet-top{display:none}
+@media (min-width:761px){.sheet,.sheet.out{width:calc(var(--s) * 1.45)}}

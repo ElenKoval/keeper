@@ -464,7 +464,8 @@ $('dVol').oninput = e => { audio.volume = e.target.value / 100; audio.muted = fa
 $('dMute').onclick = () => { audio.muted = !audio.muted; $('dWave').style.opacity = audio.muted ? .2 : 1; };
 $('dLyricsBtn').onclick = () => { const sh = $('sheet'), on = !sh.classList.contains('out'); sh.classList.toggle('out', on); $('dLyricsBtn').setAttribute('aria-expanded', String(on));
   const drop = on ? Math.min($('dLyrics').scrollHeight + 40, innerHeight * .62) : 0;
-  $('record').style.setProperty('--drop', drop + 'px'); if (on) setTimeout(() => $('sheet').scrollIntoView({behavior:'smooth', block:'nearest'}), 350); };
+  $('record').style.setProperty('--drop', drop + 'px'); };
+$('dLyricsTop').onclick = () => $('dLyricsBtn').click();
 $('dFlip').onclick = $('dFlipBack').onclick = () => $('sleeve').classList.toggle('flipped');
 $('dTalk').onclick = () => { const id = detailId; $('music').hidden = true; openChat(id); };
 $('detailBack').onclick = renderShelf;
@@ -518,7 +519,7 @@ const STATIC = {
   doodle:{ru:'жук — ?',en:'beetle — ?'}, toKeeperArrow:{ru:'← К Киперу',en:'← To Kiper'}, toKeeper:{ru:'К Киперу',en:'To Kiper'},
   soundTitle:{ru:'Звук мира',en:'The Sound of the World'}, allChars:{ru:'← Все персонажи',en:'← All characters'}, lyrics:{ru:'Текст песни',en:'Lyrics'},
   allDrawings:{ru:'← Все рисунки',en:'← All drawings'}, expand:UI.expand, allRecords:{ru:'Все записи',en:'All records'}, flip:{ru:'Перевернуть ↻',en:'Turn over ↻'},
-  clearChat:{ru:'Очистить чат',en:'Clear chat'}, restartChat:{ru:'Начать разговор заново',en:'Start the conversation over'},
+  lyricsHide:{ru:'Свернуть ↑',en:'Fold away ↑'}, clearChat:{ru:'Очистить чат',en:'Clear chat'}, restartChat:{ru:'Начать разговор заново',en:'Start the conversation over'},
   write:{ru:'Поговори со мной…',en:'Talk to me…'}, close:{ru:'Закрыть',en:'Close'}, album:{ru:'Из альбома',en:'From the album'}, book:{ru:'Книга',en:'The Book'},
   bookLead:{ru:'Ну если ты настаиваешь на порядке…',en:'Well, if you insist on order…'}, reset:{ru:'Начать всё сначала',en:'Start everything over'},
   footBrand:{ru:'Мир Дриады · <em>Часть первая</em>',en:"The Dryad's World · <em>Part One</em>"}, about:{ru:'Об авторе и мире',en:'About the author & world'},
