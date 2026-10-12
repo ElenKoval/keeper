@@ -336,6 +336,8 @@ function openChat(id, first){
   const sc = SONGCARD[id]; $('pCard').hidden = !sc; $('pCardAside').hidden = !sc;
   if (sc){ $('pCardHead').textContent = tr(sc.head); $('pCardQuote').textContent = tr(sc.quote); $('pCardAside').textContent = tr(sc.aside); }
   $('pSong').classList.toggle('carded', !!sc);
+  const hasSong = songs(id).length > 0; $('pVinyl').hidden = !hasSong; $('chat').classList.toggle('with-vinyl', hasSong);
+  const row = SHELF.find(r => r[0] === id); $('pVinylLbl').innerHTML = row && row[2] ? labelHTML(row[2]) : '';
   const log = $('chatLog'); log.innerHTML = '';
   const can = !p.sleeps && !p.nochat; $('chatForm').hidden = !can; $('pAsleep').hidden = can || !p.sleeps; $('pAsleep').textContent = tr(p.sleeps) || '';
   $('clearChat').hidden = !can; $('pExpand').hidden = !can;
@@ -365,11 +367,12 @@ function renderPersonSong(){
 function personSongOn(){ const s = songs(chatWith)[pSongIdx]; return s && curSong === s.file; }
 function syncP(){
   if (!chatWith || $('pSong').hidden) return;
-  const mine = personSongOn(); $('pPlay').textContent = mine && !audio.paused ? '❚❚' : '▶';
+  const mine = personSongOn(); $('pPlay').textContent = mine && !audio.paused ? '❚❚' : '▶'; $('pVinylIco').textContent = $('pPlay').textContent; $('chat').classList.toggle('spinning', mine && !audio.paused);
   const p = mine && audio.duration ? audio.currentTime / audio.duration * 100 : 0;
   $('pFill').style.width = p + '%'; $('pKnob').style.left = p + '%';
   $('pTime').textContent = fmt(mine ? audio.currentTime : 0); $('pDur').textContent = fmt(mine ? audio.duration : 0);
 }
+$('pVinyl').onclick = () => $('pPlay').click();
 $('pPlay').onclick = () => { const s = songs(chatWith)[pSongIdx]; if (!s) return;
   if (curSong !== s.file){ audio.src = s.file; curSong = s.file; } curId = chatWith;
   audio.paused ? audio.play().catch(() => {}) : audio.pause(); if (!S.heard.includes(chatWith)) { S.heard.push(chatWith); save(); } };
@@ -560,6 +563,7 @@ let discAngle = 0, lastT = 0;
   lastT = t;
   $('dLabel').style.transform = `rotate(${discAngle}deg)`;   // крутится наклейка, блик на пластинке стоит, как в жизни
   $('miniLbl').style.transform = `rotate(${discAngle}deg)`;
+  $('pVinylLbl').style.transform = `rotate(${discAngle}deg)`;
   requestAnimationFrame(spinLoop);
 })();
 $('miniDisc').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
