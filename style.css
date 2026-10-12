@@ -387,3 +387,8 @@ button,input{font:inherit;color:inherit}
 .mini-x{background:none;border:0;color:var(--dim);font-size:1.3rem;line-height:1;cursor:pointer;padding:4px 8px}
 .mini-x:hover{color:var(--ink)}
 @media (max-width:760px){.mini{left:10px;bottom:118px}}
+/* мини-плеер под запиской */
+@media (min-width:761px){
+  .mini{left:auto;right:24px;bottom:auto;top:calc(312px + env(safe-area-inset-top,0px));max-width:244px}
+  body.reading .mini{top:calc(236px + env(safe-area-inset-top,0px))}
+}
