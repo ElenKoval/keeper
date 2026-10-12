@@ -436,36 +436,44 @@ const BACKNOTE = {
   keeper:{ru:'Если увидишь жука, не говори ему, что я спрашивал.',en:"If you see the beetle, don't tell him I asked."},
 };
 const WITH = {cat:{ru:'с Котом',en:'Cat'},weaver:{ru:'с Вивер',en:'Weaver'},crystal:{ru:'с Кристаллом',en:'Crystal'},keeper:{ru:'с Кипером',en:'Kiper'},dream:{ru:'с Дримом',en:'Dream'},liora:{ru:'с Лиорой',en:'Liora'},drpak:{ru:'с Паком',en:'Pak'},shiny:{ru:'с Шайни',en:'Shiny'},shiny_bro:{ru:'с Братом',en:"Shiny's Brother"},talk_mushroom:{ru:'с Грибом',en:'Mushroom'},angry_forest:{ru:'со Злым Лесом',en:'the Angry Forest'}};
+let dIdx = 0;
 function openDetail(id, autoplay){
-  detailId = id;
-  const row = SHELF.find(r => r[0] === id); const list = songs(id); const s = list[0];
+  detailId = id; dIdx = 0;
+  const row = SHELF.find(r => r[0] === id); const list = songs(id);
   $('shelf').hidden = true; $('detail').hidden = false; $('music').scrollTop = 0;
   $('dLabel').className = 'lbl' + (row[2] ? '' : ' ph'); $('dLabel').innerHTML = row[2] ? labelHTML(row[2]) : tr(UI.bro);
-  $('dName').textContent = (nm(id) || row[1]) + (s && s.by ? ' · ' + tr(s.by) : ''); $('dSong').textContent = s ? s.title : '';
-  $('dEmpty').hidden = !!s; $('dEmpty').textContent = tr(UI.songSoon); $('dPlayer').hidden = !s;
-  $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('record').style.setProperty('--drop','0px'); $('dLyricsBtn').setAttribute('aria-expanded','false'); $('record').style.removeProperty('--sheet');
+  $('dSong').textContent = nm(id) || row[1];                       // на конверте — имя героя
+  $('dEmpty').hidden = !!list.length; $('dEmpty').textContent = tr(UI.songSoon); $('dPlayer').hidden = !list.length;
   $('sleeve').classList.remove('flipped');
   const sl = SLEEVES[id]; $('dFront').className = 'face front' + (sl ? ' has-cover fx-' + (sl.fx || 'none') : '');
-  $('dCover').style.backgroundImage = sl ? (sl.sym ? `url(assets/img/${sl.sym}.png?v=1)` : `url(assets/img/${sl.img}.jpg?v=4)`) : ''; $('dCover').style.backgroundPosition = sl ? sl.pos : ''; $('dCover').style.setProperty('--cs', sl && sl.size ? sl.size : 'cover'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
+  $('dCover').style.backgroundImage = sl ? (sl.sym ? `url(assets/img/${sl.sym}.png?v=1)` : `url(assets/img/${sl.img}.jpg?v=4)`) : ''; $('dCover').style.backgroundPosition = sl && sl.pos ? sl.pos : ''; $('dCover').style.setProperty('--cs', sl && sl.size ? sl.size : 'cover'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
   const w = (PEOPLE[id] || {}).works || []; $('dBackArt').src = w.length ? `assets/img/${w[0][0]}.jpg?v=4` : ''; $('dBackArt').hidden = !w.length;
   $('dBackNote').textContent = tr(BACKNOTE[id]) || '';
   const canTalk = PEOPLE[id] && !PEOPLE[id].sleeps && !PEOPLE[id].nochat; $('dTalk').hidden = !canTalk;
   $('dTalk').textContent = (LANG === 'en' ? 'Talk to ' : 'Поговорить ') + tr(WITH[id] || {ru:nm(id),en:nm(id)});
-  if (s && curSong !== s.file){ audio.src = s.file; curSong = s.file; }
-  if (s) curId = id;
-  if (s && autoplay) audio.play().catch(() => {});
-  syncPlay(); paintSeek();
-  if (s && !S.heard.includes(id)) { S.heard.push(id); save(); }
+  // если уже играет песня этого героя — показываем её
+  const playing = list.findIndex(x => x.file === curSong); if (playing >= 0) dIdx = playing;
+  selectTrack(dIdx, autoplay);
 }
-function syncPlay(){ const on = !audio.paused; $('dPlay').textContent = on ? '❚❚' : '▶'; $('stage').classList.toggle('playing', on); }
-$('dPlay').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
+function curTrack(){ return songs(detailId)[dIdx]; }
+function selectTrack(i, play){
+  const list = songs(detailId); dIdx = i; const s = list[i];
+  $('dTracks').innerHTML = list.map((x, k) => `<button class="trk${k === i ? ' on' : ''}" data-k="${k}"><span class="n">${k + 1}</span>${esc(x.title)}${x.by ? `<small> · ${esc(tr(x.by))}</small>` : ''}</button>`).join('');
+  $('dTracks').querySelectorAll('.trk').forEach(b => b.onclick = () => selectTrack(+b.dataset.k, true));
+  $('dName').textContent = '';
+  $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('record').style.setProperty('--drop','0px'); $('dLyricsBtn').setAttribute('aria-expanded','false');
+  if (s && play){ if (curSong !== s.file){ audio.src = s.file; curSong = s.file; } curId = detailId; audio.play().catch(() => {}); if (!S.heard.includes(detailId)) { S.heard.push(detailId); save(); } }
+  syncPlay(); paintSeek();
+}
+function syncPlay(){ const s = curTrack(), on = !!s && curSong === s.file && !audio.paused; $('dPlay').textContent = on ? '❚❚' : '▶'; $('stage').classList.toggle('playing', on); }
+$('dPlay').onclick = () => { const s = curTrack(); if (!s) return; if (curSong !== s.file) return selectTrack(dIdx, true); audio.paused ? audio.play().catch(() => {}) : audio.pause(); };
 ['play','pause','ended','timeupdate','loadedmetadata'].forEach(ev => audio.addEventListener(ev, () => { if (chatWith) syncP(); }));
 audio.addEventListener('play', syncPlay); audio.addEventListener('pause', syncPlay); audio.addEventListener('ended', syncPlay);
-function paintSeek(){ const p = audio.duration ? audio.currentTime / audio.duration * 100 : 0; $('dFill').style.width = p + '%'; $('dKnob').style.left = p + '%';
-  $('dTime').textContent = fmt(audio.currentTime); $('dDur').textContent = fmt(audio.duration); }
+function paintSeek(){ const s = curTrack(), mine = s && curSong === s.file; const p = mine && audio.duration ? audio.currentTime / audio.duration * 100 : 0; $('dFill').style.width = p + '%'; $('dKnob').style.left = p + '%';
+  $('dTime').textContent = fmt(mine ? audio.currentTime : 0); $('dDur').textContent = fmt(mine ? audio.duration : 0); }
 audio.addEventListener('timeupdate', paintSeek); audio.addEventListener('loadedmetadata', paintSeek);
 (() => { const th = $('dThread'); let drag = false;
-  const at = e => { const r = th.getBoundingClientRect(); const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); if (audio.duration) { audio.currentTime = x * audio.duration; paintSeek(); } };
+  const at = e => { const r = th.getBoundingClientRect(); const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); const s = curTrack(); if (audio.duration && s && curSong === s.file) { audio.currentTime = x * audio.duration; paintSeek(); } };
   th.addEventListener('pointerdown', e => { drag = true; th.setPointerCapture(e.pointerId); at(e); });
   th.addEventListener('pointermove', e => { if (drag) at(e); });
   th.addEventListener('pointerup', () => { drag = false; }); })();

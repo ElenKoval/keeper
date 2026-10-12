@@ -739,3 +739,13 @@ body.reading .vin.show{transform:scale(.8)}
 .front.fx-old .d-song{white-space:normal}
 .front.has-cover > .wear{position:absolute!important;inset:0}
 .front.fx-old .cover-art{background-size:48%;background-position:50% 9%!important}
+/* конверт — имя героя; песни списком над плеером */
+.front .d-song{font-size:calc(var(--s) * .16)!important;letter-spacing:-.01em}
+.front .d-name:empty{display:none}
+.tracks{width:min(740px,100%);margin:0 auto -6px;display:flex;flex-direction:column;gap:2px}
+.trk{display:flex;align-items:baseline;gap:12px;background:none;border:0;border-bottom:1px solid #1f1f1f;padding:8px 2px;cursor:pointer;text-align:left;color:#9a9a9a;font-family:'Alice',Georgia,serif;font-size:1.15rem}
+.trk .n{font-family:'PT Serif',Georgia,serif;font-size:.8rem;color:#666;min-width:1.4em}
+.trk small{font-family:'Caveat',cursive;font-size:1rem;color:#777}
+.trk:hover{color:#fff}
+.trk.on{color:#f4f4f4}
+.trk.on .n::before{content:"▸ ";color:#bbb}
