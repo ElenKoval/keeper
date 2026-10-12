@@ -749,3 +749,34 @@ body.reading .vin.show{transform:scale(.8)}
 .trk:hover{color:#fff}
 .trk.on{color:#f4f4f4}
 .trk.on .n::before{content:"▸ ";color:#bbb}
+
+/* Звук мира: одна композиция — конверт, пластинка и плеер вместе */
+.sound{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding-top:60px}
+.sound-title{margin-bottom:6px}
+.sound-sub{margin:0 0 30px;text-align:center;font-family:'PT Serif',Georgia,serif;font-style:italic;font-size:.95rem;color:#8a8580}
+.detail{width:100%}
+.stage{gap:0}
+.record + .tracks,.tracks{margin-top:4px}
+.player{width:calc(var(--s,380px) * 1.95);max-width:100%;margin:22px auto 0;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;
+  padding:16px 18px;border-top:1px solid #2a2824;border-bottom:1px solid #2a2824;background:linear-gradient(#121110,#0e0d0c)}
+.record ~ .player{--s:min(380px,52vw,52vh)}
+/* кнопка — потемневший металл */
+.player .play{width:44px;height:44px;border-radius:50%;border:0;color:#d8d2c6;font-size:.85rem;
+  background:radial-gradient(circle at 35% 30%,#5a5650,#2e2c29 55%,#1a1917);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -2px 4px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.6)}
+.player .play:hover{color:#fff;background:radial-gradient(circle at 35% 30%,#6a665f,#34322e 55%,#1c1b19)}
+/* название записи над полосой */
+.now{margin:0 0 2px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.now b{font-family:'PT Serif',Georgia,serif;font-weight:400;font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;color:#e6e1d6}
+.now small{font-family:'PT Serif',Georgia,serif;font-style:italic;font-size:.82rem;color:#8a8580}
+/* полоса цвета старой бумаги, головка булавки */
+.player .thread{height:18px}
+.player .thread .track{background:#3a3730;height:1px}
+.player .thread .fill{background:#d9cfb8;height:1px}
+.player .thread .knob{width:8px;height:8px;margin:-4px 0 0 -4px;border:0;background:radial-gradient(circle at 35% 30%,#fff,#bdb6a6 60%,#6e6a60);box-shadow:0 1px 2px rgba(0,0,0,.7)}
+.player .times{font-family:'PT Serif',Georgia,serif;font-size:.74rem;color:#7d786f;letter-spacing:.06em}
+/* громкость — тише: только значок, ползунок при наведении */
+.player .mute{width:28px;height:28px;border:0;background:none;color:#7d786f}
+.player .mute:hover{color:#e6e1d6;background:none}
+.player .vol input{width:0;opacity:0;transition:width .3s,opacity .3s;accent-color:#bdb6a6}
+.player .vol:hover input,.player .vol:focus-within input{width:70px;opacity:1}
+@media (max-width:760px){.player{width:100%;grid-template-columns:auto 1fr auto;grid-template-areas:none}.player .play{grid-area:auto}.seek,.vol{grid-area:auto}}

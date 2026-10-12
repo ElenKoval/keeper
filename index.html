@@ -7,7 +7,7 @@
 <meta name="description" content="Мир Дриады. Кипер помнит всё, только не по порядку. Садись, он расскажет.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alice&family=Caveat:wght@400;600&family=PT+Serif:ital@0;1&family=Forum&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=57">
+<link rel="stylesheet" href="style.css?v=59">
 </head>
 <body>
 <svg id="roots" aria-hidden="true"></svg>
@@ -144,6 +144,7 @@
 <section class="sound" id="music" hidden aria-label="Звук мира">
   <button class="toKeeper" id="musicHome" data-i18n="toKeeperArrow">← К Киперу</button>
   <h2 class="sound-title" data-i18n="soundTitle">Звук мира</h2>
+  <p class="sound-sub" data-i18n="soundSub">Песни из Сада, Леса и дальше</p>
   <div class="shelf" id="shelf"></div>
   <div class="detail" id="detail" hidden>
     <div class="stage" id="stage">
@@ -174,6 +175,7 @@
       <div class="player" id="dPlayer">
         <button class="play" id="dPlay" aria-label="Play">▶</button>
         <div class="seek">
+          <p class="now"><b id="dNow"></b><small id="dNowSub"></small></p>
           <div class="thread" id="dThread"><span class="track"></span><span class="fill" id="dFill"></span><span class="knob" id="dKnob"></span></div>
           <div class="times"><span id="dTime">0:00</span><span id="dDur">0:00</span></div>
         </div>
@@ -211,7 +213,7 @@
 </footer>
 
 <script src="assets/chapters.js?v=30"></script>
-<script src="assets/songs.js?v=49"></script>
-<script src="app.js?v=57"></script>
+<script src="assets/songs.js?v=58"></script>
+<script src="app.js?v=58"></script>
 </body>
 </html>

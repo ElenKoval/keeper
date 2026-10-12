@@ -461,6 +461,9 @@ function selectTrack(i, play){
   $('dTracks').innerHTML = list.map((x, k) => `<button class="trk${k === i ? ' on' : ''}" data-k="${k}"><span class="n">${k + 1}</span>${esc(x.title)}${x.by ? `<small> · ${esc(tr(x.by))}</small>` : ''}</button>`).join('');
   $('dTracks').querySelectorAll('.trk').forEach(b => b.onclick = () => selectTrack(+b.dataset.k, true));
   $('dName').textContent = '';
+  $('dTracks').hidden = list.length < 2;
+  $('dNow').textContent = s ? s.title : '';
+  $('dNowSub').textContent = s ? (s.by ? tr(s.by).replace(/^(поёт|sung by) /,'') : nm(detailId)) + (s.no ? (LANG === 'en' ? ' · Record ' : ' · Запись ') + String(s.no).padStart(2,'0') : '') : '';
   $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('record').style.setProperty('--drop','0px'); $('dLyricsBtn').setAttribute('aria-expanded','false');
   if (s && play){ if (curSong !== s.file){ audio.src = s.file; curSong = s.file; } curId = detailId; audio.play().catch(() => {}); if (!S.heard.includes(detailId)) { S.heard.push(detailId); save(); } }
   syncPlay(); paintSeek();
@@ -545,7 +548,7 @@ const STATIC = {
   nPeople:{ru:'Рисунки и персонажи',en:'Drawings & characters'}, nMusic:{ru:'Включить музыку',en:'Play some music'}, nBook:{ru:'Открыть книгу',en:'Open the book'},
   doodle:{ru:'жук — ?',en:'beetle — ?'}, toKeeperArrow:{ru:'← К Киперу',en:'← To Kiper'}, toKeeper:{ru:'К Киперу',en:'To Kiper'},
   soundTitle:{ru:'Звук мира',en:'The Sound of the World'}, allChars:{ru:'← Все персонажи',en:'← All characters'}, lyrics:{ru:'Текст песни',en:'Lyrics'},
-  allDrawings:{ru:'← Все рисунки',en:'← All drawings'}, expand:UI.expand, allRecords:{ru:'Все записи',en:'All records'}, flip:{ru:'Перевернуть ↻',en:'Turn over ↻'},
+  allDrawings:{ru:'← Все рисунки',en:'← All drawings'}, expand:UI.expand, soundSub:{ru:'Песни из Сада, Леса и дальше',en:'Songs from the Garden, the Forest, and Beyond'}, allRecords:{ru:'Все записи',en:'All records'}, flip:{ru:'Перевернуть ↻',en:'Turn over ↻'},
   shelfView:{ru:'все пластинки на полке',en:'all records on the shelf'}, lyricsHide:{ru:'Свернуть ↑',en:'Fold away ↑'}, clearChat:{ru:'Очистить чат',en:'Clear chat'}, restartChat:{ru:'Начать разговор заново',en:'Start the conversation over'},
   write:{ru:'Поговори со мной…',en:'Talk to me…'}, close:{ru:'Закрыть',en:'Close'}, album:{ru:'Из альбома',en:'From the album'}, book:{ru:'Книга',en:'The Book'},
   bookLead:{ru:'Ну если ты настаиваешь на порядке…',en:'Well, if you insist on order…'}, reset:{ru:'Начать всё сначала',en:'Start everything over'},
