@@ -928,3 +928,28 @@ body.reading .vin.show{transform:scale(.8)}
 .person.spinning .pvinyl.bg{opacity:1;right:-90px}
 .person.spinning .pvinyl.bg .lbl{opacity:.32}
 @media (max-width:760px){.pvinyl.bg{width:300px;height:300px;right:-80px;top:-40px}.person.spinning .pvinyl.bg{right:-80px}}
+
+/* чат — на старом изрисованном листе для рисования */
+.person-right{position:relative;isolation:isolate;padding:26px 30px 24px 34px;margin-top:-10px}
+.sheetbg{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden;border-radius:2px;
+  background:linear-gradient(175deg,rgba(236,230,216,.075),rgba(236,230,216,.045) 60%,rgba(236,230,216,.06));
+  box-shadow:0 0 0 1px rgba(236,230,216,.06),0 18px 50px rgba(0,0,0,.5);
+  clip-path:polygon(0 0,100% 0,100% 97%,96% 100%,70% 98.5%,40% 100%,12% 98.8%,0 100%)}
+/* стёртый набросок героя */
+.sheetbg .ghost{position:absolute;inset:6% -10% 0 20%;background-size:cover;background-position:30% 30%;filter:grayscale(1) invert(1) contrast(1.4);mix-blend-mode:screen;opacity:.06;transform:rotate(-4deg)}
+/* следы ластика и графита */
+.sheetbg .smudge{position:absolute;border-radius:50%;filter:blur(18px)}
+.sheetbg .s1{left:8%;top:62%;width:38%;height:14%;background:rgba(255,255,255,.035);transform:rotate(-8deg)}
+.sheetbg .s2{right:6%;top:18%;width:26%;height:20%;background:rgba(255,255,255,.03)}
+.sheetbg .s3{left:40%;bottom:6%;width:30%;height:9%;background:rgba(0,0,0,.25)}
+/* пружина/дырочки слева, как у скетчбука */
+.sheetbg .holes{position:absolute;left:10px;top:14px;bottom:14px;width:9px;background:radial-gradient(circle,#0a0a0a 0 3.5px,rgba(236,230,216,.12) 4.5px,transparent 5px) 0 0/9px 26px repeat-y}
+/* реплики — как записи карандашом */
+.line-msg .who{color:#8a857c}
+.line-msg.me .said{font-family:'Caveat',cursive;font-size:1.35rem;line-height:1.2;color:#cfc8ba}
+.line-msg .said{color:#ece6da}
+.person .chat-form input{border-bottom:1px dashed #6a655c}
+.person .chat-form input::placeholder{font-family:'Caveat',cursive;font-size:1.25rem;color:#7d786f}
+.margins{margin-top:8px}
+@media (max-width:760px){.person-right{padding:20px 16px 18px 26px}.sheetbg .holes{left:6px}}
+@media (min-width:761px){.person-right{min-height:calc(100vh - 110px)}}

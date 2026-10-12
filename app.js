@@ -325,6 +325,7 @@ function openChat(id, first){
   chatWith = id; if (!S.met.includes(id)) S.met.push(id); save();
   const p = PEOPLE[id];
   showWork(0);
+  { const w = (PEOPLE[id] || {}).works || []; $('pGhost').style.backgroundImage = w.length ? `url(assets/img/${w[w.length > 1 ? 1 : 0][0]}.jpg?v=4)` : 'none'; }
   const th = $('pThumbs'); th.innerHTML = '';
   if (p.works.length > 1) p.works.forEach((w, i) => { const b = document.createElement('button'); b.className = 'thumb' + (i ? '' : ' on');
     b.innerHTML = `<img src="assets/img/${w[0]}.jpg?v=4" alt="">`; b.onclick = () => showWork(i); th.appendChild(b); });
