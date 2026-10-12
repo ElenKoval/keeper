@@ -629,5 +629,7 @@ document.querySelectorAll('.note button[data-tab]').forEach(b => b.addEventListe
 document.addEventListener('click', e => { if (mq.matches && !$('note').contains(e.target)) noteMin(true); });
 
 /* старт */
+const INTRO_V = 2;   // новое вступление: показать один раз всем, кто был раньше (главы и чаты остаются)
+if ((S.intro || 1) < INTRO_V) { S.intro = INTRO_V; S.node = null; S.resume = 'start'; save(); }
 setTimeout(() => go(S.node && S.node !== 'start' ? 'back' : 'start'), 600);
 })();
