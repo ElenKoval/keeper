@@ -276,3 +276,12 @@ button,input{font:inherit;color:inherit}
 #roots .grow{stroke-dasharray:1;stroke-dashoffset:1;animation:grow 3.5s ease-out forwards}
 @keyframes grow{to{stroke-dashoffset:0}}
 @media (prefers-reduced-motion:reduce){#roots .grow{animation:none;stroke-dashoffset:0}}
+/* футер */
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:3;display:flex;gap:10px 22px;align-items:baseline;justify-content:center;flex-wrap:wrap;padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));font-size:.78rem;color:var(--dim);background:linear-gradient(transparent,var(--bg) 45%)}
+.foot-brand{font-family:var(--display);font-size:.95rem;color:var(--ink);letter-spacing:.04em}
+.foot a,.foot-copy a{color:var(--dim);text-decoration:underline;text-decoration-color:var(--faint);text-underline-offset:3px}
+.foot a:hover,.foot-copy a:hover{color:var(--amber-hi)}
+.mode-read ~ .foot{display:none}
+.foot-copy{margin-top:auto;padding-top:20px;border-top:1px solid var(--faint);display:flex;flex-direction:column;gap:6px;font-size:.78rem;color:var(--dim)}
+@media (min-width:761px){.foot-copy{display:none}}
+@media (max-width:760px){.foot{display:none}}
