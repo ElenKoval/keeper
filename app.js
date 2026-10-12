@@ -422,6 +422,10 @@ function renderShelf(){
 const audio = $('player'); let curSong = null, curId = null;
 function fmt(s){ s = Math.floor(s || 0); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
 let detailId = null;
+/* обложки конвертов: рисунок героя на лицевой стороне + своя деталь */
+const SLEEVES = {
+  weaver: {img:'weaver', pos:'50% 42%', size:'175%', fx:'oil'},
+};
 const BACKNOTE = {
   cat:{ru:'Двести сорок семь. Четыре за водонапорной башней не видно. Я всё равно их считаю.',en:'Two hundred forty-seven. Four are hidden behind the water tower. I count them anyway.'},
   weaver:{ru:'Лужи цветут. Никто не предупреждал. Теперь ты знаешь.',en:'Puddles bloom. Nobody warned me. Now you know.'},
@@ -440,7 +444,9 @@ function openDetail(id, autoplay){
   $('dName').textContent = (nm(id) || row[1]) + (s && s.by ? ' · ' + tr(s.by) : ''); $('dSong').textContent = s ? s.title : '';
   $('dEmpty').hidden = !!s; $('dEmpty').textContent = tr(UI.songSoon); $('dPlayer').hidden = !s;
   $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('record').style.setProperty('--drop','0px'); $('dLyricsBtn').setAttribute('aria-expanded','false'); $('record').style.removeProperty('--sheet');
-  $('sleeve').classList.remove('flipped'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
+  $('sleeve').classList.remove('flipped');
+  const sl = SLEEVES[id]; $('dFront').className = 'face front' + (sl ? ' has-cover fx-' + (sl.fx || 'none') : '');
+  $('dCover').style.backgroundImage = sl ? `url(assets/img/${sl.img}.jpg?v=4)` : ''; $('dCover').style.backgroundPosition = sl ? sl.pos : ''; $('dCover').style.setProperty('--cs', sl && sl.size ? sl.size : 'cover'); $('recs').classList.remove('out'); $('record').classList.remove('recs-open');
   const w = (PEOPLE[id] || {}).works || []; $('dBackArt').src = w.length ? `assets/img/${w[0][0]}.jpg?v=4` : ''; $('dBackArt').hidden = !w.length;
   $('dBackNote').textContent = tr(BACKNOTE[id]) || '';
   const canTalk = PEOPLE[id] && !PEOPLE[id].sleeps && !PEOPLE[id].nochat; $('dTalk').hidden = !canTalk;

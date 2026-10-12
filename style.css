@@ -679,3 +679,27 @@ body.reading .vin.show{transform:scale(.8)}
   .record.recs-open{transform:translateX(calc(var(--s) * .45))}
   .recs.out{transform:translateX(calc(var(--s) * -.82)) rotate(-1.5deg)}
 }
+/* обложка с рисунком героя */
+.cover-art,.cover-fx{position:absolute;inset:0;pointer-events:none;display:none}
+.front.has-cover .cover-art{display:block;background-size:cover;filter:grayscale(1) contrast(1.08) brightness(.92)}
+.front.has-cover::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(10,10,10,.82) 0%,rgba(10,10,10,.15) 32%,rgba(10,10,10,0) 55%,rgba(10,10,10,.78) 86%,rgba(10,10,10,.92) 100%)}
+.front.has-cover .scuffs,.front.has-cover .pencil{z-index:1}
+.front.has-cover > *:not(.cover-art):not(.cover-fx){position:relative;z-index:2}
+.front.has-cover .flip{position:absolute}
+.front.has-cover .d-song{text-shadow:0 2px 14px rgba(0,0,0,.8)}
+.front.has-cover .talkto{color:#f0f0f0;text-shadow:0 1px 8px #000}
+/* Вивер: бензиновая радуга — маслянистое пятно на бумаге */
+.front.fx-oil .cover-fx{display:block;mix-blend-mode:color;opacity:.55;
+  background:radial-gradient(ellipse 38% 26% at 30% 64%,transparent 0 38%,rgba(255,80,160,.9) 44%,rgba(255,200,60,.9) 52%,rgba(80,220,140,.9) 60%,rgba(70,140,255,.9) 68%,rgba(170,90,255,.9) 76%,transparent 84%)}
+.front.has-cover > .scuffs,.front.has-cover > .pencil,.front.has-cover > .flip{position:absolute}
+.front.has-cover > .pencil{display:none}
+.front.has-cover .d-song{margin-top:auto}
+.front.has-cover .talkto{margin-top:.6em;font-size:calc(var(--s) * .055)}
+.front.has-cover .cover-art{filter:grayscale(1) contrast(1.15) brightness(.78)}
+.front.has-cover::after{background:linear-gradient(180deg,rgba(10,10,10,.25) 0%,rgba(10,10,10,0) 30%,rgba(10,10,10,.35) 55%,rgba(10,10,10,.9) 82%,rgba(10,10,10,.96) 100%)}
+.front.fx-oil .cover-fx{background:radial-gradient(ellipse 30% 20% at 74% 30%,transparent 0 36%,rgba(255,80,160,.9) 44%,rgba(255,200,60,.9) 52%,rgba(80,220,140,.9) 60%,rgba(70,140,255,.9) 68%,rgba(170,90,255,.9) 76%,transparent 84%);opacity:.5}
+.front.has-cover > .flip{position:absolute!important;right:7%;bottom:6%;left:auto}
+.front.has-cover > .scuffs,.front.has-cover > .pencil{position:absolute!important}
+.front.has-cover .cover-art{background-size:var(--cs,cover)}
+.front.has-cover .talkto{margin-bottom:1.2em}
