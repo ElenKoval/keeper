@@ -630,3 +630,5 @@ body.reading .vin.show{transform:scale(.8)}
 @media (min-width:761px){.pages{padding-top:0}.chap-bar{top:0;padding-top:64px}}
 .chap-bar{margin-left:-2px;padding-right:4px}
 @media (min-width:761px){.read .art{margin-top:56px}}
+.clearchat{align-self:flex-start;margin-top:10px;color:#7d7d7d}
+.clearchat:hover{color:#fff}
