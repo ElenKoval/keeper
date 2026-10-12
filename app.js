@@ -82,7 +82,7 @@ const N = {
     object:{kind:'chitin', label:{ru:'осколок хитина',en:'a shard of chitin'}, go:'pro_read'}},
   pro_read: {read:0, then:'pro_after'},
   pro_after: {steps:[{say:{ru:'Он не знал, как её держать. Столько лапок и всего две руки. Несправедливая арифметика.',en:'He didn\'t know how to hold her. So many little legs and only two hands. Unfair arithmetic.'}}],
-    opts:[{label:{ru:'А что было дальше?',en:'What happened next?'}, go:'ch1_in'}]},
+    opts:[{label:{ru:'А что было дальше?',en:'What happened next?'}, go:'pro_song'}]},
   pro_song: {steps:[{say:{ru:'Он потом про неё пел. Мне он этого не говорил. Но я слышал.',en:'Later he sang about her. He never told me. But I heard.'}}],
     opts:[{label:{ru:'Послушать Дрима',en:'Listen to Dream'}, song:'dream'}, {label:{ru:'Дальше',en:'Next'}, go:'ch1_in', tap:true}]},
   ch1_in: {steps:[
@@ -426,6 +426,8 @@ const BACKNOTE = {
   cat:{ru:'Двести сорок семь. Четыре за водонапорной башней не видно. Я всё равно их считаю.',en:'Two hundred forty-seven. Four are hidden behind the water tower. I count them anyway.'},
   weaver:{ru:'Лужи цветут. Никто не предупреждал. Теперь ты знаешь.',en:'Puddles bloom. Nobody warned me. Now you know.'},
   crystal:{ru:'Слушай медленно. Я настраивал долго.',en:'Listen slowly. I took a long time to tune it.'},
+  dream:{ru:'Я не знаю, откуда ты. Но я здесь.',en:"I don't know where you came from. But I'm here."},
+  liora:{ru:'Я знаю. Поэтому и не говорила.',en:"I know. That's why I didn't tell you."},
   keeper:{ru:'Если увидишь жука, не говори ему, что я спрашивал.',en:"If you see the beetle, don't tell him I asked."},
 };
 const WITH = {cat:{ru:'с Котом',en:'Cat'},weaver:{ru:'с Вивер',en:'Weaver'},crystal:{ru:'с Кристаллом',en:'Crystal'},keeper:{ru:'с Кипером',en:'Kiper'},dream:{ru:'с Дримом',en:'Dream'},liora:{ru:'с Лиорой',en:'Liora'},drpak:{ru:'с Паком',en:'Pak'},shiny:{ru:'с Шайни',en:'Shiny'},shiny_bro:{ru:'с Братом',en:"Shiny's Brother"},talk_mushroom:{ru:'с Грибом',en:'Mushroom'},angry_forest:{ru:'со Злым Лесом',en:'the Angry Forest'}};
