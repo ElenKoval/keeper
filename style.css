@@ -640,3 +640,15 @@ body.reading .vin.show{transform:scale(.8)}
 .sheet.out .sheet-edge::after{content:"  ×";color:#6b665d}
 .sheet-text::-webkit-scrollbar{width:6px}.sheet-text::-webkit-scrollbar-thumb{background:#c9c1b0}
 @media (max-width:760px){.sheet.out{left:4%;width:calc(var(--s) * 1.6);top:calc(var(--s) * -.1);height:calc(var(--s) * 1.25);transform:rotate(1deg)}}
+/* лист выпадает вниз из-под конверта */
+.record{--drop:0px;margin-bottom:calc(var(--drop) + 30px)!important;transition:margin-bottom .7s cubic-bezier(.3,.7,.2,1)}
+.sheet,.sheet.out{z-index:2;left:calc(var(--s) * .06);width:calc(var(--s) * .88);transform:none;top:calc(var(--s) - 6px);height:34px;
+  clip-path:polygon(0 0,100% 0,100% 100%,82% 98.5%,64% 100%,45% 98.8%,26% 100%,10% 98.6%,0 100%);transition:height .7s cubic-bezier(.3,.7,.2,1),box-shadow .4s}
+.sheet.out{height:calc(var(--drop) + 34px);box-shadow:0 14px 30px rgba(0,0,0,.6)}
+.sheet-edge{position:absolute;left:0;right:0;bottom:0;height:30px;padding:0 14px;display:flex;align-items:center}
+.sheet.out .sheet-edge{background:#ece6d8}
+.sheet-text{height:calc(100% - 34px);padding:12px 20px 8px}
+.sheet.out .sheet-edge::after{content:"  ↑"}
+.sheet:not(.out) .sheet-edge::after{content:"  ↓";color:#6b665d}
+@media (max-width:760px){.sheet.out,.sheet{left:4%;width:calc(var(--s) * 1.6);transform:none}}
+.sheet:not(.out) .sheet-text{display:none}.sheet-edge{z-index:1}

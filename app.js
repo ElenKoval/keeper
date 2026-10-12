@@ -435,7 +435,7 @@ function openDetail(id, autoplay){
   $('dLabel').className = 'lbl' + (row[2] ? '' : ' ph'); $('dLabel').innerHTML = row[2] ? labelHTML(row[2]) : tr(UI.bro);
   $('dName').textContent = nm(id) || row[1]; $('dSong').textContent = s ? s.title : '';
   $('dEmpty').hidden = !!s; $('dEmpty').textContent = tr(UI.songSoon); $('dPlayer').hidden = !s;
-  $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('dLyricsBtn').setAttribute('aria-expanded','false'); $('record').style.removeProperty('--sheet');
+  $('sheet').hidden = !(s && s.lyrics); $('dLyrics').textContent = s ? s.lyrics || '' : ''; $('sheet').classList.remove('out'); $('record').style.setProperty('--drop','0px'); $('dLyricsBtn').setAttribute('aria-expanded','false'); $('record').style.removeProperty('--sheet');
   $('sleeve').classList.remove('flipped');
   const w = (PEOPLE[id] || {}).works || []; $('dBackArt').src = w.length ? `assets/img/${w[0][0]}.jpg?v=3` : ''; $('dBackArt').hidden = !w.length;
   $('dBackNote').textContent = tr(BACKNOTE[id]) || '';
@@ -463,7 +463,8 @@ audio.volume = .8;
 $('dVol').oninput = e => { audio.volume = e.target.value / 100; audio.muted = false; $('dWave').style.opacity = audio.volume ? 1 : .2; };
 $('dMute').onclick = () => { audio.muted = !audio.muted; $('dWave').style.opacity = audio.muted ? .2 : 1; };
 $('dLyricsBtn').onclick = () => { const sh = $('sheet'), on = !sh.classList.contains('out'); sh.classList.toggle('out', on); $('dLyricsBtn').setAttribute('aria-expanded', String(on));
-  if (on) $('dLyrics').scrollTop = 0; };
+  const drop = on ? Math.min($('dLyrics').scrollHeight + 40, innerHeight * .62) : 0;
+  $('record').style.setProperty('--drop', drop + 'px'); if (on) setTimeout(() => $('sheet').scrollIntoView({behavior:'smooth', block:'nearest'}), 350); };
 $('dFlip').onclick = $('dFlipBack').onclick = () => $('sleeve').classList.toggle('flipped');
 $('dTalk').onclick = () => { const id = detailId; $('music').hidden = true; openChat(id); };
 $('detailBack').onclick = renderShelf;
