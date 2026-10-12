@@ -344,7 +344,7 @@ function openChat(id, first){
   $('clearChat').hidden = !can; $('pExpand').hidden = !can;
   if (can){ (S.chats[ck(id)] || []).forEach(m => addMsg(m.role === 'user' ? 'me' : 'them', m.text)); }
   $('chat').classList.remove('expanded'); $('pMenu').hidden = true;
-  $('chat').hidden = false; $('chat').scrollTop = 0;
+  $('chat').hidden = false; $('chat').scrollTop = 0; requestAnimationFrame(() => { $('chatLog').scrollTop = $('chatLog').scrollHeight; });
   if (first) sendChat(first.charAt(0).toUpperCase() + first.slice(1));
 }
 function showWork(i){
@@ -390,14 +390,14 @@ function addMsg(cls, text){
   const d = document.createElement('div'); d.className = 'line-msg ' + cls;
   const who = cls.includes('me') ? tr(UI.you) : nm(chatWith);
   d.innerHTML = `<span class="who">${esc(who)}</span><span class="said"></span>`; d.querySelector('.said').textContent = text;
-  $('chatLog').appendChild(d); $('chatInput').scrollIntoView({block:'nearest'}); return d.querySelector('.said');
+  $('chatLog').appendChild(d); $('chatLog').scrollTop = $('chatLog').scrollHeight; return d.querySelector('.said');
 }
 async function sendChat(m){
   const id = chatWith; addMsg('me', m); const w = addMsg('them wait', '…');
   const key = ck(id), h = S.chats[key] || (S.chats[key] = []);
   try{ const a = await ask(id, LANG === 'en' ? m + '\n\n(Reply in English.)' : m, h); h.push({role:'user', text:m}, {role:'model', text:a}); S.chats[key] = h.slice(-40); save(); w.parentNode.classList.remove('wait'); w.textContent = a; }
   catch(e){ w.textContent = tr(UI.silence); }
-  finally{ $('chatInput').scrollIntoView({block:'nearest'}); }
+  finally{ $('chatLog').scrollTop = $('chatLog').scrollHeight; }
 }
 $('chatForm').addEventListener('submit', e => { e.preventDefault(); const i = $('chatInput'); const m = i.value.trim(); if (!m) return; i.value = ''; sendChat(m); });
 $('chatBack').onclick = () => { $('chat').hidden = true; openPanel('people'); };

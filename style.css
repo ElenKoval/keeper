@@ -972,3 +972,11 @@ body.reading .vin.show{transform:scale(.8)}
   .person-grid{grid-template-columns:minmax(280px,440px) minmax(0,720px);gap:40px;justify-content:center;max-width:1240px;margin:0 auto}
   .person-bar{max-width:1240px;margin:0 auto 18px}
 }
+/* чат не ниже блока с музыкой — дальше прокрутка внутри листа */
+@media (min-width:761px){
+  .person-grid{align-items:stretch;min-height:0}
+  .person-right{contain:size;min-height:420px!important;height:auto;display:flex;flex-direction:column;position:relative}
+  .talklog{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;max-height:none;padding-right:8px}
+  .talklog::-webkit-scrollbar{width:6px}.talklog::-webkit-scrollbar-thumb{background:#4a4740;border-radius:3px}
+  .talklog:empty{display:block;flex:0 0 0}
+}
