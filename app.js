@@ -313,7 +313,7 @@ function openChat(id, first){
   const log = $('chatLog'); log.innerHTML = '';
   const can = !p.sleeps; $('chatForm').hidden = !can; $('pAsleep').hidden = can; $('pAsleep').textContent = tr(p.sleeps) || '';
   $('pMenuBtn').hidden = !can; $('pExpand').hidden = !can;
-  if (can){ (S.chats[id] || []).forEach(m => addMsg(m.role === 'user' ? 'me' : 'them', m.text)); if (!log.children.length) addMsg('them', tr(p.hello) || '…'); }
+  if (can){ (S.chats[id] || []).forEach(m => addMsg(m.role === 'user' ? 'me' : 'them', m.text)); }
   $('chat').classList.remove('expanded'); $('pMenu').hidden = true;
   $('chat').hidden = false; $('chat').scrollTop = 0;
   if (first) sendChat(first.charAt(0).toUpperCase() + first.slice(1));
@@ -360,19 +360,19 @@ function addMsg(cls, text){
   const d = document.createElement('div'); d.className = 'line-msg ' + cls;
   const who = cls.includes('me') ? tr(UI.you) : nm(chatWith);
   d.innerHTML = `<span class="who">${esc(who)}</span><span class="said"></span>`; d.querySelector('.said').textContent = text;
-  $('chatLog').appendChild(d); $('chatLog').scrollTop = $('chatLog').scrollHeight; return d.querySelector('.said');
+  $('chatLog').appendChild(d); $('chatInput').scrollIntoView({block:'nearest'}); return d.querySelector('.said');
 }
 async function sendChat(m){
   const id = chatWith; addMsg('me', m); const w = addMsg('them wait', '…');
   const h = S.chats[id] || (S.chats[id] = []);
   try{ const a = await ask(id, m, h); h.push({role:'user', text:m}, {role:'model', text:a}); S.chats[id] = h.slice(-40); save(); w.parentNode.classList.remove('wait'); w.textContent = a; }
   catch(e){ w.textContent = tr(UI.silence); }
-  finally{ $('chatLog').scrollTop = $('chatLog').scrollHeight; }
+  finally{ $('chatInput').scrollIntoView({block:'nearest'}); }
 }
 $('chatForm').addEventListener('submit', e => { e.preventDefault(); const i = $('chatInput'); const m = i.value.trim(); if (!m) return; i.value = ''; sendChat(m); });
 $('chatBack').onclick = () => { $('chat').hidden = true; openPanel('people'); };
 $('personHome').onclick = () => $('homeBtn').click();
-$('clearChat').onclick = () => { S.chats[chatWith] = []; save(); $('chatLog').innerHTML = ''; addMsg('them', tr(PEOPLE[chatWith].hello) || '…'); $('pMenu').hidden = true; };
+$('clearChat').onclick = () => { S.chats[chatWith] = []; save(); $('chatLog').innerHTML = ''; $('pMenu').hidden = true; };
 
 /* разделы: История · Персонажи · Музыка · Книга */
 const PANELS = ['people','music','toc'];
@@ -512,7 +512,7 @@ const STATIC = {
   soundTitle:{ru:'Звук мира',en:'The Sound of the World'}, allChars:{ru:'← Все персонажи',en:'← All characters'}, lyrics:{ru:'Текст песни',en:'Lyrics'},
   allDrawings:{ru:'← Все рисунки',en:'← All drawings'}, expand:UI.expand, allRecords:{ru:'Все записи',en:'All records'}, flip:{ru:'Перевернуть ↻',en:'Turn over ↻'},
   restartChat:{ru:'Начать разговор заново',en:'Start the conversation over'},
-  write:{ru:'Напиши…',en:'Write…'}, close:{ru:'Закрыть',en:'Close'}, album:{ru:'Из альбома',en:'From the album'}, book:{ru:'Книга',en:'The Book'},
+  write:{ru:'Поговори со мной…',en:'Talk to me…'}, close:{ru:'Закрыть',en:'Close'}, album:{ru:'Из альбома',en:'From the album'}, book:{ru:'Книга',en:'The Book'},
   bookLead:{ru:'Ну если ты настаиваешь на порядке…',en:'Well, if you insist on order…'}, reset:{ru:'Начать всё сначала',en:'Start everything over'},
   footBrand:{ru:'Мир Дриады · <em>Часть первая</em>',en:"The Dryad's World · <em>Part One</em>"}, about:{ru:'Об авторе и мире',en:'About the author & world'},
   legal:{ru:'© 2026 sunnyChimera. Тексты и рисунки. Все права защищены · Персонажи отвечают с помощью ИИ',en:'© 2026 sunnyChimera. Texts and drawings. All rights reserved · Characters respond with AI'},

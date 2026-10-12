@@ -603,3 +603,14 @@ body.reading .vin.show{transform:scale(.8)}
 .readnav.done .more{border:0;padding:0;font-family:'Caveat',cursive;font-size:1.35rem;color:#9a9a9a;transform:rotate(-1.5deg)}
 .readnav.done .more::before{content:"← "}
 .readnav.done .more:hover{color:#fff}
+/* чат сразу под именем */
+.person-right{height:auto;position:static}
+.person .chat-form{order:0;margin:14px 0 0;max-width:40rem;padding-top:0}
+.person .chat-form input{font-size:1.15rem}
+.talklog{flex:none;overflow:visible;max-height:none;padding-top:22px}
+.talklog:empty{display:none}
+.pname-row .person-name{margin:0}
+.talklog{padding:22px 0 4px}
+.person .chat-form{margin-top:10px}
+@media (max-width:760px){.talklog{max-height:none}}
+.person-art img{width:auto;max-width:100%;height:auto}
