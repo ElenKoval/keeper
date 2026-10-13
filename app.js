@@ -470,13 +470,14 @@ const labelHTML = img => img ? `<img src="assets/img/${img}.jpg?v=4" alt="">` : 
 function renderShelf(){
   const last = detailId; $('detail').hidden = true; $('shelf').hidden = false; const box = $('shelf'); box.innerHTML = '';
   SHELF.forEach(([id, name, img]) => {
-    const n = songs(id).length; const b = document.createElement('button'); b.className = 'rec'; b.disabled = !n;
+    const n = songs(id).length; const b = document.createElement('button'); b.className = 'rec'; b.disabled = !n; b.dataset.id = id;
     b.innerHTML = `<span class="disc"><span class="lbl${img ? '' : ' ph'}">${img ? labelHTML(img) : tr(UI.bro)}</span><span class="pin"></span></span><b>${esc(nm(id) || name)}</b>` +
       (n ? `<small>${n} ${plural(n)}</small>` : `<small class="soon">${tr(UI.soon)}</small>`);
     if (id === last && n){ b.classList.add('last'); b.insertAdjacentHTML('beforeend', `<em class="backtag">${LANG === 'en' ? '← back here' : '← вернуться сюда'}</em>`); }
     if (n) b.onclick = () => openDetail(id, false);
     box.appendChild(b);
   });
+  markPlaying();
   const bb = $('shelfBack');
   if (last && songs(last).length){ bb.hidden = false; bb.innerHTML = `<span class="bb-disc"><span class="lbl">${labelHTML((SHELF.find(r => r[0] === last) || [])[2] || '')}</span></span><span class="bb-t">← ${LANG === 'en' ? 'back to' : 'назад к пластинке'}<b>${esc(nm(last))}</b></span>`; bb.onclick = () => openDetail(last, false); }
   else bb.hidden = true;
@@ -524,9 +525,11 @@ function renderCrate(){
     const b = document.createElement('button'); b.className = 'cs' + (has ? '' : ' empty') + (cur ? ' out' : '');
     b.style.setProperty('--tilt', ((k * 37) % 7 - 3) * .6 + 'deg'); b.disabled = !has || cur;
     const sl = SLEEVES[id]; if (sl){ b.classList.add('cover', 'fx-' + (sl.fx || 'none')); b.style.setProperty('--cov', sl.sym ? `url(assets/img/${sl.sym}.png?v=1)` : `url(assets/img/${sl.img}.jpg?v=4)`); }
-    b.innerHTML = `<span>${esc(nm(id))}</span>`; b.title = has ? nm(id) : tr(UI.soonLow);
+    b.dataset.id = id; const img = (SHELF.find(r => r[0] === id) || [])[2];
+    b.innerHTML = `<i class="peek" aria-hidden="true"><i class="pd"><i class="plbl">${labelHTML(img)}</i></i></i><span>${esc(nm(id))}</span>`; b.title = has ? nm(id) : tr(UI.soonLow);
     if (has && !cur) b.onclick = () => { b.classList.add('pull'); setTimeout(() => openDetail(id, false), 260); };
     box.appendChild(b); });
+  markPlaying();
 }
 $('crateFront').onclick = renderShelf;
 function curTrack(){ return songs(detailId)[dIdx]; }
@@ -573,11 +576,14 @@ function renderRecs(){
 }
 $('detailBack').onclick = () => { const r = $('recs'); if (!r.classList.contains('out')) renderRecs(); r.classList.toggle('out'); $('record').classList.toggle('recs-open', r.classList.contains('out')); };
 $('recsShelf').onclick = () => { $('recs').classList.remove('out'); $('record').classList.remove('recs-open'); renderShelf(); };
+/* играющая пластинка выглядывает из конверта в ящике, на полке крутится её наклейка */
+function markPlaying(){ const has = !!curSong && !audio.ended && (!audio.paused || audio.currentTime > 0), on = has && !audio.paused;
+  document.querySelectorAll('#crateSleeves .cs, #shelf .rec').forEach(b => { const p = has && b.dataset.id === curId; b.classList.toggle('playing', p); b.classList.toggle('spin', p && on); }); }
 /* мини-плеер: музыка играет дальше, пока ходишь по сайту */
 function miniSync(){
-  const onDetail = (!$('music').hidden && !$('detail').hidden) || (!$('chat').hidden && personSongOn());
+  const dt = curTrack(), onDetail = (!$('music').hidden && !$('detail').hidden && !!dt && dt.file === curSong) || (!$('chat').hidden && personSongOn());
   const show = !!curSong && !onDetail && (!audio.paused || audio.currentTime > 0) && !audio.ended;
-  $('mini').classList.toggle('show', show); if (!show || !curId) return;
+  $('mini').classList.toggle('show', show); markPlaying(); if (!show || !curId) return;
   const pr = audio.duration ? audio.currentTime / audio.duration * 100 : 0; $('miniFill').style.width = pr + '%'; $('miniKnob').style.left = pr + '%';
   const row = SHELF.find(r => r[0] === curId) || [curId, (PEOPLE[curId]||{}).name || '', ''];
   if ($('mini').dataset.id !== curId){ $('mini').dataset.id = curId; $('miniLbl').className = 'lbl' + (row[2] ? '' : ' ph'); $('miniLbl').innerHTML = row[2] ? labelHTML(row[2]) : ''; }
