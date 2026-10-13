@@ -473,7 +473,6 @@ function renderShelf(){
     const n = songs(id).length; const b = document.createElement('button'); b.className = 'rec'; b.disabled = !n; b.dataset.id = id;
     b.innerHTML = `<span class="disc"><span class="lbl${img ? '' : ' ph'}">${img ? labelHTML(img) : tr(UI.bro)}</span><span class="pin"></span></span><b>${esc(nm(id) || name)}</b>` +
       (n ? `<small>${n} ${plural(n)}</small>` : `<small class="soon">${tr(UI.soon)}</small>`);
-    if (id === last && n){ b.classList.add('last'); b.insertAdjacentHTML('beforeend', `<em class="backtag">${LANG === 'en' ? '← back here' : '← вернуться сюда'}</em>`); }
     if (n) b.onclick = () => openDetail(id, false);
     box.appendChild(b);
   });
