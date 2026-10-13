@@ -594,13 +594,15 @@ function miniSync(){
 audio.addEventListener('play', () => { if (app.classList.contains('mode-talk') && $('music').hidden && $('chat').hidden && !busy && Math.random() < .3) { act('twitch'); showLine({ru:'А, эту оставь. Под неё я лучше вспоминаю неправильно.',en:'Ah, leave this one. I remember things wrong better to it.'}); } });
 setInterval(miniSync, 700);
 /* пластинки крутит скрипт: на паузе угол замирает, при игре продолжается с того же места */
-let discAngle = 0, lastT = 0;
+let discAngle = 0, lastT = 0, dAng = 0, pAng = 0;
 (function spinLoop(t){
-  if (lastT && !audio.paused) discAngle = (discAngle + (t - lastT) * 360 / 14000) % 360;
-  lastT = t;
-  $('dLabel').style.transform = `rotate(${discAngle}deg)`;   // крутится наклейка, блик на пластинке стоит, как в жизни
+  const dt = lastT && !audio.paused ? (t - lastT) * 360 / 14000 : 0; lastT = t;
+  discAngle = (discAngle + dt) % 360;                         // мини-пластинка = то, что играет
+  const dc = curTrack(); if (dc && curSong === dc.file) dAng = (dAng + dt) % 360;   // большая крутится, только если играет её песня
+  if (personSongOn()) pAng = (pAng + dt) % 360;                                  // на странице героя — только его песня
+  $('dLabel').style.transform = `rotate(${dAng}deg)`;   // крутится наклейка, блик на пластинке стоит, как в жизни
   $('miniLbl').style.transform = `rotate(${discAngle}deg)`;
-  $('pVinylLbl').style.transform = `rotate(${discAngle}deg)`;
+  $('pVinylLbl').style.transform = `rotate(${pAng}deg)`;
   requestAnimationFrame(spinLoop);
 })();
 $('miniDisc').onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
